@@ -2,29 +2,39 @@
   <div class="main zIndex20">
     <div class="tabChange">
       <!-- 可点击tab头 -->
-      <ul class="nav">
-        <li
-          class="item"
-          :class="tab === 0 ? 'active' : ''"
-          @click="clickTab(0)"
-        >
-          频谱扫描
-        </li>
-        <li
-          class="item"
-          :class="tab === 1 ? 'active' : ''"
-          @click="clickTab(1)"
-        >
-          信号分析
-        </li>
-        <li
-          class="item"
-          :class="tab === 2 ? 'active' : ''"
-          @click="clickTab(2)"
-        >
-          网台分选
-        </li>
-      </ul>
+      <div class="tabChangeBox">
+        <ul class="nav">
+          <li
+            class="item"
+            :class="tab === 0 ? 'active' : ''"
+            @click="clickTab(0)"
+          >
+            频谱扫描
+          </li>
+          <li
+            class="item"
+            :class="tab === 1 ? 'active' : ''"
+            @click="clickTab(1)"
+          >
+            信号分析
+          </li>
+          <li
+            class="item"
+            :class="tab === 2 ? 'active' : ''"
+            @click="clickTab(2)"
+          >
+            网台分选
+          </li>
+        </ul>
+        <ul class="nav navnew">
+          <li
+            class="item active"
+          >
+            频谱扫描
+          </li>
+        </ul>
+
+      </div>
 
       <!-- 对应 tab 展示区域 -->
       <div class="tab-show">
@@ -67,13 +77,46 @@ export default {
   height: 100%;
   @include position(absolute, 10, 580px, static, static, static);
   @include flex(column, center, center);
+  .tabChangeBox{
+    display: flex;
+    justify-content: space-between;
+
+  }
+  .navnew{
+    width: 240px !important;
+    height: 60px !important;
+    .item{
+      border-radius: 15px 0 0 0 !important;
+
+    }
+
+    .item:before {
+        width: 0px!important;
+
+      
+    }
+    .item:after {
+      content: "";
+      display: block;
+      width: 26px;
+      height: 101%;
+      background: #00644C;
+      position: absolute;
+      left: -13px;
+      top: 0;
+      z-index: -1;
+      border-radius: 15px 0 0 0;
+      transform: skew(-20deg);
+    }
+  }
   .nav {
     display: flex;
-    width: 70%;
+    width: 700px;
     align-items: flex-end;
     .item {
         flex: 0.8;
-        height: 55px;
+        width: 216px;
+        height: 60px;
         background: #15231E;
         border-radius: 5px 5px 0 0;
         position: relative;
@@ -84,7 +127,6 @@ export default {
         // vertical-align: middle;
         justify-content: center;
         align-items: center;
-
         font-size: 24px;
         color: #fff;
         text-align: left;
@@ -123,7 +165,7 @@ export default {
 
     .active {
         flex: 1;
-        height: 70px;
+        height: 60px;
         background: #00644C;
         z-index: 10;
         transform: translateY(1px);
