@@ -118,6 +118,7 @@ export default {
         },
 
         handleSelect(key, keyPath) {
+            clearInterval(this.$store.state.tiemer)
             if(keyPath.length>1){
                 this.activeIndex = keyPath[0];
             }else{

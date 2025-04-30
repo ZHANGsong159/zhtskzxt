@@ -42,25 +42,54 @@
 
 
     <el-dialog
-      width="30%"
+      width="40%"
       title="设备新增"
       :visible.sync="innerVisible"
-
       append-to-body>
-        <el-form :model="form" :inline="true">
-            <el-form-item label="审批人">
-                <el-input v-model="form.name" placeholder="审批人"></el-input>
+        <el-form  :model="formAdd" :inline="true">
+            <el-form-item label="设备编号">
+                <el-input v-model="formAdd.deviceCode" placeholder="设备编号"></el-input>
             </el-form-item>
-            <el-form-item label="活动区域" :label-width="formLabelWidth">
-                <el-select v-model="form.region" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="shanghai"></el-option>
-                    <el-option label="区域二" value="beijing"></el-option>
+            <el-form-item label="设备名称">
+                <el-input v-model="formAdd.deviceName" placeholder="设备名称"></el-input>
+            </el-form-item>
+            <el-form-item label="设备IP">
+                <el-input v-model="formAdd.deviceIp" placeholder="设备IP"></el-input>
+            </el-form-item>
+            <!-- <el-form-item label="审批人">
+                <el-input v-model="form.name" placeholder="审批人"></el-input>
+            </el-form-item> -->
+            <el-form-item label="所属系统" >
+                <el-select v-model="formAdd.systemType" placeholder="请选择所属系统">
+                    <el-option v-for="(item,index) in SSXToption" :label="item.label" :value="item.value" :key='index'></el-option>
+
                 </el-select>
             </el-form-item>
+            <el-form-item label="装备类型" >
+                <el-select v-model="formAdd.deviceType" placeholder="请选择装备类型">
+                    <el-option v-for="(item,index) in SBLXoption " :label="item.label" :value="item.value" :key='index'></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="是否部署" >
+                <el-radio v-model="formAdd.isDeploy" label="0" style="padding-left:20px">未部署</el-radio>
+                <el-radio v-model="formAdd.isDeploy" label="1">已部署</el-radio>
+
+                <!-- <el-input v-model="formAdd.isDeploy" placeholder="状态"></el-input> -->
+            </el-form-item>
+            <el-form-item label="状态">
+                <el-input v-model="formAdd.state" placeholder="状态"></el-input>
+            </el-form-item>
+            <el-form-item label="经度">
+                <el-input v-model="formAdd.longitude" placeholder="经度"></el-input>
+            </el-form-item>
+            <el-form-item label="纬度">
+                <el-input v-model="formAdd.latitude" placeholder="纬度"></el-input>
+            </el-form-item>
+
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+            <el-button type="primary" @click="confirm" >确 定</el-button>
         </div>
     </el-dialog>
 </div>
@@ -79,13 +108,21 @@ export default {
             selectedDevice: '',
             shebeiBoxId:'dialogPinPu',
             innerVisible: false,
+            radio:'1',
             
-            devices: [
-                { value: '选项1', label: '黄金糕' },
-                { value: '选项2', label: '双皮奶' },
-                { value: '选项3', label: '蚵仔煎' },
-                { value: '选项4', label: '龙须面' },
-                { value: '选项5', label: '北京烤鸭' }
+            SSXToption: [
+                { value: 'TK', label: '通抗分系统' },
+                { value: 'LK', label: '类抗分系统' },
+                { value: 'DK', label: '电抗分系统' },
+            ],
+            SBLXoption:[
+                { value: 'TK', label: '通抗分系统' },
+                { value: 'LK', label: '类抗分系统' },
+                { value: 'DK-HK', label: '红外设备' },
+                { value: 'DK-106', label: '1.06激光设备' },
+                { value: 'DK-15', label: '1.5激光设备' },
+                { value: 'DK-GJ', label: '告警天线' },
+                { value: 'DK-GR', label: '偏引干扰机' },
             ],
             tableData: [{
                 date: '2016-05-02',
@@ -104,33 +141,27 @@ export default {
                 name: '王小虎',
                 address: '上海市普陀区金沙江路 1516 弄'
             }],
-            form: {
-                name: '',
-                region: '',
-                date1: '',
-                date2: '',
-                delivery: false,
-                type: [],
-                resource: '',
-                desc: ''
-            },
-            params:{
+            formAdd:{
                 deviceId: 78376133,
-                deviceCode: "quis Duis sunt",
-                deviceName: "est ullamco pariatur do",
-                deviceIp: "ut voluptate sed sunt",
-                systemType: "",
-                deviceType: "quis occaecat magna e",
-                longitude: "tempor culpa",
-                latitude: "consequat mollit",
-                picUrl:"exercitation sit sunt nostrud Ut",
-                isDeploy: -19807719,
-                state: "dolore tempor nostrud et exercitation"
-            }
+                deviceCode: 'testShebei',
+                deviceName: '测试设备',
+                deviceIp: '192.168.1.1',
+                systemType: 'TK',
+                deviceType: 'TK',
+                isDeploy: '0',
+                state: 78376133,
+                longitude: 78376133,
+                latitude: 78376133,
+            },
+        
         }
     
     },
     methods:{
+        confirm(){
+            console.log(this.formAdd,'formAddformAddformAdd');
+            
+        },
         addSbgl(){
             this.innerVisible=true
 
@@ -143,6 +174,13 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.dialog-footer{
+    .el-button{
+        background-color: #1C735E;
+        color: #fff;
+        border:1px solid #FFFFFF4C;
+    }
+}
 .PinPuPopor{
     width: 100%;
     // border: 1px solid #0B715A;
@@ -220,9 +258,28 @@ export default {
 }
 .el-form--inline{
     display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
     .inpotBox{
         margin-bottom: 0;
     }
-}
+    .el-form-item{
+        width: 45%;
 
+    }
+}        
+::v-deep .el-form-item__label{
+        text-align: center;
+        width: 70px !important;
+    }
+    ::v-deep .el-form-item__content{
+        width: calc(100% - 70px) !important;
+        .el-select{
+            width: 100%;
+        }
+    }
+::v-deep .el-input__inner{
+    color: #fff;
+}
 </style>

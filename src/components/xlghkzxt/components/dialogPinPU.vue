@@ -50,7 +50,7 @@
     </div>
     <div class="PinPuPopor-content">
         <div class="PinPuPopor-content-left">
-            <!-- <hightEcharts :shebeiID="shebeiBoxId" ></hightEcharts> -->
+            <hightEcharts :shebeiID="shebeiBoxId" ></hightEcharts>
         </div>
         <div class="PinPuPopor-content-right ">
             <div class="PinPuPopor-content-righ-title leftPinpu-title">
@@ -90,11 +90,11 @@
     
 </template>
 <script>
-// import hightEcharts from "./hightEcharts.vue";
+import hightEcharts from "./hightEcharts.vue";
 
 
 export default {
-    // components:{hightEcharts},
+    components:{hightEcharts},
     props: {
         closeDiaLog:{
         type: Boolean,

@@ -3,9 +3,20 @@
     <div class="tittleText">训练规划及电磁环境控制分系统</div>
     <div class="tittelImg">
       <img src="@/assets/img/组28_@1x.png" alt="">  
-      <div class="currentTime" v-show="bosShow">
+      <div class="currentTime" v-if="bosShow">
         <div class="currentTimeText">天文时间：{{ currentTime }}</div>
         <div class="currentTimeText">作战时间：{{ currentTime }}</div>
+      </div>
+      <div class="backButton" v-else @click="backButton()">
+        <div class="buttonBox" >
+          <el-button   >
+            <div class="buttonBoxImge flexBox">
+              <img src="@/assets/img/arrow_go_back_line_@1x.png" alt="">
+              <div>返回首页</div>
+            </div>
+          </el-button> 
+        </div>
+
 
       </div>
     </div>
@@ -27,7 +38,7 @@ export default {
     bosShow:{
       type: Boolean,
       default: true,
-      }
+      },
   },
   data() {
     return {
@@ -37,6 +48,12 @@ export default {
     };
   },
   methods: {
+    backButton(){
+      console.log('backButton');
+      
+      this.$router.back()
+
+    },
     getFormattedTime() {
       return moment().format('YYYY-MM-DD HH:mm:ss');
       // return format(new Date(), 'yyyy-MM-dd HH:mm:ss');
@@ -91,6 +108,7 @@ export default {
 ::v-deep .el-menu.el-menu--horizontal{
     border-bottom: 0 !important;
 }
+
 
 .tittlemain {
   width: 100%;
@@ -161,5 +179,31 @@ export default {
       text-align: left;
   }
 
+}
+.buttonBox {
+  margin-left: 0px;
+  .el-button {
+    width: 100%;
+    height: 100%;
+    color: #FFFFFF;
+  }
+}
+.backButton{
+  width: 162px;
+  height: 52px;
+  position:absolute;
+  top: -10px;
+  left: -160px;
+  cursor: pointer;
+  .backIconImg{
+      width: 20px !important;
+      height: 20px !important;
+      img{
+        width: 100%;
+      }
+  }
+
+  
+  
 }
 </style>

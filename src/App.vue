@@ -5,6 +5,8 @@
 </template>
 <script>
 import WebSocketService from './utils/websocket.js';
+import {getCmdRate}  from "@/api/api.js"
+
 
 
 export default {
@@ -13,16 +15,13 @@ export default {
             socket: null,
             messages: [],
             ymessages:[],
+            lastClickTime: 0,
         };
     },
     methods: {
         connectWebSocket() {
             this.socket = new WebSocketService('ws://192.168.2.167:8001/websocket/push');
             this.socket.connect();
-
-            this.socket.on('message', (data) => {
-                this.messages.push(data);
-            });
         },
         sendMessage() {
             if (this.socket) {
@@ -33,35 +32,66 @@ export default {
             if (this.socket) {
                 this.socket.close();
             }
-        }
+        },
+        //发送频谱请求接口
+        getCmdRateFun(){
+          getCmdRate().then(res => {
+              console.log(res,'getCmdRategetCmdRate');
+          }); 
+
+        },
     },
     mounted() {
           this.connectWebSocket();
+
           this.socket.on('open', () => {
-          let userId=localStorage.getItem('userID')
-          let parame={
-            "userId":userId
-          }
-          this.socket.send(parame); 
-          this.socket.on('message', (data) => {
-            if(data.ratePushDTO.segmentStartRate==1){
-              this.messages=[]
-              this.ymessages=[]
+            let userId=localStorage.getItem('userID')
+            let parame={
+              "userId":userId
             }
+            console.log('openSocketOpen');
             
+            this.socket.send(parame);
+            this.getCmdRateFun()
 
-            data.ratePushDTO.values.forEach((item,index)=>{
-                this.messages.push([index+Number(data.ratePushDTO.segmentStartRate),item]);
-                this.ymessages.push(item)
-            })
-            console.log(this.ymessages,'item')
-            this.$store.state.messages=this.messages
-            this.$store.state.ymessages=this.ymessages
-
-            // this.messages.push(data.ratePushDTO);
           });
-        });
+
+
+
+          this.socket.on('message', (data) => {
+            console.log('message');
+            
+              if(data.ratePushDTO.segmentStartRate==1){
+                this.messages=[]
+                this.ymessages=[]
+              }
+              data.ratePushDTO.values.forEach((item,index)=>{
+                  this.messages.push([index+Number(data.ratePushDTO.segmentStartRate),item]);
+                  this.ymessages.push(item)
+              })
+              this.$store.state.messages=this.messages
+              this.$store.state.ymessages=this.ymessages
+              const now = new Date().getTime()
+              this.lastClickTime=now
+          });
+
+
+          this.$store.state.tiemer = setInterval(() => {
+            console.log('setIntervalsetInterval');
+            
+            const now = new Date().getTime()
+            if(now - this.lastClickTime>=2000){
+              this.getCmdRateFun()
+            }
+          }, 2000);
        
+    },
+    beforeDestroy() {
+      clearInterval(this.$store.state.timer);
+    },
+    watch:{ 
+
+
     },
     
 };

@@ -223,7 +223,7 @@ export default {
     //频谱渲染值
     highInit(data) {
       this.options.series[0].data = data;
-      console.log(this.options.series[0].data,'highInithighInit');
+      // console.log(this.options.series[0].data,'highInithighInit');
       
       Highcharts.chart(this.shebeiID, this.options);
     },
@@ -352,16 +352,26 @@ export default {
     // console.log(this.shebeiID,'shebeiIDshebeiID');
     
       // 模拟假数据
-    this.timer = setInterval(() => {
-      if(this.$store.state.messages.length>0){
-        this.initMessage();
-      }
-      console.log('setIntervalsetInterval');
+    // this.timer = setInterval(() => {
+    //   if(this.$store.state.messages.length>0){
+    //     this.initMessage();
+    //   }
+    //   // console.log('setIntervalsetInterval');
       
-    }, 30);
+    // }, 30);
 
 
     
+
+  },
+  watch:{
+      '$store.state.messages': {
+        handler() {
+          // console.log(newVal,'someObject变化了')
+          this.initMessage();
+        },
+        deep: true
+      }
 
   },
   beforeDestroy() {

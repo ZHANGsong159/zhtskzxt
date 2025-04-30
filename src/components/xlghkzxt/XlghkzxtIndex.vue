@@ -41,7 +41,7 @@ import xlghkzxtMenu from "./components/xlghkzxtMenu.vue";
 import dialogPinPU from "./components/dialogPinPU.vue";
 import sbglBOX  from "./components/sbglBox.vue";
 
-import {getCmdRate}  from "@/api/api.js"
+// import {getCmdRate}  from "@/api/api.js"
 export default {
   components: {
     xlghkzxtTittle,
@@ -73,29 +73,15 @@ export default {
       }
     },
     clickPinPu(id){
-      console.log(id,'clickPinPu');
+      console.log(this.$store.state.tiemer,id,'clickPinPu');
       // this.dialogTitle='频谱图'
       // this.dialogVisible = true;
       // this.componentsment = 'dialogPinPU'
-      // this.$router.push('/pinpuindex')
-
-      // getListAPI().then(res=>{
-      //   console.log(res,'resclickPinPu');
-        
-      // })
-
-      getCmdRate().then(res => {
-            console.log(res,'getCmdRategetCmdRate');
-      }); 
+      clearInterval(this.$store.state.tiemer)
+      this.$router.push('/pinpuindex')
     },
     handleClose(done) {
         done();
-
-        // this.$confirm('确认关闭？')
-        //   .then(()=> {
-        //     done();
-        //   })
-        //   .catch(() => {});
     },
   },
   created(){ 

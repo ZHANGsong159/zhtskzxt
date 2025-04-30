@@ -39,9 +39,7 @@
       <!-- 对应 tab 展示区域 -->
       <div class="tab-show">
         <div v-if="tab === 0">
-          <div class="tab-help-text">
-            
-          </div>
+          <pinpuBoxPPSM> </pinpuBoxPPSM>
         </div>
         <div v-else>
           <!-- tab2里面内容 -->
@@ -51,7 +49,13 @@
   </div>
 </template>
 <script>
+// import pinpuBoxXHFXVue from './pinpuBoxXHFX.vue';
+import pinpuBoxPPSM from './pinpuBoxPPSM.vue'
 export default {
+  components: {
+    // pinpuBoxXHFXVue,
+    pinpuBoxPPSM
+  },
     data() {
       return {
         tab: 0,
@@ -68,7 +72,9 @@ export default {
 <style lang="less" scoped>
 .main {
   width: 80%;
-  height: 70%;
+  height: 80%;
+  margin-top: 70px;
+  box-sizing: border-box;
 //   background: #15231e;
 }
 
@@ -87,19 +93,15 @@ export default {
     height: 60px !important;
     .item{
       border-radius: 15px 0 0 0 !important;
-
     }
-
     .item:before {
-        width: 0px!important;
-
-      
+      width: 0px!important;
     }
     .item:after {
       content: "";
       display: block;
       width: 26px;
-      height: 101%;
+      height: 100%;
       background: #00644C;
       position: absolute;
       left: -13px;
@@ -111,7 +113,7 @@ export default {
   }
   .nav {
     display: flex;
-    width: 700px;
+    width: 600px;
     align-items: flex-end;
     .item {
         flex: 0.8;
@@ -210,6 +212,10 @@ export default {
     width: 100%;
     height:calc(100% - 70px);
     // padding: 70px;
+    div{
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 </style>

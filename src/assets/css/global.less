@@ -316,6 +316,62 @@ input[type=number]::-webkit-outer-spin-button {
     }
 }
 
+//自定义按钮
+.buttonBox{
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    margin-left:30px;
+    .el-button{
+        width: 104px;
+        height: 44px;
+        border-radius: 0;
+        background-color: #1C735E;
+        border: 1px solid #FFFFFF4C;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .buttonBoxImge{
+            img{
+                width: 24px;
+                height: 24px;
+                margin-right: 10px;
+            }
+
+        }
+    }
+}
+.el-button:focus, .el-button:hover {
+    background-color: #2CE5BA4c !important;
+    color: #fff !important;
+}
+.el-select-dropdown{
+    background-color: transparent !important;
+}
+.el-scrollbar__wrap{
+    color: #fff;
+}
+.el-select-dropdown__item{
+    background-color: #0B201B;
+    color: #fff;
+
+}
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+    background-color: #0B715A !important;
+    color: #fff;
+}
+.el-select-dropdown__item.selected{
+    color: #fff !important;
+}
+.el-radio__input.is-checked+.el-radio__label{
+    color: #fff !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner{
+    background-color: #2CE5BA !important;
+    border-color: #2CE5BA !important;
+}
+
 
 
 

@@ -7,6 +7,9 @@ export default new Vuex.Store({
   state: {
     messages:[],
     ymessages:[],
+    lastClickTime:0,
+    tiemer:null,
+
   },
   getters: {
   },
@@ -15,5 +18,5 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
-  }
+  },
 })
