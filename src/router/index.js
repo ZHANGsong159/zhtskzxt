@@ -63,8 +63,8 @@ router.beforeEach((to, from, next) => {
   
   if (to.meta.isAuth) {
       //判断 如果school本地存储是qinghuadaxue的时候，可以进去
-      if (localStorage.getItem('token')) {
-        console.log(localStorage.getItem('token'));
+      if (sessionStorage.getItem('token')) {
+        console.log(sessionStorage.getItem('token'));
         
           next()  //放行
       } else {

@@ -76,7 +76,7 @@ export default {
             console.log(res,'postLoginOut')
             if(res.data.code==200){
               this.$router.push('/login');
-              localStorage.removeItem('token')
+              sessionStorage.removeItem('token')
               this.$message({
                 type: 'success',
                 message: '注销成功!'

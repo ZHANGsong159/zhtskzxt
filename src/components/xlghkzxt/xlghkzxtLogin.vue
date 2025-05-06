@@ -54,6 +54,7 @@
   </div>
 </template>
 <script>
+// import HttpRequte from '@/api/api.js'
 import {postLogin} from '@/api/api'
 export default {
   data() {
@@ -75,8 +76,8 @@ export default {
         }).then(res=>{
           console.log(res,'postLogin')
           if(res.code==200){
-            localStorage.setItem('userID', res.data.userId)
-            localStorage.setItem('token', res.data.token)
+            sessionStorage.setItem('userID', res.data.userId)
+            sessionStorage.setItem('token', res.data.token)
             this.$router.push({
                 path: '/xlghkzxt'
             })

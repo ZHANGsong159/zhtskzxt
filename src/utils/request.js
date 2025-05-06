@@ -2,8 +2,7 @@
 // 导入axios
 import axios from 'axios'
 // 使用element-ui Message做消息提醒
-import { 
-    Message} from 'element-ui';
+import {Message} from 'element-ui';
 //1. 创建新的axios实例，
 const service = axios.create({ 
    
@@ -14,7 +13,7 @@ const service = axios.create({
 })
 // 2.请求拦截器
 service.interceptors.request.use(config => { 
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   // if(token){
   //   config.headers.token = token
   // }

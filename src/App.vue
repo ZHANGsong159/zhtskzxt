@@ -42,10 +42,10 @@ export default {
         },
     },
     mounted() {
-          this.connectWebSocket();
+          // this.connectWebSocket();
 
           this.socket.on('open', () => {
-            let userId=localStorage.getItem('userID')
+            let userId=sessionStorage.getItem('userID')
             let parame={
               "userId":userId
             }

@@ -7,24 +7,53 @@ let resquest = "/fd"
 export function getListAPI(params){ 
     return http.get(`${resquest}/sys-device`,params)
 }
+
+
 // post请求
-// export function postFormAPI(params){ 
-//     return http.post(`${resquest}/postForm.json`,params)
-// }
+
 
 //登录接口
 export function postLogin(params){ 
     return http.post(`${resquest}/sys/login`,params)
 }
+//退出登录
 export function postLoginOut(params){ 
     return http.post(`${resquest}/sys/logout`,params)
 }
 
+//设备列表
+export function getShebeiList(params){ 
+    return http.get(`${resquest}/sys-device`,params)
+}
 
-//频谱查询
+
+
+
+// //频谱查询
 export function getCmdRate(params){ 
     return http.get(`${resquest}/cmd/rate`,params)
 }
+
+
+
+// 添加设备
+export function postAddShebei(params){ 
+    return http.post(`${resquest}/sys-device`,params)
+}
+
+
+// 删除设备
+export function deleteShebeiById(params){ 
+    return http.delete(`${resquest}/sys-device/${params}`)
+}
+
+
+export function putShebeiUpdata(params){ 
+    return http.put(`${resquest}/sys-device/`,params)
+}
+
+
+
 
 // put 请求
 export function putSomeAPI(params){ 
@@ -34,3 +63,5 @@ export function putSomeAPI(params){
 export function deleteListAPI(params){ 
     return http.delete(`${resquest}/deleteList.json`,params)
 }
+
+
