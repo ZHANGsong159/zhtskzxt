@@ -66,9 +66,11 @@
 
             </template>
             <el-pagination
+            style="margin-top: 20px;"
             background
             layout="prev, pager, next"
-            :total="1000">
+            @current-change="handleCurrentChange"
+            :total="total">
             </el-pagination>
         </div>
     </div>
@@ -148,11 +150,14 @@ export default {
     },
     data() {
         return {
+            pageNum:1,
+            pageSize:10,
             dialogTitle:'新增设备',
             selectedDevice: '',
             shebeiBoxId:'dialogPinPu',
             innerVisible: false,
             radio:'1',
+            total:'1',
             
             SSXToption: [
                 { value: 'TK', label: '通抗分系统' },
@@ -192,6 +197,14 @@ export default {
     
     },
     methods:{
+        // 分页
+        handleCurrentChange(parame){
+            console.log(parame,'parameparameparame');
+            this.pageNum=parame
+            this.getShebeiList()
+            
+
+        },
         handleClickUpdata(params){
             console.log(params,'paramsparamsparams');
             this.dialogTitle='设备更新'
@@ -279,13 +292,21 @@ export default {
         },
         //获取列表数据
         getShebeiList(){
-            getShebeiList().then(res=>{
+        let params={
+                pageNum:this.pageNum,
+                pageSize:this.pageSize,
+            }
+            getShebeiList(params).then(res=>{
+                return res.data
+            }) .then(res=>{
                 console.log(res,'getShebeiListgetShebeiList');
-                if(res.status==200){
-                    this.tableData=res.data.data.list
+                if(res.code==200){
+                    this.tableData=res.data.list
+                    this.total=res.data.total
                 }
                 
-            }) 
+
+            })
         },
 
     },
@@ -310,7 +331,6 @@ export default {
 .PinPuPopor{
     width: 100%;
     // border: 1px solid #0B715A;
-
     .PinPuPopor-title{
         width: 100%;
         padding-bottom: 15px;
@@ -349,14 +369,14 @@ export default {
         justify-content: center;
         align-items: center;
         box-sizing: border-box;
-        padding: 20px 10px;
+        padding: 10px 10px;
         .PinPuPopor-content-right{
             width: 100%;
             height: 100%;
             padding: 0px 20px;
             background: transparent;
-
-
+            display: flex;
+            flex-flow: column;
         }
     }
 }

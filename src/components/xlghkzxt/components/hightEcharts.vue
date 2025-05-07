@@ -178,7 +178,6 @@ export default {
     initMessage() {
       // var pin = this.RandomNumBoth(40, 60);
       // console.log(pin);
-
       var data = [],
         yData = [];
       // for (var i = 950; i < 2150; i += 0.3) {

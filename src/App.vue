@@ -36,13 +36,14 @@ export default {
         //发送频谱请求接口
         getCmdRateFun(){
           getCmdRate().then(res => {
-              console.log(res,'getCmdRategetCmdRate');
-          }); 
-
+            return res.data
+          }).then(res=>{
+            console.log(res,'getCmdRategetCmdRate');
+          })
         },
     },
     mounted() {
-          // this.connectWebSocket();
+          this.connectWebSocket();
 
           this.socket.on('open', () => {
             let userId=sessionStorage.getItem('userID')
@@ -76,14 +77,14 @@ export default {
           });
 
 
-          this.$store.state.tiemer = setInterval(() => {
-            console.log('setIntervalsetInterval');
+          // this.$store.state.tiemer = setInterval(() => {
+          //   // console.log('setIntervalsetInterval');
             
-            const now = new Date().getTime()
-            if(now - this.lastClickTime>=2000){
-              this.getCmdRateFun()
-            }
-          }, 2000);
+          //   const now = new Date().getTime()
+          //   if(now - this.lastClickTime>=2000){
+          //     this.getCmdRateFun()
+          //   }
+          // }, 2000);
        
     },
     beforeDestroy() {

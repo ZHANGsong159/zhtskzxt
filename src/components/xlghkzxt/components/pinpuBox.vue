@@ -41,6 +41,9 @@
         <div v-if="tab === 0">
           <pinpuBoxPPSM> </pinpuBoxPPSM>
         </div>
+        <div v-if="tab === 1">
+          <pinpuBoxXHFX> </pinpuBoxXHFX>
+        </div>
         <div v-else>
           <!-- tab2里面内容 -->
         </div>
@@ -51,10 +54,12 @@
 <script>
 // import pinpuBoxXHFXVue from './pinpuBoxXHFX.vue';
 import pinpuBoxPPSM from './pinpuBoxPPSM.vue'
+import pinpuBoxXHFX from './pinpuBoxXHFX.vue'
 export default {
   components: {
     // pinpuBoxXHFXVue,
-    pinpuBoxPPSM
+    pinpuBoxPPSM,
+    pinpuBoxXHFX
   },
     data() {
       return {

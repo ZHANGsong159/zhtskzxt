@@ -8,7 +8,7 @@ export class TCesium {
      * @param {*} dom 节点id
      */
     constructor(dom) {
-        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiYzQxMmViYS02YzY0LTQwZTctYmZiNi1lMjFiZmVjMTZhNmIiLCJpZCI6Mjk0NTY0LCJpYXQiOjE3NDQ4NTk3OTZ9.oHF5XLaESJXaAiL-6rup9N3qL7gi475B9QcTT8DqiaQ'
+        // Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiYzQxMmViYS02YzY0LTQwZTctYmZiNi1lMjFiZmVjMTZhNmIiLCJpZCI6Mjk0NTY0LCJpYXQiOjE3NDQ4NTk3OTZ9.oHF5XLaESJXaAiL-6rup9N3qL7gi475B9QcTT8DqiaQ'
         this.viewer = new Cesium.Viewer(dom, {
             terrain: Cesium.Terrain.fromWorldTerrain({
               requestWaterMask: true,
