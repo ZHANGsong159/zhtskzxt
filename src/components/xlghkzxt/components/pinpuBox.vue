@@ -38,14 +38,14 @@
 
       <!-- 对应 tab 展示区域 -->
       <div class="tab-show">
-        <div v-if="tab === 0">
+        <div v-if="tab == 0">
           <pinpuBoxPPSM> </pinpuBoxPPSM>
         </div>
-        <div v-if="tab === 1">
+        <div v-if="tab == 1">
           <pinpuBoxXHFX> </pinpuBoxXHFX>
         </div>
-        <div v-else>
-          <!-- tab2里面内容 -->
+        <div v-if="tab == 2">
+          <pinpuBoxWTFX> </pinpuBoxWTFX>
         </div>
       </div>
     </div>
@@ -55,11 +55,13 @@
 // import pinpuBoxXHFXVue from './pinpuBoxXHFX.vue';
 import pinpuBoxPPSM from './pinpuBoxPPSM.vue'
 import pinpuBoxXHFX from './pinpuBoxXHFX.vue'
+import pinpuBoxWTFX from './pinpuBoxWTFX.vue'
 export default {
   components: {
     // pinpuBoxXHFXVue,
     pinpuBoxPPSM,
-    pinpuBoxXHFX
+    pinpuBoxXHFX,
+    pinpuBoxWTFX
   },
     data() {
       return {

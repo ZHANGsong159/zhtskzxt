@@ -9,13 +9,12 @@
                     </div>
                 </div>
                 <div class="line"></div>
-                                <el-form label-width="140px" :inline="true">
+                    <el-form label-width="140px" :inline="true">
                         <el-form-item label="起始频率(MHz)" class="inpotBox">
                             <el-input v-model="pdsmFrom.qspl" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="终止频率(MHz)" class="inpotBox">
                             <el-input v-model="pdsmFrom.zzpl" placeholder="请输入"></el-input>
-                 
                         </el-form-item>
                         <el-form-item label="分辨率(KHz)" class="inpotBox">
                             <el-select v-model="selectedDeviceQJSM" placeholder="请选择">
@@ -28,7 +27,7 @@
                             </el-select>
                         </el-form-item>
                         <el-button type="primary" class="confimeButton"><i class="el-icon-check"></i> 确认</el-button>
-                </el-form>
+                    </el-form>
             </div>
            
         </div>
@@ -36,23 +35,37 @@
             <hightEchartsVue :shebeiID='PPSMshebeiID'></hightEchartsVue>       
         </div>
         <div class="rightBox">
-            <el-collapse v-model="activeNames" @change="handleChange">
-                <el-collapse-item title=" 一致性 Consistency" name="1">
-                    <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
-                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
-                </el-collapse-item>
-                <el-collapse-item title="反馈 Feedback" name="2">
-                    <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
-                    <div>页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。</div>
-                </el-collapse-item>
-                <el-collapse-item title="效率 Efficiency" name="3">
-                    <div>简化流程：设计简洁直观的操作流程；</div>
-                    <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
-                    <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
-                </el-collapse-item>
-                <el-collapse-item title="可控 Controllability" name="4">
-                    <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-                    <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+            <el-collapse v-model="activeNames" @change="handleChange" v-for="(item,index) in collapseList" :key='index'>
+                <el-collapse-item  :name="item.id">
+                    <template slot="title">
+                        <div class="COLLAPSEtitleleft">
+                            <img src="@/assets/img/路径_@1x.png" class="titleicon" alt="">
+                            <span>频率：{{item.value}}MHz</span>
+                        </div>
+
+                        <div class="rightButton">
+                            <el-button type="primary" class="startButton" size="small" v-if="pdsmStart" @click="clickQJSM(item.id)"><i class="el-icon-video-play"></i> 开始</el-button>
+                            <el-button type="primary" class="stopButton" size="small" v-else @click="clickQJSM(item.id)"><i class="el-icon-video-pause"></i> 终止</el-button>
+                        </div>
+
+                    </template>
+                    <div class="collapseBox">
+                        <el-form label-width="140px" :inline="true">
+                            <el-form-item label="中心频率(MHz)" class="inpotBox">
+                                <el-input v-model="pdsmFrom.qspl" placeholder="请输入"></el-input>
+                            </el-form-item>
+                            <el-form-item label="分析带宽(MHz)" class="inpotBox">
+                                <el-input v-model="pdsmFrom.zzpl" placeholder="请输入"></el-input>
+                    
+                            </el-form-item>
+                        </el-form>
+                        <div class="textBox">
+                            <div>开始时间：2024-05-16 05:15:11</div>
+                            <div>结束时间：2024-12-16 05:15:11</div>
+                            <div>调制样式：调制样式调制样式调制样式</div>
+                        </div>
+                    </div>
+
                 </el-collapse-item>
             </el-collapse>
 
@@ -70,9 +83,7 @@ export default {
         return {
             activeNames:'',
             PPSMshebeiID:'PPSM',
-            qjsmStart:true,
             pdsmStart:true,
-            dpksStart:true,
             selectedDeviceQJSM:'',
             devicesQJSM: [
                 { label: '1920*1080', value: '1920*1080' },
@@ -95,7 +106,13 @@ export default {
                 zxpl:'',
                 dl:'',
 
-            }
+            },
+            collapseList:[
+                {title:'1',content:'',id:'01',value:'122'},
+                {title:'2',content:'',id:'02',value:'200'},
+
+            ]
+
 
 
         }
@@ -142,31 +159,13 @@ export default {
             margin-bottom: 20px;
             border:1px solid #FFFFFF4c;
             padding: 10px;
+            overflow: auto;
             .line{
                 width: 100%;
                 height: 1px;
                 background-color: #FFFFFF4c;
                 margin: 5px 0px;
             }
-            .inpotBox{
-                display: flex;
-                background-color: #FFFFFF26;
-                margin: 5px 0px;
-            }
-        }
-        .qjsm{
-            // height: 110px;
-            
-            .inpotBox{
-                margin: 5px 0px !important;
-
-            }
-        }
-        .pdsm{
-            height: 216px;
-        }
-        .dpks{
-            height: 163px;
 
         }
     }
@@ -181,8 +180,14 @@ export default {
         height: 100%;
         border-left: 1px solid #FFFFFF26;
         padding: 0px 10px;
+        overflow: auto;
     }
 
+}
+.inpotBox{
+    display: flex;
+    background-color: #FFFFFF26;
+    margin: 5px 0px;
 }
 
 .leftPinpu-title{
@@ -192,16 +197,6 @@ export default {
     justify-content: space-between;
     padding-left: 10px;
     font-size: 16px;
-    .rightButton{
-        button{
-            background: #2CE5BA4c;
-            border-color: #ffffff4c;
-            border-radius: 0;
-        }
-        .stopButton{
-            background: #FFFFFF19 !important;
-        }
-    }
 }
 .el-form--inline .el-form-item{
     margin-right: 0px !important;
@@ -215,6 +210,35 @@ export default {
     border: 1px solid #1C735E;
     background-color: #1C735E;
     border-radius: 0px;
+}
+.COLLAPSEtitleleft{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.titleicon{
+    padding-right: 10px;
+    padding-left: 10px;
+    border-right: 1px solid #FFFFFF4c;
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+.collapseBox{
+    background: transparent;
+    .textBox{
+        // height: 116px;
+        font-size: 16px;
+        background: #FFFFFF26;
+        border: 1px solid #FFFFFF4c;
+        padding: 10px 10px;
+        color: #fff;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: flex-start;
+        text-align: left;
+    }
 }
 
 </style>

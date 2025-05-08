@@ -55,7 +55,6 @@ service.interceptors.response.use(response => {
         break;
       case 401:
         error.message = '未授权，请重新登录'
-        this.$router.push('/login')
         break;
       case 403:
         error.message = '拒绝访问'

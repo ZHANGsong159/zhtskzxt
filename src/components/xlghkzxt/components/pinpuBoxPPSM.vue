@@ -25,13 +25,8 @@
                             </el-select>
                         </el-form-item>
                 </el-form>
-
-
             </div>
             <div class="leftListBox pdsm">
-
-
-
                 <div class="leftPinpu-title">
                     <div class="leftText">
                         <img src="@/assets/img/组21_@1x.png" alt="" />
@@ -49,7 +44,6 @@
                         </el-form-item>
                         <el-form-item label="终止频率(MHz)" class="inpotBox">
                             <el-input v-model="pdsmFrom.zzpl" placeholder="请输入"></el-input>
-                 
                         </el-form-item>
                         <el-form-item label="分辨率(KHz)" class="inpotBox">
                             <el-select v-model="selectedDeviceQJSM" placeholder="请选择">
@@ -62,8 +56,6 @@
                             </el-select>
                         </el-form-item>
                 </el-form>
-
-                
             </div>
             <div class="leftListBox dpks">
 
@@ -81,7 +73,6 @@
                 <el-form label-width="140px" :inline="true">
                         <el-form-item label="中心频率(MHz)" class="inpotBox">
                             <el-input v-model="qjsmFrom.zxpl" placeholder="请输入"></el-input>
-    
                         </el-form-item>
                          <el-form-item label="带宽(MHz)" class="inpotBox">
                             <el-select v-model="selectedDeviceQJSM" placeholder="请选择">
@@ -94,9 +85,7 @@
                             </el-select>
                         </el-form-item>
                 </el-form>
-                
             </div>
-
         </div>
         <div class="rightMain">
             <hightEchartsVue :shebeiID='PPSMshebeiID'></hightEchartsVue>       
@@ -150,6 +139,9 @@ export default {
           getCmdRate().then(res => {
             return res.data
           }).then(res=>{
+            if(res.code==401){
+              this.$router.push('/login')
+            }
             console.log(res,'getCmdRategetCmdRate');
           })
         },
@@ -167,12 +159,6 @@ export default {
                     this.dpksStart=!this.dpksStart
                     break;
             }
-            
-            // if(this.qjsmStart){
-            //     this.qjsmStart=false
-            // }else{
-            //     this.qjsmStart=true
-            // }
         }
     },
     mounted() {
@@ -192,6 +178,7 @@ export default {
         height: 100%;
         padding: 0px 15px;
         border-right: 1px solid #FFFFFF26;
+        overflow: auto;
         .leftListBox{
             width: 100%;
             // height: 150px;
@@ -212,21 +199,6 @@ export default {
                 margin: 5px 0px;
             }
         }
-        .qjsm{
-            height: 110px;
-            
-            .inpotBox{
-                margin: 5px 0px !important;
-
-            }
-        }
-        .pdsm{
-            height: 216px;
-        }
-        .dpks{
-            height: 163px;
-
-        }
     }
     .rightMain{
         width: 80%;
@@ -236,6 +208,9 @@ export default {
     }
 
 }
+.rightButton{
+    padding: 0px !important;
+}
 
 .leftPinpu-title{
     height: 36px;
@@ -244,16 +219,7 @@ export default {
     justify-content: space-between;
     padding-left: 10px;
     font-size: 16px;
-    .rightButton{
-        button{
-            background: #2CE5BA4c;
-            border-color: #ffffff4c;
-            border-radius: 0;
-        }
-        .stopButton{
-            background: #FFFFFF19 !important;
-        }
-    }
+
 }
 .el-form--inline .el-form-item{
     margin-right: 0px !important;

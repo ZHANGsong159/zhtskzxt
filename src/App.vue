@@ -38,6 +38,9 @@ export default {
           getCmdRate().then(res => {
             return res.data
           }).then(res=>{
+            if(res.code==401){
+              this.$router.push('/login')
+            }
             console.log(res,'getCmdRategetCmdRate');
           })
         },

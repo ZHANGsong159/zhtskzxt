@@ -68,7 +68,7 @@ router.beforeEach((to, from, next) => {
         
           next()  //放行
       } else {
-          alert('登录信息失效，请重新登录。')
+          // alert('登录信息失效，请重新登录。')
 
           router.push('/login')
       }

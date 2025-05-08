@@ -60,7 +60,8 @@ i,u,b,em,span,small {
 }
 
 html,body {
-    height: 100%
+    height: 100%;
+    
 }
 
 /****/
@@ -207,8 +208,6 @@ input[type=number]::-webkit-outer-spin-button {
 
 .menu-popper-box .el-submenu.is-opened {
     background-color: transparent;
-    // border: 1px solid #2CE5BA;
-    // border-bottom: none;
     border: none !important;
     color: #fff;
 }
@@ -233,10 +232,7 @@ input[type=number]::-webkit-outer-spin-button {
     background-color: #FFFFFF4C;
     z-index: 1000000;
     position: absolute;
-    // content: ""; /* 字体图标 Unicode 编码 */
-    // font-family: "Font Awesome 5 Free"; /* 引入图标字体 */
     top: 15%;
-    // right: -20px;
 }
 .el-input__inner{
     background-color: transparent !important;
@@ -392,13 +388,43 @@ input[type=number]::-webkit-outer-spin-button {
 
 
 
-
+.el-collapse{
+    border: none !important;
+}
 .el-collapse-item{
     margin-bottom: 20px !important;
     background: transparent;
     .el-collapse-item__header{
         background: #ffffff26;
         color: #fff;
+        justify-content: space-between !important;
+        border: 1px solid #FFFFFF4C;
+    }
+    .el-collapse-item__content{
+        padding: 10px 10px;
+        border: 1px solid #FFFFFF4C;
+
+    }
+}
+.el-collapse-item__arrow{
+    display: none !important;
+}
+.el-collapse-item__wrap{
+    background: #ffffff26 !important;
+    border-bottom: 0px;
+}
+
+
+
+.rightButton{
+    padding-right: 10px;
+    button{
+        background: #2CE5BA4c;
+        border-color: #ffffff4c;
+        border-radius: 0;
+    }
+    .stopButton{
+        background: #FFFFFF19 !important;
     }
 }
 
