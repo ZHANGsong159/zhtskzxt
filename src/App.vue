@@ -39,7 +39,9 @@ export default {
             return res.data
           }).then(res=>{
             if(res.code==401){
-              this.$router.push('/login')
+              if (this.$router.currentRoute.path !== '/login') {
+                  this.$router.push('/login');
+              }
             }
             console.log(res,'getCmdRategetCmdRate');
           })

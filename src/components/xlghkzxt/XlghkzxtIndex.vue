@@ -39,7 +39,9 @@ import xlghkzxtBodyVue from "./components/xlghkzxtBody.vue";
 import xlghkzxtPinpu from "./components/xlghkzxtPinpu.vue";
 import xlghkzxtMenu from "./components/xlghkzxtMenu.vue";
 import dialogPinPU from "./components/dialogPinPU.vue";
-import sbglBOX  from "./components/sbglBox.vue";
+import sbglBOX  from "./components/dialogBox/sbglBox.vue";
+import xhmnmbBox from "./components/dialogBox/xhmnmbBox.vue";
+import xhgrmbBox from './components/dialogBox/xhgrmbBox.vue';
 
 // import {getCmdRate}  from "@/api/api.js"
 export default {
@@ -50,6 +52,8 @@ export default {
     xlghkzxtMenu,
     dialogPinPU,
     sbglBOX,
+    xhmnmbBox,
+    xhgrmbBox,
   },
 
   data() {
@@ -65,9 +69,33 @@ export default {
     handleSelect(key,keyPath){
       console.log(key,keyPath,'handleSelect');
       switch (key){
+        
+        case '2-1':
+          this.dialogTitle = '信号干扰模板'
+          this.componentsment = 'xhgrmbBox'
+          this.dialogVisible = true
+          break;
+        case '2-2':
+          this.dialogTitle = '信号模拟模板'
+          this.componentsment = 'xhmnmbBox'
+          this.dialogVisible = true
+          break;
+
         case '5-1':
           this.dialogTitle = '设备管理'
           this.componentsment = 'sbglBOX'
+          this.dialogVisible = true
+          break; 
+
+        case '5-2':
+          this.dialogTitle = '部署配置'
+          this.componentsment = 'bspzBOX'
+          this.dialogVisible = true
+          break; 
+
+        case '5-3':
+          this.dialogTitle = '保护频段'
+          this.componentsment = 'bhpdBOX'
           this.dialogVisible = true
           break; 
       }

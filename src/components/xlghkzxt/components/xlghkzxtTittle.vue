@@ -75,7 +75,9 @@ export default {
           postLoginOut().then(res=>{
             console.log(res,'postLoginOut')
             if(res.data.code==200){
-              this.$router.push('/login');
+              if (this.$router.currentRoute.path !== '/login') {
+                  this.$router.push('/login');
+              }
               sessionStorage.removeItem('token')
               this.$message({
                 type: 'success',

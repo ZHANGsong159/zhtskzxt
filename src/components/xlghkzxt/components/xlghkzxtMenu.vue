@@ -48,58 +48,58 @@ export default {
             isGroup1Active:false,
             menus: [
                 {
-                index: "1",
-                title: "训练规划",
-                icon: "el-icon-setting",
-                children: [
-                    { 
-                        index: "1-1", 
-                        title: "训练控制",
-                        children: [
-                                { index: "1-1-1", title: "启动" },
-                                { index: "1-1-2", title: "暂停/继续" },
-                                { index: "1-1-3", title: "停止" },
-
-                            ]
-                    },
-                    { 
-                        index: "1-2", 
-                        title: "任务管理",
-                        
-                    }, 
-                    { 
-                        index: "1-3", 
-                        title: "方案规划",
-                    } ,
-                    { 
-                        index: "1-4", 
-                        title: "任务管理",
-                    } 
-                ]
+                    index: "1",
+                    title: "训练规划",
+                    icon: "el-icon-setting",
+                    children: [
+                        { 
+                            index: "1-1", 
+                            title: "训练控制",
+                            children: [
+                                    { index: "1-1-1", title: "启动" },
+                                    { index: "1-1-2", title: "暂停/继续" },
+                                    { index: "1-1-3", title: "停止" },
+                                ]
+                        },
+                        { 
+                            index: "1-2", 
+                            title: "任务管理",
+                        }, 
+                        { 
+                            index: "1-3", 
+                            title: "方案规划",
+                        } ,
+                        { 
+                            index: "1-4", 
+                            title: "任务管理",
+                        } 
+                    ]
                 },
                 {
-                index: "2",
-                title: "通讯对抗分系统",
-                icon: "el-icon-tickets",
-                children: [
-                    { index: "2-1", title: "订单列表" },
-                    { index: "2-2", title: "退款管理" }
-                ]
+                    index: "2",
+                    title: "通讯对抗分系统",
+                    icon: "el-icon-tickets",
+                    children: [
+                        { index: "2-1", title: "信号干扰模板" },
+                        { index: "2-2", title: "信号模拟模板" }
+                    ]
                 },
                 {
-                index: "3",
-                title: "雷达对抗分系统",
+                    index: "3",
+                    title: "雷达对抗分系统",
                 },
                 {
-                index: "4",
-                title: "光电对抗分系统",
+                    index: "4",
+                    title: "光电对抗分系统",
                 },
                 {
-                index: "5",
-                title: "系统管理",
-                children: [
-                    { index: "5-1", title: "设备管理" },
-                ]
+                    index: "5",
+                    title: "系统管理",
+                    children: [
+                            { index: "5-1", title: "设备管理" },
+                            { index: "5-2", title: "部署配置" },
+                            { index: "5-3", title: "保护频段" },
+                        ]
                 },
             ]
         };
@@ -124,6 +124,7 @@ export default {
             }else{
                 this.activeIndex = key[0];
             }
+
             this.$emit('handleSelect',key, keyPath)
             // console.log(this.activeIndex,key, keyPath,'activeIndex');
         },
@@ -142,11 +143,7 @@ export default {
 ::v-deep .el-submenu__icon-arrow {
   display: none;
 } 
-// ::v-deep .el-menu--horizontal>.el-menu-item.is-active{
-//     color: #fff;
-//     border: 1px solid #2CE5BA;
-//     border-bottom:none;
-// }
+
 
 /* 修改弹出菜单的背景、阴影、边框等 */
 .custom-submenu-popup {

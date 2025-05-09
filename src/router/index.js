@@ -63,13 +63,10 @@ router.beforeEach((to, from, next) => {
   
   if (to.meta.isAuth) {
       //判断 如果school本地存储是qinghuadaxue的时候，可以进去
-      if (sessionStorage.getItem('token')) {
-        console.log(sessionStorage.getItem('token'));
-        
+      if (sessionStorage.getItem('token')) {        
           next()  //放行
       } else {
           // alert('登录信息失效，请重新登录。')
-
           router.push('/login')
       }
   } else {

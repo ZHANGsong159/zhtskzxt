@@ -47,10 +47,22 @@ export function deleteShebeiById(params){
     return http.delete(`${resquest}/sys-device/${params}`)
 }
 
-
+//更新设备
 export function putShebeiUpdata(params){ 
     return http.put(`${resquest}/sys-device/`,params)
 }
+
+
+
+
+
+//通抗干扰模块
+export function getTongKangGR(params){ 
+    return http.get(`${resquest}/tk-template-disturb`,params)
+}
+
+
+
 
 
 
