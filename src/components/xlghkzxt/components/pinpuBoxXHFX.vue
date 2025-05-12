@@ -147,7 +147,7 @@ export default {
     flex-flow: row;
     padding: 20px 0px;
     .leftList{
-        width: 18%;
+        width: 20%;
         height: 100%;
         padding: 0px 15px;
         border-right: 1px solid #FFFFFF26;

@@ -92,7 +92,6 @@
             <el-form-item label="所属系统" >
                 <el-select v-model="formAdd.systemType" placeholder="请选择所属系统">
                     <el-option v-for="(item,index) in SSXToption" :label="item.label" :value="item.value" :key='index'></el-option>
-
                 </el-select>
             </el-form-item>
             <el-form-item label="装备类型" >
@@ -311,12 +310,15 @@ export default {
         this.getShebeiList()
  
     },
-    watch(){
- 
-    },
     
 }
 </script>
 
 <style lang="less" scoped>
+ ::v-deep .el-form-item{
+    width: 45%;
+ }
+ ::v-deep .el-form-item__label{
+    width: 90px;
+ }
 </style>

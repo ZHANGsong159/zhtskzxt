@@ -5,7 +5,7 @@
       <xlghkzxtTittle></xlghkzxtTittle>
     </div>
     <div class="body zIndex10">
-      <xlghkzxtBodyVue></xlghkzxtBodyVue>
+      <!-- <xlghkzxtBodyVue></xlghkzxtBodyVue> -->
     </div>
     <div class="leftPinpu zIndex40">
       <xlghkzxtPinpu @clickPinPu='clickPinPu'></xlghkzxtPinpu>
@@ -28,7 +28,7 @@
             <img src="@/assets/img/组21Right_@1x.png" alt="" />
           </div>
         </template>
-        <components :is='componentsment' :closeDiaLog='closeDiaLog'></components>
+        <components :is='componentsment' :closeDiaLog='closeDiaLog' @closeDialogZD='closeDialogZD'></components>
       </el-dialog>
     </div>
   </div>
@@ -42,6 +42,8 @@ import dialogPinPU from "./components/dialogPinPU.vue";
 import sbglBOX  from "./components/dialogBox/sbglBox.vue";
 import xhmnmbBox from "./components/dialogBox/xhmnmbBox.vue";
 import xhgrmbBox from './components/dialogBox/xhgrmbBox.vue';
+import bspzBOX from './components/dialogBox/bspzBox.vue';
+import bhpdBOX from './components/dialogBox/bhpdBox.vue';
 
 // import {getCmdRate}  from "@/api/api.js"
 export default {
@@ -54,6 +56,8 @@ export default {
     sbglBOX,
     xhmnmbBox,
     xhgrmbBox,
+    bspzBOX,
+    bhpdBOX
   },
 
   data() {
@@ -66,6 +70,9 @@ export default {
     };
   },
   methods:{
+    closeDialogZD(){
+      this.dialogVisible = false
+    },
     handleSelect(key,keyPath){
       console.log(key,keyPath,'handleSelect');
       switch (key){
@@ -106,6 +113,7 @@ export default {
       // this.dialogVisible = true;
       // this.componentsment = 'dialogPinPU'
       clearInterval(this.$store.state.tiemer)
+      
       this.$router.push('/pinpuindex')
     },
     handleClose(done) {

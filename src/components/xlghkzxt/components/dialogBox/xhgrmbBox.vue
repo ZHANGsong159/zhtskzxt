@@ -366,7 +366,10 @@ export default {
                         console.log(item,'itemresresresresGR');
                     });
                 }else if(res.code==401){
-                    this.$router.push('/login')
+                    if (this.$router.currentRoute.path !== '/login') {
+                        this.$router.push('/login')
+                    }
+
 
                 }
             })
@@ -375,9 +378,6 @@ export default {
     },
     mounted(){
         this.getGanRaoList()
- 
-    },
-    watch(){
  
     },
     
@@ -408,6 +408,10 @@ export default {
 ::v-deep .el-form-item__label{
         width: 100px !important;
 }
+ ::v-deep .el-form-item{
+    width: 45%;
+ }
+
 
 
 

@@ -15,7 +15,6 @@ export default {
             socket: null,
             messages: [],
             ymessages:[],
-            lastClickTime: 0,
         };
     },
     methods: {
@@ -77,20 +76,8 @@ export default {
               })
               this.$store.state.messages=this.messages
               this.$store.state.ymessages=this.ymessages
-              const now = new Date().getTime()
-              this.lastClickTime=now
-          });
 
-
-          // this.$store.state.tiemer = setInterval(() => {
-          //   // console.log('setIntervalsetInterval');
-            
-          //   const now = new Date().getTime()
-          //   if(now - this.lastClickTime>=2000){
-          //     this.getCmdRateFun()
-          //   }
-          // }, 2000);
-       
+          });       
     },
     beforeDestroy() {
       clearInterval(this.$store.state.timer);

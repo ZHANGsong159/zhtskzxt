@@ -63,6 +63,38 @@ export function getTongKangGR(params){
 
 
 
+//部署配置
+
+//获取部署方式
+export function getDeployNote(params){ 
+    return http.get(`${resquest}/sys-config/key/${params}`)
+}
+//修改部署方式
+export function UpdataDeployNote(params){ 
+    return http.put(`${resquest}/sys-config`,params)
+}
+
+//手动保存经纬度
+export function saveLngLat(params){ 
+    return http.put(`${resquest}/sys-device/position`,params)
+}
+
+
+
+
+
+//保护频段
+
+//获取保护频段
+export function getProtectFrequency(params){ 
+    return http.get(`${resquest}/sys-rate-protect`,params)
+}
+//添加保护频段
+export function postProtectFrequency(params){ 
+    return http.post(`${resquest}/sys-rate-protect`,params)
+}
+
+
 
 
 

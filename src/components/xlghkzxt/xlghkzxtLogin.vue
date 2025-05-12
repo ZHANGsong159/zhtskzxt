@@ -78,9 +78,10 @@ export default {
           if(res.code==200){
             sessionStorage.setItem('userID', res.data.userId)
             sessionStorage.setItem('token', res.data.token)
-            this.$router.push({
-                path: '/xlghkzxt'
-            })
+            if (this.$router.currentRoute.path !== '/xlghkzxt') {
+                this.$router.push('/xlghkzxt')
+            }
+
           }
         })
         .catch(err => console.log(err))

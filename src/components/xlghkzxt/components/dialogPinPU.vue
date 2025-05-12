@@ -138,9 +138,6 @@ export default {
 
         },
     },
-    watch(){
- 
-    },
     
 }
 </script>

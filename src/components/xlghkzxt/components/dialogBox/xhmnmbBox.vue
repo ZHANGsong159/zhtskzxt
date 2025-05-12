@@ -140,6 +140,8 @@
     
 </template>
 <script>
+import '@/assets/css/mbBox.less';
+
 import { postAddShebei,getShebeiList,deleteShebeiById,putShebeiUpdata } from '@/api/api'
 export default {
     props: {
@@ -314,9 +316,6 @@ export default {
         this.getShebeiList()
  
     },
-    watch(){
- 
-    },
     
 }
 </script>
@@ -359,24 +358,6 @@ export default {
 
                 }
             }
-        }
-    }
-    .PinPuPopor-content{
-        width: 100%;
-        height: 636px;
-        display: flex;
-        flex-flow: row;
-        justify-content: center;
-        align-items: center;
-        box-sizing: border-box;
-        padding: 10px 10px;
-        .PinPuPopor-content-right{
-            width: 100%;
-            height: 100%;
-            padding: 0px 20px;
-            background: transparent;
-            display: flex;
-            flex-flow: column;
         }
     }
 }
