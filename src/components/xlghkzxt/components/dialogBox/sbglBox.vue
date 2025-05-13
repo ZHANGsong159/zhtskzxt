@@ -20,40 +20,49 @@
                 <el-table-column
                     prop="deviceName"
                     label="设备名称"
+                    align='center'
                     width="180">
                 </el-table-column>
                 <el-table-column
                     prop="deviceCode"
                     label="设备编号"
+                    align='center'
                     width="180">
                 </el-table-column>
                 <el-table-column
                     prop="deviceIp"
                     label="设备IP"
+                    align='center'
                     width="180">
                 </el-table-column>
                 <el-table-column
                     prop="systemType"
+                    align='center'
                     label="所属系统">
                 </el-table-column>
                  <el-table-column
                     prop="deviceType"
+                    align='center'
                     label="装备类型">
                 </el-table-column>
                  <el-table-column
                     prop="state"
+                    align='center'
                     label="状态">
                 </el-table-column>
                 <el-table-column
                     prop="longitude"
+                    align='center'
                     label="经度">
                 </el-table-column>
                 <el-table-column
                     prop="latitude"
+                    align='center'
                     label="纬度">
                 </el-table-column>
                 <el-table-column
                     label="操作"
+                    align='center'
                     width="100">
                     <template slot-scope="scope">
                         <el-button @click="handleClickUpdata(scope.row)" type="text" size="small">编辑</el-button>

@@ -46,7 +46,8 @@
 <script>
 import { 
     getProtectFrequency ,
-    postProtectFrequency
+    postProtectFrequency,
+    deleteProtectFrequency
 } from "@/api/api";
 export default {
   props: {
@@ -110,6 +111,7 @@ export default {
     },
     deletePL(param) {
       console.log(param, "deletePL");
+      this.deleteProtectFrequency(param.rateId)
     },
     //获取列表数据
     getProtectFrequency() {
@@ -138,11 +140,28 @@ export default {
         .then((res) => {
           if (res.code == 200) {
             // console.log(res, "postProtectFrequency");
+            this.formAdd = {
+              startRate: "",
+              endRate: "",
+              rateId: "",
+            }
             this.$message.success("添加成功");
             this.getProtectFrequency()
           }
         })
-    }
+    },
+    //删除保护频段
+    deleteProtectFrequency(params) {
+      deleteProtectFrequency(params).then((res) => {
+          return res.data;
+        })
+        .then((res) => {
+          if (res.code == 200) {
+            this.$message.success("删除成功");
+            this.getProtectFrequency()
+          }
+        })
+    },
   },
   mounted() {
     this.getProtectFrequency();
@@ -189,8 +208,10 @@ export default {
       background: transparent;
       display: flex;
       flex-flow: row wrap;
-      justify-content: space-between;
+      // justify-content: space-between;
+      gap: 15px;
       align-items: flex-start;
+      align-content:flex-start;
       .PinLvbox {
         width: 30%;
         height: 50px;
@@ -198,7 +219,7 @@ export default {
         border: 1px solid #ffffff4c;
         font-size: 18px;
         color: #fff;
-        margin: 10px 0px;
+        // margin: 10px 0px;
         flex: 0 0 auto;
         // justify-content: start;
         .PinLvboxTitle {
@@ -220,6 +241,7 @@ export default {
           text-align: right;
           padding-right: 10px;
           flex-grow: 1;
+          cursor:pointer;
         }
       }
     }

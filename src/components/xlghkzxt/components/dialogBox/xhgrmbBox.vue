@@ -15,7 +15,6 @@
             <div class="PinPuPopor-content-right ">
                 <template>
                     <el-table
-                    
                     :data="tableData"
                     style="width: 100%;hight: 100%;">
                     <el-table-column
@@ -39,7 +38,11 @@
                         align='center'
                         width="180">
                         <template slot-scope="scope">
-                            {{scope.row.disturbDto.disturbStyle}}
+                            <!-- {{scope.row.disturbDto.disturbStyle}} -->
+                            <span v-if="scope.row.disturbDto.disturbStyle==0">窄带噪声干扰</span>
+                            <span v-if="scope.row.disturbDto.disturbStyle==1">宽带噪声干扰</span>
+                            <span v-if="scope.row.disturbDto.disturbStyle==2">宽带扫频干扰</span>
+                            <span v-if="scope.row.disturbDto.disturbStyle==3">梳状谱干扰</span>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -72,9 +75,9 @@
                         align='center'
                         width="150">
                         <template slot-scope="scope">
-                            <el-button  type="text" size="small">复制</el-button>
-                            <el-button  @click="handleClickUpdata(scope.row)" type="text" size="small">修改</el-button>
-                            <el-button  type="text" size="small">删除</el-button>
+                            <el-button  type="text" size="small" class="buttonStyle">复制</el-button>
+                            <el-button  @click="handleClickUpdata(scope.row)" type="text" size="small" class="buttonStyle">修改</el-button>
+                            <el-button  @click="handleClickDelete(scope.row)" type="text" size="small" class="buttonStyle deleteStyle">删除</el-button>
                         </template>
                     </el-table-column>
                     </el-table>
@@ -98,13 +101,13 @@
       append-to-body>
         <el-form  :model="formAdd" :inline="true">
             <el-form-item label="模板名称">
-                <el-input v-model="formAdd.name" placeholder="模板名称"></el-input>
+                <el-input v-model="formAdd.name" placeholder="请输入模板名称"></el-input>
             </el-form-item>
             <el-form-item label="生效时间(秒)">
-                <el-input v-model="formAdd.time" placeholder="0~3600"></el-input>
+                <el-input v-model="formAdd.time" placeholder="范围0~3600"></el-input>
             </el-form-item>
             <el-form-item label="干扰样式">
-                <el-select v-model="formAdd.disturbDto.disturbStyle" placeholder="请选择">
+                <el-select v-model="formAdd.disturbDto.disturbStyle" @change='ganraoChange' placeholder="请选择">
                     <el-option
                         v-for="device in GRYSoption"
                         :key="device.value"
@@ -113,14 +116,66 @@
                     ></el-option>
                 </el-select>
             </el-form-item>
+            <!-- <el-form-item label="干扰频率范围">
+                <el-input v-model="formAdd.disturbDto.param.rateRange" placeholder="选择干扰频率范围"></el-input>
+            </el-form-item> -->
             <el-form-item label="发射增益">
-                <el-input v-model="formAdd.disturbDto.param.gain" placeholder="5~2000"></el-input>
+                <el-input v-model="formAdd.disturbDto.param.gain" placeholder="范围5~2000"></el-input>
             </el-form-item>
             <el-form-item label="干扰功率">
-                <el-input v-model="formAdd.disturbDto.param.disturbPower" placeholder="干扰功率"></el-input>
+                <el-input v-model="formAdd.disturbDto.param.disturbPower" placeholder="请输入干扰功率"></el-input>
             </el-form-item>
             <el-form-item label="干扰频率">
-                <el-input v-model="formAdd.disturbDto.param.disturbRate" placeholder="干扰频率"></el-input>
+                <el-input v-model="formAdd.disturbDto.param.disturbRate" placeholder="请输入干扰频率"></el-input>
+            </el-form-item>
+
+            <el-form-item label="干扰带宽" v-if='formAdd.disturbDto.disturbStyle==0 || formAdd.disturbDto.disturbStyle==1'>
+                <!-- <el-input v-model="formAdd.disturbDto.param.disturbBand" placeholder="请输入干扰带宽"></el-input> -->
+                <el-select v-model="formAdd.disturbDto.param.disturbBand" @change='ganraoChange' placeholder="请选择">
+                    <el-option
+                        v-for="device in GRDKoption"
+                        :key="device.value"
+                        :label="device.label"
+                        :value="device.value"
+                    ></el-option>
+                </el-select>
+            </el-form-item>
+
+
+
+            <el-form-item label="扫频带宽" v-if='formAdd.disturbDto.disturbStyle==2'>
+                <!-- <el-input v-model="formAdd.disturbDto.param.sweepBand" placeholder="请输入扫频带宽"></el-input> -->
+                <el-select v-model="formAdd.disturbDto.param.sweepBand" @change='ganraoChange' placeholder="请选择">
+                    <el-option
+                        v-for="device in SPDKoption"
+                        :key="device.value"
+                        :label="device.label"
+                        :value="device.value"
+                    ></el-option>
+                </el-select>
+                
+            </el-form-item>
+            <el-form-item label="谱线间隔" v-if='formAdd.disturbDto.disturbStyle==3'>
+                <!-- <el-input v-model="formAdd.disturbDto.param.lineInterval" placeholder="请输入谱线间隔"></el-input> -->
+                <el-select v-model="formAdd.disturbDto.param.lineInterval" @change='ganraoChange' placeholder="请选择">
+                    <el-option
+                        v-for="device in PXJGoption"
+                        :key="device.value"
+                        :label="device.label"
+                        :value="device.value"
+                    ></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="谱线数量" v-if='formAdd.disturbDto.disturbStyle==3'>
+                <!-- <el-input v-model="formAdd.disturbDto.param.lineNum" placeholder="请输入谱线数量"></el-input> -->
+                <el-select v-model="formAdd.disturbDto.param.lineNum" @change='ganraoChange' placeholder="请选择">
+                    <el-option
+                        v-for="device in PXSLoption"
+                        :key="device.value"
+                        :label="device.label"
+                        :value="device.value"
+                    ></el-option>
+                </el-select>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -210,7 +265,7 @@
 <script>
 import '@/assets/css/mbBox.less';
 
-import {getTongKangGR} from '@/api/api'
+import {getTongKangGR,postTongKangGR,putTongKangGR,deleteTongKangGR} from '@/api/api'
 export default {
     props: {
         closeDiaLog:{
@@ -240,19 +295,59 @@ export default {
                 { value: 1, label: '宽带噪声干扰' },
                 { value: 2, label: '宽带扫频干扰' },
                 { value: 3, label: '梳状谱干扰' },
+            ],
+            GRDKoption:[
+                {  value: 0, label: '0.1MHz' },
+                {  value: 1, label: '0.2MHz' },
+                {  value: 2, label: '0.5MHz' },
+                {  value: 3, label: '1MHz' },
+                {  value: 4, label: '2MHz' },
+                {  value: 5, label: '5MHz' },
+                {  value: 6, label: '10MHz' },
+                {  value: 7, label: '20MHz' },
+                {  value: 8, label: '40MHz' },
+                {  value: 9, label: '60MHz' },
+            ],
+            SPDKoption:[
+                { value: 3, label: '1MHz' },
+                { value: 4, label: '2MHz' },
+                { value: 5, label: '5MHz' },
+                { value: 6, label: '10MHz' },
+                { value: 7, label: '20MHz' },
+                { value: 8, label: '40MHz' },
+            ],
+            PXJGoption:[
+                { value: 0, label: '0.2MHz' },
+                { value: 1, label: '0.5MHz' },
+                { value: 2, label: '1MHz' },
 
             ],
+            PXSLoption:[
+                { value: 0, label: '8' },
+                { value: 1, label: '16' },
+                { value: 2, label: '32' },
+                { value: 3, label: '64' },
+            ],
+
+
+
+
 
             tableData: [],
             formAdd:{
                     name:'',
-                    tiem:'',
+                    time:'',
                     disturbDto:{
                         disturbStyle:'',
                         param:{
+                            rateRange:'',
                             gain:'',
                             disturbPower:'',
                             disturbRate:'',
+                            disturbBand:'',
+                            sweepBand:'',
+                            lineInterval:'',
+                            lineNum:'',
                         }
                     }
             }
@@ -260,19 +355,39 @@ export default {
     
     },
     methods:{
+        ganraoChange(key){
+            console.log(key,'ganraoChangeganraoChange');
+            
+        },
         // 分页
         handleCurrentChange(parame){
-            console.log(parame,'parameparameparame');
             this.pageNum=parame
             this.getGanRaoList()
             
 
         },
         handleClickUpdata(params){
+            this.dialogTitle='模版更新'
+            this.formAdd=params
+            this.innerVisible=true
+        },
+        handleClickDelete(params){
             console.log(params,'paramsparamsparams');
-            // this.dialogTitle='设备更新'
-            // this.formAdd=params
-            // this.innerVisible=false
+            
+            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.deleteTongKangGR(params.id)
+
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });          
+            });
+
         },
         //列表删除
         handleClickClose(params){
@@ -283,63 +398,82 @@ export default {
 
         
         confirm(){
-            if(this.dialogTitle=='新增设备'){
-                this.formAdd.deviceId=this.generateRandomId()
+            if(this.dialogTitle=='干扰模版新增'){
+                // this.formAdd.deviceId=this.generateRandomId()
+                console.log(this.formAdd,'formAddformAddformAdd新增设备');
+                
      
-                // this.Addshebei(this.formAdd)
-            }else if(this.dialogTitle=='设备更新'){
-                // this.UpdataShebei(this.formAdd)
+                this.Addgairao(this.formAdd)
+            }else if(this.dialogTitle=='模版更新'){
+                this.Updataganrao(this.formAdd)
     
             }
             
             
         },
-        // 新增设备按钮
-        Addshebei(foram){
+        // 新增
+        Addgairao(foram){
             console.log(foram,'foramforamforamforam');
             
-            // postAddShebei(foram).then(res=>{
-            //     console.log(res,'resresresre')
-            //     if(res.data.code==200){
-            //         this.innerVisible=false
-            //         this.getGanRaoList()
-            //         this.$message.success('新增成功')
+            postTongKangGR(foram).then(res=>{
+                console.log(res,'resresresre')
+                if(res.data.code==200){
+                    this.innerVisible=false
+                    this.getGanRaoList()
+                    this.$message.success('新增成功')
 
-            //     }else{
-            //         this.$message.error('新增失败')
-            //     }
+                }else{
+                    this.$message.error('新增失败')
+                }
                 
-            // })
+            })
 
         },
 
-        //更新设备
-        UpdataShebei(params){
+        //更新
+        Updataganrao(params){
             console.log(params,'params');
-            
-            // putShebeiUpdata(params).then(res=>{
-            //     console.log(res,'resresresres');
-            //     if(res.data.code==200){
-            //         this.innerVisible=false
-            //         this.getGanRaoList()
-            //         this.$message.success('编辑成功')
-
-            //     }else{
-            //         this.$message.error('编辑失败')
-            //     }
-
-            // })
+            putTongKangGR(params).then(res=>{
+                console.log(res,'resresresres');
+                if(res.data.code==200){
+                    this.innerVisible=false
+                    this.getGanRaoList()
+                    this.$message.success('编辑成功')
+                }else{
+                    this.$message.error('编辑失败')
+                }
+            })
+        },
+        //删除
+        deleteTongKangGR(param){
+            deleteTongKangGR(param).then(res=>{
+                console.log(res,'resresresres');
+                if(res.data.code==200){
+                    this.getGanRaoList()
+                    this.$message.success('删除成功')
+                }else{
+                    this.$message.error('删除失败')
+                }
+            })
         },
         addSbgl(){
+            this.dialogTitle='干扰模版新增'
+
             this.formAdd={
+                    id:this.generateRandomId(),
                     name:'',
-                    tiem:'',
+                    time:'',
                     disturbDto:{
                         disturbStyle:'',
                         param:{
+                            rateRange:'',
                             gain:'',
                             disturbPower:'',
                             disturbRate:'',
+                            disturbBand:'',
+                            sweepBand:'',
+                            lineInterval:'',
+                            lineNum:'',
                         }
                     }
             }
@@ -384,7 +518,12 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-
+.buttonStyle{
+    color: #FFF10D !important;
+}
+.deleteStyle{
+    color: #FA5151 !important;
+}
 
 .inpotBox{
     width: 100% !important;
@@ -410,6 +549,7 @@ export default {
 }
  ::v-deep .el-form-item{
     width: 45%;
+    background: #ffffff26;
  }
 
 

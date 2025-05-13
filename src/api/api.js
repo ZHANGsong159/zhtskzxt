@@ -60,6 +60,40 @@ export function putShebeiUpdata(params){
 export function getTongKangGR(params){ 
     return http.get(`${resquest}/tk-template-disturb`,params)
 }
+//新建通抗干扰模块
+export function postTongKangGR(params){ 
+    return http.post(`${resquest}/tk-template-disturb`,params)
+}
+//更新通抗干扰模块
+export function putTongKangGR(params){ 
+    return http.put(`${resquest}/tk-template-disturb`,params)
+}
+//删除通抗干扰模块
+export function deleteTongKangGR(params){ 
+    return http.delete(`${resquest}/tk-template-disturb/${params}`)
+}
+
+
+
+//通抗模拟模块
+export function getTongKangMN(params){ 
+    return http.get(`${resquest}/tk-template-simulate`,params)
+}
+//新建通抗模拟模块
+export function postTongKangMN(params){ 
+    return http.post(`${resquest}/tk-template-simulate`,params)
+}
+//更新通抗模拟模块
+export function putTongKangMN(params){ 
+    return http.put(`${resquest}/tk-template-simulate`,params)
+}
+//删除通抗模拟模块
+export function deleteTongKangMN(params){ 
+    return http.delete(`${resquest}/tk-template-simulate/${params}`)
+}
+
+
+
 
 
 
@@ -92,6 +126,10 @@ export function getProtectFrequency(params){
 //添加保护频段
 export function postProtectFrequency(params){ 
     return http.post(`${resquest}/sys-rate-protect`,params)
+}
+//删除保护频段
+export function deleteProtectFrequency(params){ 
+    return http.delete(`${resquest}/sys-rate-protect/${params}`)
 }
 
 
