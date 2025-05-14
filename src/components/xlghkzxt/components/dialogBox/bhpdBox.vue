@@ -96,7 +96,7 @@ export default {
         return Math.floor(Math.random() * 90000000000) + 10000000000;
     },
     confirm() {
-        this.formAdd.rateId = this.generateRandomId();
+        // this.formAdd.rateId = this.generateRandomId();
         if(this.formAdd.startRate&&this.formAdd.endRate){
             if(this.formAdd.startRate<this.formAdd.endRate){
                 // console.log(this.formAdd, "postProtectFrequency");

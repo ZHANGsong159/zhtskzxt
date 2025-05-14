@@ -11,6 +11,10 @@ const service = axios.create({
   // 超时时间 单位是ms，这里设置了3s的超时时间
   timeout: 3 * 1000
 })
+let vm
+service.setVueInstance = function(vueInstance) {
+  vm = vueInstance
+}
 // 2.请求拦截器
 service.interceptors.request.use(config => { 
   const token = sessionStorage.getItem('token');
@@ -39,6 +43,28 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(response => { 
    
   //接收到响应数据并成功后的一些共有的处理，关闭loading等
+  // console.log(response,'接收到响应数据');
+  if(response.data.code==4000){
+    // vm.$message.error(response.data.message)
+    if (vm && vm.$message) {
+      vm.$message.error(response.data.message)
+    } else {
+      console.error('Vue instance not set in request.js')
+    }
+  }
+  
+  if(response.data.code==401){
+    if (vm && vm.$router) {
+        if (vm.$router.currentRoute.path !== '/login') {
+            vm.$message.error(response.data.message)
+            vm.$router.push('/login');
+        }
+    } else {
+      console.error('Vue instance not set in request.js')
+    }
+    
+  }
+  
   
   return response
 }, error => { 
@@ -87,6 +113,10 @@ service.interceptors.response.use(response => {
       case 505:
         error.message = 'http版本不支持该请求'
         break;
+      // case 4000:
+      //   // error.message = 'http版本不支持该请求'
+      //   this.$message.error(error.message)
+      //   break;
       default:
         error.message = `连接错误${ 
      error.response.status}`

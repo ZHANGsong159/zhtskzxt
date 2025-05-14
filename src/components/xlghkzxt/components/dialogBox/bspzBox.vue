@@ -177,7 +177,7 @@ export default {
                 if(res.code==200){
                     this.$message.success('保存成功')
                 }else if(res.code==4000){
-                    this.$message.error('请先填写必要数据')
+                    // this.$message.error('请先填写必要数据')
                 }
             })
         },

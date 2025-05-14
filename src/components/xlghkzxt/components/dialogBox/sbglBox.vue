@@ -232,7 +232,7 @@ export default {
         
         confirm(){
             if(this.dialogTitle=='新增设备'){
-                this.formAdd.deviceId=this.generateRandomId()
+                // this.formAdd.deviceId=this.generateRandomId()
                 console.log(this.formAdd,'formAddformAddformAdd新增设备');
 
                 this.Addshebei(this.formAdd)

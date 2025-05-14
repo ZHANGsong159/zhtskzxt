@@ -54,14 +54,14 @@
                             {{scope.row.disturbDto.param.gain}}
                         </template>
                     </el-table-column>
-                    <el-table-column
+                    <!-- <el-table-column
                         prop="disturbPower"
                         align='center'
                         label="干扰功率">
                         <template slot-scope="scope">
                             {{scope.row.disturbDto.param.disturbPower}}瓦
                         </template>
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column
                         prop="disturbRate"
                         align='center'
@@ -104,10 +104,14 @@
                 <el-input v-model="formAdd.name" placeholder="请输入模板名称"></el-input>
             </el-form-item>
             <el-form-item label="生效时间(秒)">
-                <el-input v-model="formAdd.time" placeholder="范围0~3600"></el-input>
+                <el-input 
+                v-model="formAdd.time"
+                type="number"
+                oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>3600)value=3600;if(value<0)value=null"
+                placeholder="范围0~3600"></el-input>
             </el-form-item>
             <el-form-item label="干扰样式">
-                <el-select v-model="formAdd.disturbDto.disturbStyle" @change='ganraoChange' placeholder="请选择">
+                <el-select v-model="formAdd.disturbDto.disturbStyle"  placeholder="请选择">
                     <el-option
                         v-for="device in GRYSoption"
                         :key="device.value"
@@ -116,22 +120,39 @@
                     ></el-option>
                 </el-select>
             </el-form-item>
-            <!-- <el-form-item label="干扰频率范围">
-                <el-input v-model="formAdd.disturbDto.param.rateRange" placeholder="选择干扰频率范围"></el-input>
-            </el-form-item> -->
+            <el-form-item label="干扰频率范围">
+                <!-- <el-input v-model="formAdd.disturbDto.param.rateRange" placeholder="选择干扰频率范围"></el-input> -->
+                <el-select v-model="formAdd.disturbDto.param.rateRange" @change="GRPLchange"  placeholder="请选择">
+                    <el-option
+                        v-for="device in GRPLFWoption"
+                        :key="device.value"
+                        :label="device.label"
+                        :value="device.value"
+                    ></el-option>
+                </el-select>
+            </el-form-item>
             <el-form-item label="发射增益">
-                <el-input v-model="formAdd.disturbDto.param.gain" placeholder="范围5~2000"></el-input>
+                <el-input 
+                v-model="formAdd.disturbDto.param.gain" 
+                type="number"
+                oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>2000)value=100;if(value<5)value=null"
+                placeholder="范围5~2000"></el-input>
             </el-form-item>
-            <el-form-item label="干扰功率">
+            <!-- <el-form-item label="干扰功率">
                 <el-input v-model="formAdd.disturbDto.param.disturbPower" placeholder="请输入干扰功率"></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="干扰频率">
-                <el-input v-model="formAdd.disturbDto.param.disturbRate" placeholder="请输入干扰频率"></el-input>
+                <el-input 
+                v-model="formAdd.disturbDto.param.disturbRate" 
+                @change="ganraoChange" 
+                type="number"
+                @blur="handleTimeInput(formAdd.disturbDto.param.disturbRate,maxvalueGRPL,minvalueGRPL,'grpl')"
+                placeholder="请输入干扰频率"></el-input>
             </el-form-item>
 
             <el-form-item label="干扰带宽" v-if='formAdd.disturbDto.disturbStyle==0 || formAdd.disturbDto.disturbStyle==1'>
                 <!-- <el-input v-model="formAdd.disturbDto.param.disturbBand" placeholder="请输入干扰带宽"></el-input> -->
-                <el-select v-model="formAdd.disturbDto.param.disturbBand" @change='ganraoChange' placeholder="请选择">
+                <el-select v-model="formAdd.disturbDto.param.disturbBand"  placeholder="请选择">
                     <el-option
                         v-for="device in GRDKoption"
                         :key="device.value"
@@ -145,7 +166,7 @@
 
             <el-form-item label="扫频带宽" v-if='formAdd.disturbDto.disturbStyle==2'>
                 <!-- <el-input v-model="formAdd.disturbDto.param.sweepBand" placeholder="请输入扫频带宽"></el-input> -->
-                <el-select v-model="formAdd.disturbDto.param.sweepBand" @change='ganraoChange' placeholder="请选择">
+                <el-select v-model="formAdd.disturbDto.param.sweepBand" placeholder="请选择">
                     <el-option
                         v-for="device in SPDKoption"
                         :key="device.value"
@@ -157,7 +178,7 @@
             </el-form-item>
             <el-form-item label="谱线间隔" v-if='formAdd.disturbDto.disturbStyle==3'>
                 <!-- <el-input v-model="formAdd.disturbDto.param.lineInterval" placeholder="请输入谱线间隔"></el-input> -->
-                <el-select v-model="formAdd.disturbDto.param.lineInterval" @change='ganraoChange' placeholder="请选择">
+                <el-select v-model="formAdd.disturbDto.param.lineInterval"  placeholder="请选择">
                     <el-option
                         v-for="device in PXJGoption"
                         :key="device.value"
@@ -168,7 +189,7 @@
             </el-form-item>
             <el-form-item label="谱线数量" v-if='formAdd.disturbDto.disturbStyle==3'>
                 <!-- <el-input v-model="formAdd.disturbDto.param.lineNum" placeholder="请输入谱线数量"></el-input> -->
-                <el-select v-model="formAdd.disturbDto.param.lineNum" @change='ganraoChange' placeholder="请选择">
+                <el-select v-model="formAdd.disturbDto.param.lineNum"  placeholder="请选择">
                     <el-option
                         v-for="device in PXSLoption"
                         :key="device.value"
@@ -275,6 +296,9 @@ export default {
     },
     data() {
         return {
+            minvalueGRPL:0,
+            maxvalueGRPL:100,
+
             zanshigezhi:false,
             pageNum:1,
             pageSize:10,
@@ -309,12 +333,12 @@ export default {
                 {  value: 9, label: '60MHz' },
             ],
             SPDKoption:[
-                { value: 3, label: '1MHz' },
-                { value: 4, label: '2MHz' },
-                { value: 5, label: '5MHz' },
-                { value: 6, label: '10MHz' },
-                { value: 7, label: '20MHz' },
-                { value: 8, label: '40MHz' },
+                { value: 0, label: '1MHz' },
+                { value: 1, label: '2MHz' },
+                { value: 2, label: '5MHz' },
+                { value: 3, label: '10MHz' },
+                { value: 4, label: '20MHz' },
+                { value: 5, label: '40MHz' },
             ],
             PXJGoption:[
                 { value: 0, label: '0.2MHz' },
@@ -327,6 +351,13 @@ export default {
                 { value: 1, label: '16' },
                 { value: 2, label: '32' },
                 { value: 3, label: '64' },
+            ],
+            GRPLFWoption:[
+                { value: 0, label: '1.5-30MHZ' },
+                { value: 1, label: '30-512MHZ' },
+                { value: 2, label: '512-2000MHZ' },
+                { value: 3, label: '2000-3000MHZ' },
+
             ],
 
 
@@ -355,8 +386,50 @@ export default {
     
     },
     methods:{
+        //  干扰频率范围change
+        GRPLchange(key){
+            switch(key){
+                case 0:
+                    this.minvalueGRPL=1.5
+                    this.maxvalueGRPL=30
+                break;
+                case 1:
+                    this.minvalueGRPL=30
+                    this.maxvalueGRPL=512
+                break;
+                case 2:
+                    this.minvalueGRPL=512
+                    this.maxvalueGRPL=2000
+                break;
+                case 3:
+                    this.minvalueGRPL=2000
+                    this.maxvalueGRPL=3000
+                break;
+  
+
+                    
+            }
+        },
+        //输入框数字限制
+        handleTimeInput(value,maxvalue,minvalue,key) {
+            console.log(value,'handleTimeInputhandleTimeInputhandleTimeInput');
+            let num = value.replace(/\D/g, '');
+            if (num > maxvalue) num = maxvalue;
+            if (num < minvalue) num = minvalue;
+            switch (key) {
+                case 'grpl':
+                    this.formAdd.disturbDto.param.disturbRate= num;
+                    break;
+            }
+        },
+
         ganraoChange(key){
             console.log(key,'ganraoChangeganraoChange');
+            switch(key){
+                case 0:
+                    break;
+                    
+            }
             
         },
         // 分页
@@ -460,7 +533,7 @@ export default {
             this.dialogTitle='干扰模版新增'
 
             this.formAdd={
-                    id:this.generateRandomId(),
+                    // id:this.generateRandomId(),
                     name:'',
                     time:'',
                     disturbDto:{
@@ -499,13 +572,14 @@ export default {
                     this.tableData.forEach(item => {
                         console.log(item,'itemresresresresGR');
                     });
-                }else if(res.code==401){
-                    if (this.$router.currentRoute.path !== '/login') {
-                        this.$router.push('/login')
-                    }
-
-
                 }
+                // else if(res.code==401){
+                //     if (this.$router.currentRoute.path !== '/login') {
+                //         this.$router.push('/login')
+                //     }
+
+
+                // }
             })
         },
 
@@ -514,7 +588,7 @@ export default {
         this.getGanRaoList()
  
     },
-    
+   
 }
 </script>
 <style lang="less" scoped>
