@@ -38,9 +38,9 @@ const routes = [
   {
     path: '/test',
     name: '测试',
-    component: () => import('@/components/xlghkzxt/components/hightEcharts.vue'),
+    component: () => import('@/components/xlghkzxt/components/testTIEME.vue'),
     meta: {
-      isAuth: true,  // 需要登录
+      // isAuth: true,  // 需要登录
       title: '测试'     // 页面标题
     },
   },
