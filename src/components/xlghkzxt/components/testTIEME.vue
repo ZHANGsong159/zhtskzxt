@@ -21,27 +21,37 @@ export default {
     init() {
       this.mapObject = new TCesium("my-maptext"); // 注意，这个my-map就是我们div的id
       this.viewerBF = this.mapObject.viewer; //将创建的地图资源进行赋值
-      setTimeout(() => {
-        this.flyToTarget(117.000923, 36.675807, 12000000, 0, -90, 0, 2);
-      }, 2000);
+      // setTimeout(() => {
+      //   this.flyToTarget(117.000923, 36.675807, 12000000, 0, -90, 0, 2);
+      // }, 2000);
       // 添加一个基本标签
-      const label = this.viewerBF.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(-75.1641667, 39.9522222), // 费城坐标
-        label: {
-          text: '这是一个自定义标签',
-          font: '24px sans-serif',
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          outlineWidth: 2,
+      var entity  = this.viewerBF.entities.add({
+        name: '标点',
+        position: Cesium.Cartesian3.fromDegrees(117.000923, 36.675807, 10),
+        label: { //文字标签
+          text: "文字标签文字标签文字标签",
+          font: '500 30px Helvetica',// 15pt monospace
+          scale: 0.5,
+          style: Cesium.LabelStyle.FILL,
           fillColor: Cesium.Color.WHITE,
-          outlineColor: Cesium.Color.BLACK,
-          pixelOffset: new Cesium.Cartesian2(0, -20), // 偏移量
+          pixelOffset: new Cesium.Cartesian2(0, -65), //偏移量
           showBackground: true,
-          backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
-          horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+          backgroundColor: new Cesium.Color(0, 0, 0, 0)
+        },
+        billboard:{
+            image: require('@/assets/img/组 33@1x.png'),
+            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            width:187*2,
+            height: 178*2,
+            scale: 0.5,
         }
-      });
-      console.log(label);
+      })
+      console.log(entity);
+      
+      // this.viewerBF.zoomTo(entity )
+      
+
       
     },
 
@@ -100,8 +110,6 @@ export default {
 
 
     },
-
-
     addBoundaryWall() {
       // 绘制墙体的数据，将多维数组转成一维数组
       let coordinates = this.flatten(geojson.features[0].geometry.coordinates[0]);

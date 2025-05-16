@@ -1,6 +1,6 @@
 <template>
   <div class="tittlemain ">
-    <div class="tittleText">训练规划及电磁环境控制分系统</div>
+    <div class="tittleText">训练规划及电磁环境系统</div>
     <div class="tittelImg">
       <img src="@/assets/img/组28_@1x.png" alt="">  
       <div class="currentTime" v-if="bosShow">
@@ -16,8 +16,6 @@
             </div>
           </el-button> 
         </div>
-
-
       </div>
     </div>
     <el-tooltip class="item" effect="dark" content="注销" placement="bottom" v-show="bosShow">

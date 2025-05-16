@@ -1,5 +1,5 @@
 <template>
-<div  class="pingPuBox">
+  <div class="pingPuBox">
     <div class="main">
       <!-- 频谱图 -->
       <div class="linecharts" :id="shebeiID"></div>
@@ -15,22 +15,30 @@
           @mousemove="waterFallMove($event)"
           @mouseleave="waterFallLeave"
         >
-          <canvas :ref="shebeiID+'canvas'"></canvas>
+          <canvas :ref="shebeiID + 'canvas'"></canvas>
           <!--鼠标移入弹出框-->
           <div ref="tip" class="tip"></div>
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 <script>
 import Highcharts from "highcharts";
 export default {
   props: {
-    shebeiID:{
+    shebeiID: {
       type: String,
       default: "333",
-    }
+    },
+    minvalue: {
+      type: Number,
+      default: 0,
+    },
+    maxvalue: {
+      type: Number,
+      default: 1000,
+    },
   },
   data() {
     return {
@@ -67,66 +75,15 @@ export default {
               color: "#dfdfdf",
             },
           },
-          min: 0,
-          max: 100,
+          min: this.minvalue,
+          max: this.maxvalue,
           showLastLabel: true,
           gridLineColor: "rgba(46, 54, 92, 0.69)",
           lineColor: "rgba(165,165,165, 0.3)",
           showFirstLabel: true,
           tickColor: false,
-          plotBands: [
-            // {
-            //   from: 1200, // 标示区开始值
-            //   to: 1230, // 标示区结束值
-            //   color: "rgba(225, 90, 47, 0.3)", // 标示区背景颜色
-            //   borderWidth: 0, // 标示区边框宽度
-            //   borderColor: "#aca", // 标示区边框颜色
-            // },
-            // {
-            //   from: 1450, // 标示区开始值
-            //   to: 1500, // 标示区结束值
-            //   color: "rgba(225, 90, 47, 0.3)", // 标示区背景颜色
-            //   borderWidth: 0, // 标示区边框宽度
-            //   borderColor: "#aca", // 标示区边框颜色
-            // },
-            // {
-            //   from: 1800, // 标示区开始值
-            //   to: 1850, // 标示区结束值
-            //   color: "rgba(225, 90, 47, 0.3)", // 标示区背景颜色
-            //   borderWidth: 0, // 标示区边框宽度
-            //   borderColor: "#aca", // 标示区边框颜色
-            // },
-          ], //标注区
-          plotLines: [
-            // {
-            //   color: "#EB3C0A",
-            //   width: 1,
-            //   value: 1215,
-            //   zIndex: 5,
-            //   dashStyle: "LongDash",
-              // label:{
-              //     text:"DVB",
-              //     align:'left',
-              //     x:-34,
-              //     y:6,
-              //     style:{color:"#EB3C0A"}
-              // }
-            // },
-            // {
-            //   color: "#EB3C0A",
-            //   width: 1,
-            //   value: 1475,
-            //   zIndex: 5,
-            //   dashStyle: "LongDash",
-            // },
-            // {
-            //   color: "#EB3C0A",
-            //   width: 1,
-            //   value: 1825,
-            //   zIndex: 5,
-            //   dashStyle: "LongDash",
-            // },
-          ],
+          plotBands: [], //标注区
+          plotLines: [],
         },
         title: {
           enabled: false,
@@ -169,46 +126,26 @@ export default {
       waterFallHeight: 0, //瀑布图定高度（也可以理解成渲染次数 例如30次渲染完成）
       maxNum: 80, //图例最大值
       minNum: 0, //图例最小值
-      messages:[],
+      messages: [],
     };
   },
   methods: {
-    waterFallMove(){},
-    waterFallLeave(){},
+    waterFallMove() {},
+    waterFallLeave() {},
     initMessage() {
-      // var pin = this.RandomNumBoth(40, 60);
-      // console.log(pin);
       var data = [],
         yData = [];
-      // for (var i = 950; i < 2150; i += 0.3) {
-      //   if (i >= 1200 && i <= 1230) {
-      //     let nums = this.RandomNumBoth(60, 70);
-      //     yData.push(nums);
-      //     data.push([i, nums]);
-      //   } else if (i >= 1450 && i <= 1500) {
-      //     let nums = this.RandomNumBoth(50, 60);
-      //     yData.push(nums);
-      //     data.push([i, nums]);
-      //   } else if (i >= 1800 && i <= 1850) {
-      //     let num1 = this.RandomNumBoth(40, 50);
-      //     yData.push(num1);
-      //     data.push([i, num1]);
-      //   } else {
-      //     let num = this.RandomNumBoth(2, 30);
-      //     yData.push(num);
-      //     data.push([i, num]);
-      //   }
-      // }
-      data=this.$store.state.messages
-      yData=this.$store.state.ymessages
 
-      
+      data = this.$store.state.messages;
+      yData = this.$store.state.ymessages;
+      // console.log(data,yData,'yDatayData');
+
       // 折线图
       // console.log(yData,'瀑布图瀑布图瀑布图');
       //瀑布图
       // if(yData.length>0){
-        this.highInit(data);
-        this.queryChartList(yData);
+      this.highInit(data);
+      this.queryChartList(yData);
 
       // }
     },
@@ -223,7 +160,7 @@ export default {
     highInit(data) {
       this.options.series[0].data = data;
       // console.log(this.options.series[0].data,'highInithighInit');
-      
+
       Highcharts.chart(this.shebeiID, this.options);
     },
     // 创建颜色库
@@ -245,7 +182,10 @@ export default {
       let legendCanvas = document.createElement("canvas");
       legendCanvas.width = 1;
       let legendCanvasTemporary = legendCanvas.getContext("2d");
-      const imageData = legendCanvasTemporary.createImageData(1,that.colormap.length);
+      const imageData = legendCanvasTemporary.createImageData(
+        1,
+        that.colormap.length
+      );
       for (let i = 0; i < that.colormap.length; i++) {
         const color = that.colormap[i];
         imageData.data[imageData.data.length - i * 4 + 0] = color[0];
@@ -254,7 +194,17 @@ export default {
         imageData.data[imageData.data.length - i * 4 + 3] = 255;
       }
       legendCanvasTemporary.putImageData(imageData, 0, 0);
-      that.legend.drawImage(legendCanvasTemporary.canvas,0,0,1,that.colormap.length,50,0,200,that.legend.canvas.height);
+      that.legend.drawImage(
+        legendCanvasTemporary.canvas,
+        0,
+        0,
+        1,
+        that.colormap.length,
+        50,
+        0,
+        200,
+        that.legend.canvas.height
+      );
     },
     // 创建瀑布图
     createWaterFallCanvas() {
@@ -268,14 +218,21 @@ export default {
     rowToImageData(data) {
       let that = this;
       if (that.$refs[this.shebeiID] !== undefined) {
-        let  canvasHeight = 1
-        if(that.waterFallHeight == 0){
-          console.log('that.waterFallHeight',that.waterFallHeight);
+        let canvasHeight = 1;
+        if (that.waterFallHeight == 0) {
+          console.log("that.waterFallHeight", that.waterFallHeight);
           clearInterval(this.timer);
-        }else{
-          canvasHeight = Math.floor(that.$refs[this.shebeiID].offsetHeight / that.waterFallHeight);
+        } else {
+          canvasHeight = Math.floor(
+            that.$refs[this.shebeiID].offsetHeight / that.waterFallHeight
+          );
         }
-        let imgOld = that.waterFall.getImageData(0,0,that.waterFallWidth,canvasHeight * that.waterFallIndex + 1);
+        let imgOld = that.waterFall.getImageData(
+          0,
+          0,
+          that.waterFallWidth,
+          canvasHeight * that.waterFallIndex + 1
+        );
         const imageData = that.waterFall.createImageData(data.length, 1);
         for (let i = 0; i < imageData.data.length; i += 4) {
           const cindex = that.colorMapData(data[i / 4], 0, 130);
@@ -305,9 +262,9 @@ export default {
     },
 
     queryChartList(data) {
-      let hightEchartsbox=this.$refs[this.shebeiID].offsetHeight
+      let hightEchartsbox = this.$refs[this.shebeiID].offsetHeight;
       // console.log(hightEchartsbox,'hightEchartsboxhightEchartsbox');
-      
+
       let that = this;
       that.waterFallWidth = data.length;
       that.waterFallHeight = hightEchartsbox;
@@ -322,56 +279,47 @@ export default {
       }
     },
 
-
-
     //canvas自适应高度
-    HightCanvas(){
+    HightCanvas() {
       let that = this;
       let waterFall = that.$refs[`${this.shebeiID}canvas`];
       waterFall.height = that.$refs[this.shebeiID].offsetHeight;
 
-      let ctx=waterFall.getContext('2d');
+      let ctx = waterFall.getContext("2d");
       ctx.clearRect(0, 0, waterFall.width, waterFall.height);
-      this.draw(ctx)
-
+      this.draw(ctx);
     },
     draw(ctx) {
-      ctx.fillStyle = 'blue';
+      ctx.fillStyle = "blue";
       ctx.fillRect(10, 10, 100, 100);
     },
-    dianji(){
-      console.log('dianjidianjidianjidianjidianjidianjidianji');
-      
+    dianji() {
+      console.log("dianjidianjidianjidianjidianjidianjidianji");
     },
   },
   mounted() {
     let that = this;
     that.setColormap();
     that.createLegendCanvas();
-    // console.log(this.shebeiID,'shebeiIDshebeiID');
+    console.log(this.minvalue,this.maxvalue,'messagesmessages');
     
-      // 模拟假数据
-    // this.timer = setInterval(() => {
-    //   if(this.$store.state.messages.length>0){
-    //     this.initMessage();
-    //   }
-    //   // console.log('setIntervalsetInterval');
-      
-    // }, 30);
-
-
-    
-
   },
-  watch:{
-      '$store.state.messages': {
-        handler() {
-          // console.log(newVal,'someObject变化了')
-          this.initMessage();
-        },
-        deep: true
-      }
+  watch: {
+    "maxvalue": {
+      handler() {
+        document.getElementById(this.shebeiID).chart.xAxis[0].setExtremes(this.maxvalue, this.minvalue);
+      },
+      deep: true,
+    
+    },
+    "$store.state.messages": {
+      handler() {
+        console.log(this.maxvalue, this.minvalue, "messages111111");
 
+        this.initMessage(this.maxvalue, this.minvalue);
+      },
+      deep: true,
+    },
   },
   beforeDestroy() {
     let that = this;
@@ -381,11 +329,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.pingPuBox{
+.pingPuBox {
   height: 100%;
   width: 100%;
   // padding: 5px;
-  background-color: #FFFFFF26;
+  background-color: #ffffff26;
 }
 .main {
   width: 100%;
@@ -397,7 +345,7 @@ export default {
 }
 .linecharts {
   width: 100%;
-  height:70%
+  height: 70%;
 }
 .neirong {
   width: 100%;
@@ -432,5 +380,4 @@ canvas {
   padding: 10px;
   box-sizing: border-box;
 }
-
 </style>

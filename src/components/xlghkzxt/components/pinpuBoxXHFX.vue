@@ -5,28 +5,28 @@
                 <div class="leftPinpu-title">
                     <div class="leftText">
                         <img src="@/assets/img/组21_@1x.png" alt="" />
-                        <span class="pinputext">全景扫描</span>
+                        <span class="pinputext">分析频段</span>
                     </div>
                 </div>
                 <div class="line"></div>
                     <el-form label-width="140px" :inline="true">
                         <el-form-item label="起始频率(MHz)" class="inpotBox">
-                            <el-input v-model="pdsmFrom.qspl" placeholder="请输入"></el-input>
+                            <el-input v-model.number="pdsmFrom.startRate" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="pdsmFrom.zzpl" placeholder="请输入"></el-input>
+                            <el-input v-model.number="pdsmFrom.endRate" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="分辨率(KHz)" class="inpotBox">
-                            <el-select v-model="selectedDeviceQJSM" placeholder="请选择">
+                            <el-select v-model="pdsmFrom.resolution" placeholder="请选择">
                                 <el-option
-                                    v-for="device in devicesQJSM"
+                                    v-for="device in SMfbl"
                                     :key="device.value"
                                     :label="device.label"
                                     :value="device.value"
                                 ></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-button type="primary" class="confimeButton"><i class="el-icon-check"></i> 确认</el-button>
+                        <el-button type="primary" class="confimeButton" @click='StartFXFD'><i class="el-icon-check"></i> 确认</el-button>
                     </el-form>
             </div>
            
@@ -85,33 +85,34 @@ export default {
             PPSMshebeiID:'PPSM',
             pdsmStart:true,
             selectedDeviceQJSM:'',
-            devicesQJSM: [
-                { label: '1920*1080', value: '1920*1080' },
-                { label: '1280*720', value: '1280*720' },
-                { label: '960*540', value: '960*540' },
-                { label: '640*360', value: '640*360' },
-                { label: '480*270', value: '480*270' },
-            ],
-            qjsmFrom:{
-                fbl:'',
-
-            },
             pdsmFrom:{
-                qspl:'',
-                zzpl:'',
-                fbl:'',
-
-            },
-            dpksFrom:{
-                zxpl:'',
-                dl:'',
-
+                scanType:'rateBand',
+                startRate:'',
+                endRate:'',
+                resolution:'',
             },
             collapseList:[
                 {title:'1',content:'',id:'01',value:'122'},
                 {title:'2',content:'',id:'02',value:'200'},
 
-            ]
+            ],
+            SMfbl: [
+                { value: 0, label: '1000K' },
+                { value: 3, label: '12800K' },
+                { value: 4, label: '6400K' },
+                { value: 5, label: '3200K' },
+                { value: 6, label: '1600K' },
+                { value: 7, label: '800K' },
+                { value: 8, label: '400K' },
+                { value: 9, label: '200K' },
+                { value: 10, label: '100K' },
+                { value: 11, label: '50K' },
+                { value: 12, label: '25K' },
+                { value: 13, label: '12.5K' },
+                { value: 14, label: '6.25K' },
+                { value: 15, label: '3.125K' },
+                { value: 16, label: '1.5625K' },
+            ],
 
 
 
@@ -129,6 +130,9 @@ export default {
           }).then(res=>{
             console.log(res,'getCmdRategetCmdRate');
           })
+        },
+        StartFXFD(){
+            
         },
         clickQJSM(){
           

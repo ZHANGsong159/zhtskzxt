@@ -5,7 +5,7 @@
       <xlghkzxtTittle></xlghkzxtTittle>
     </div>
     <div class="body zIndex10">
-      <!-- <xlghkzxtBodyVue></xlghkzxtBodyVue> -->
+      <xlghkzxtBodyVue></xlghkzxtBodyVue>
     </div>
     <div class="leftPinpu zIndex40">
       <xlghkzxtPinpu @clickPinPu='clickPinPu'></xlghkzxtPinpu>

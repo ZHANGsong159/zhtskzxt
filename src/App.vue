@@ -21,6 +21,7 @@ export default {
         connectWebSocket() {
             this.socket = new WebSocketService('ws://192.168.2.167:8001/websocket/push');
             this.socket.connect();
+            this.$store.state.socket=this.socket
         },
         sendMessage() {
             if (this.socket) {
@@ -42,7 +43,6 @@ export default {
                   this.$router.push('/login');
               }
             }
-            console.log(res,'getCmdRategetCmdRate');
           })
         },
     },
@@ -54,30 +54,25 @@ export default {
             let parame={
               "userId":userId
             }
-            console.log('openSocketOpen');
-            
             this.socket.send(parame);
-            this.getCmdRateFun()
-
           });
 
 
 
-          this.socket.on('message', (data) => {
-            console.log('message');
+          // this.socket.on('message', (data) => {
+          //   console.log('message');
             
-              if(data.ratePushDTO.segmentStartRate==1){
-                this.messages=[]
-                this.ymessages=[]
-              }
-              data.ratePushDTO.values.forEach((item,index)=>{
-                  this.messages.push([index+Number(data.ratePushDTO.segmentStartRate),item]);
-                  this.ymessages.push(item)
-              })
-              this.$store.state.messages=this.messages
-              this.$store.state.ymessages=this.ymessages
-
-          });       
+          //     if(data.ratePushDTO.segmentStartRate==1){
+          //       this.messages=[]
+          //       this.ymessages=[]
+          //     }
+          //     data.ratePushDTO.values.forEach((item,index)=>{
+          //         this.messages.push([index+Number(data.ratePushDTO.segmentStartRate),item]);
+          //         this.ymessages.push(item)
+          //     })
+          //     this.$store.state.messages=this.messages
+          //     this.$store.state.ymessages=this.ymessages
+          // });       
     },
     beforeDestroy() {
       clearInterval(this.$store.state.timer);

@@ -8,7 +8,7 @@
     </div>
     <div class="loginMainRight">
       <div class="content">
-        <div class="contentTittle">训练规划及电磁环境控制分系统</div>
+        <div class="contentTittle">训练规划及电磁环境系统</div>
         <div class="contentBody">
           <div class="contentBodyBox flexBox">
             <el-form

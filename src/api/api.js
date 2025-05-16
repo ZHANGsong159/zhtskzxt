@@ -33,6 +33,10 @@ export function getShebeiList(params){
 export function getCmdRate(params){ 
     return http.get(`${resquest}/cmd/rate`,params)
 }
+//  频谱查询停止
+export function getCmdRateStop(params){ 
+    return http.get(`${resquest}/cmd/rate/stop`,params)
+}
 
 
 

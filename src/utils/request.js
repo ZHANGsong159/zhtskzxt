@@ -55,7 +55,7 @@ service.interceptors.response.use(response => {
   
   if(response.data.code==401){
     if (vm && vm.$router) {
-        if (vm.$router.currentRoute.path !== '/login') {
+        if (vm.$router.currentRoute.path != '/login') {
             vm.$message.error(response.data.message)
             vm.$router.push('/login');
         }
