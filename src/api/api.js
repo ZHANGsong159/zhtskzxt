@@ -139,6 +139,31 @@ export function deleteProtectFrequency(params){
 
 
 
+//控制命令
+//下方启动命令
+export function postControlCommand(params){ 
+    return http.post(`${resquest}/cmd/start`,params)
+}
+//下发暂停命令
+export function postControlCommandPause(params){ 
+    return http.post(`${resquest}/cmd/pause`,params)
+}
+//下发停止命令
+export function postControlCommandStop(params){ 
+    return http.post(`${resquest}/cmd/stop`,params)
+}
+//下发干扰命令
+export function postControlCommandInterference(params){ 
+    return http.post(`${resquest}/cmd/disturb`,params)
+}
+//下发模拟命令
+export function postControlCommandSimulation(params){ 
+    return http.post(`${resquest}/cmd/simulate`,params)
+}
+
+
+
+
 
 
 // put 请求

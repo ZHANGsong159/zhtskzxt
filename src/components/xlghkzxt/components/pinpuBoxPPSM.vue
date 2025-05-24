@@ -15,7 +15,7 @@
                 <div class="line"></div>
                 <el-form label-width="170px" :inline="true" v-model="qjsmFrom"  ref="qjsmFrom">
                         <el-form-item label="分辨率(KHz)" class="inpotBox" prop='resolution'>
-                            <el-select v-model="qjsmFrom.resolution" placeholder="请选择">
+                            <el-select v-model="qjsmFrom.resolution" placeholder="请选择" @change="fblChange(qjsmFrom.resolution)">
                                 <el-option
                                     v-for="device in SMfbl"
                                     :key="device.value"
@@ -75,14 +75,7 @@
                             <el-input v-model.number="dpksFrom.centerRate" placeholder="请输入"></el-input>
                         </el-form-item>
                          <el-form-item label="带宽(MHz)" class="inpotBox" prop='band'>
-                            <el-select v-model="dpksFrom.band" placeholder="请选择">
-                                <el-option
-                                    v-for="device in SMfbl"
-                                    :key="device.value"
-                                    :label="device.label"
-                                    :value="device.value"
-                                ></el-option>
-                            </el-select>
+                            <el-input v-model.number="dpksFrom.band" placeholder="请输入"></el-input>
                         </el-form-item>
                 </el-form>
             </div>
@@ -202,58 +195,6 @@ export default {
             }else{
                 this.allFBL=0
             }
-            // switch(this.allFBL){
-            //     case 0:
-            //         this.fblbeishu=1000
-            //         break;
-            //     case 1:
-            //         this.fblbeishu=2000
-            //         break;
-            //     case 3:
-            //         this.fblbeishu=12800
-            //         break;
-            //     case 4:
-            //         this.fblbeishu=6400
-            //         break;
-            //     case  5:
-            //         this.fblbeishu=3200
-            //         break;
-            //     case  6:
-            //         this.fblbeishu=1600
-            //         break;
-            //     case  7:
-            //         this.fblbeishu=800
-            //         break;
-            //     case 8:
-            //         this.fblbeishu=400
-            //         break;
-            //     case   9:
-            //         this.fblbeishu=200
-            //         break;
-            //     case  10:
-            //         this.fblbeishu=100
-            //         break;
-            //     case  11:
-            //         this.fblbeishu=50
-            //         break;
-            //     case  12:
-            //         this.fblbeishu=25
-            //         break;
-            //     case  13:
-            //         this.fblbeishu=12.5
-            //         break;
-            //     case  14:
-            //         this.fblbeishu=6.25
-            //         break;
-            //     case  15:
-            //         this.fblbeishu=3.125
-            //         break;
-            //     case  16:
-            //         this.fblbeishu=1.5625
-            //         break;
-
-                    
-            // }
             getCmdRate(params).then(res => {
                 return res.data
             }).then(res=>{
@@ -282,7 +223,6 @@ export default {
             }
             // this.submitForm(parameName,parameFrom)
             console.log(parameFrom,parameName,'parameFrom');
-            
             this.getCmdRateFun(parameFrom)
 
         },
@@ -299,39 +239,36 @@ export default {
                 }
             });
         },
+        fblChange(val){
+            this.allFBL=val
+        },
     },
     mounted() {
-
         this.$store.state.socket.on('message', (data) => {
                 console.log(data,'message');
                 let min=data.ratePushDTO.startRate
                 let max=data.ratePushDTO.endRate
                 this.allFBL=data.ratePushDTO.resolution
-    
                 if(data.ratePushDTO.segmentStartRate==min){
                     this.messages=[]
                     this.ymessages=[]
                     this.minvalueZJ=min
                     this.maxvalueZJ=max
-                    console.log(min,max,'starttttt');
-                    
                 }
                 data.ratePushDTO.values.forEach((item,index)=>{
                     this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
+                    console.log(index,this.fblbeishu,data.ratePushDTO.segmentStartRate,'this.messagesthis.messages');
+
+                    
                     this.ymessages.push(item)
                 })
+
                 this.$store.state.messages=this.messages
                 this.$store.state.ymessages=this.ymessages
-
-
-
-            //   let shujv=(max-min)/(this.fblbeishu/1000)
-            //   let dataX=this.generateAndSortNumbers(data.ratePushDTO.startRate,data.ratePushDTO.endRate,1)
-              console.log(this.fblbeishu,'dataX');
-              
-
-              
-          }); 
+        }); 
+    },
+    beforeDestroy() {
+        // this.getCmdRateStop()
     },
     watch:{
         allFBL(){

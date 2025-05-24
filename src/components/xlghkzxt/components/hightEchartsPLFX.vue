@@ -3,23 +3,6 @@
     <div class="main">
       <!-- 频谱图 -->
       <div class="linecharts" :id="shebeiID"></div>
-      <div class="neirong">
-        <!--图例-->
-        <div class="legend">
-          <canvas ref="legend"></canvas>
-        </div>
-        <!--瀑布图-->
-        <div
-          class="waterFall"
-          :ref="shebeiID"
-          @mousemove="waterFallMove($event)"
-          @mouseleave="waterFallLeave"
-        >
-          <canvas :ref="shebeiID + 'canvas'"></canvas>
-          <!--鼠标移入弹出框-->
-          <div ref="tip" class="tip"></div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -130,21 +113,13 @@ export default {
     };
   },
   methods: {
-    waterFallMove() {},
-    waterFallLeave() {},
     initMessage(max,min) {
       var data = [];
-      var yData = [];
+      // var yData = [];
       data = this.$store.state.messages;
-      yData = this.$store.state.ymessages;
+      // yData = this.$store.state.ymessages;
       // 折线图
-      // console.log(yData,'瀑布图瀑布图瀑布图');
-      //瀑布图
-      // if(yData.length>0){
       this.highInit(data,max,min);
-      this.queryChartList(yData);
-
-      // }
     },
     // 生成范围区间的值
     RandomNumBoth(Min, Max) {
@@ -160,57 +135,6 @@ export default {
       this.options.xAxis.max=max;
       Highcharts.chart(this.shebeiID, this.options);
     },
-    // 创建颜色库
-    setColormap() {
-      let that = this;
-      let colormap = require("colormap");
-      that.colormap = colormap({
-        colormap: "jet", //jet,cool,winter
-        nshades: 150,
-        format: "rba",
-        alpha: 1,
-      });
-    },
-    // 创建图例
-    createLegendCanvas() {
-      let that = this;
-      let legendRefs = that.$refs.legend;
-      that.legend = legendRefs.getContext("2d");
-      let legendCanvas = document.createElement("canvas");
-      legendCanvas.width = 1;
-      let legendCanvasTemporary = legendCanvas.getContext("2d");
-      const imageData = legendCanvasTemporary.createImageData(
-        1,
-        that.colormap.length
-      );
-      for (let i = 0; i < that.colormap.length; i++) {
-        const color = that.colormap[i];
-        imageData.data[imageData.data.length - i * 4 + 0] = color[0];
-        imageData.data[imageData.data.length - i * 4 + 1] = color[1];
-        imageData.data[imageData.data.length - i * 4 + 2] = color[2];
-        imageData.data[imageData.data.length - i * 4 + 3] = 255;
-      }
-      legendCanvasTemporary.putImageData(imageData, 0, 0);
-      that.legend.drawImage(
-        legendCanvasTemporary.canvas,
-        0,
-        0,
-        1,
-        that.colormap.length,
-        50,
-        0,
-        200,
-        that.legend.canvas.height
-      );
-    },
-    // 创建瀑布图
-    createWaterFallCanvas() {
-      let that = this;
-      let waterFall = that.$refs[`${this.shebeiID}canvas`];
-      that.waterFall = waterFall.getContext("2d");
-      waterFall.width = that.waterFallWidth;
-      waterFall.height = that.$refs[this.shebeiID].offsetHeight;
-    },
     // 绘制单行图像
     rowToImageData(data) {
       let that = this;
@@ -224,9 +148,12 @@ export default {
             that.$refs[this.shebeiID].offsetHeight / that.waterFallHeight
           );
         }
-        console.log(that.waterFallWidth,canvasHeight * that.waterFallIndex + 1,'瀑布图瀑布图瀑布图');
-        let imgOld = that.waterFall.getImageData(0,0,that.waterFallWidth,canvasHeight * that.waterFallIndex + 1);
-        
+        let imgOld = that.waterFall.getImageData(
+          0,
+          0,
+          that.waterFallWidth,
+          canvasHeight * that.waterFallIndex + 1
+        );
         const imageData = that.waterFall.createImageData(data.length, 1);
         for (let i = 0; i < imageData.data.length; i += 4) {
           const cindex = that.colorMapData(data[i / 4], 0, 130);
@@ -257,14 +184,11 @@ export default {
 
     queryChartList(data) {
       let hightEchartsbox = this.$refs[this.shebeiID].offsetHeight;
-      console.log(hightEchartsbox,'hightEchartsboxhightEchartsbox');
+      // console.log(hightEchartsbox,'hightEchartsboxhightEchartsbox');
 
       let that = this;
       that.waterFallWidth = data.length;
       that.waterFallHeight = hightEchartsbox;
-      if (that.waterFall === null) {
-        that.createWaterFallCanvas(data.length);
-      }
       that.rowToImageData(data);
       that.waterFallCopyList.unshift(data);
       that.waterFallIndex++;
@@ -287,17 +211,9 @@ export default {
       ctx.fillStyle = "blue";
       ctx.fillRect(10, 10, 100, 100);
     },
-    dianji() {
-      console.log("dianjidianjidianjidianjidianjidianjidianji");
-    },
   },
   mounted() {
-    let that = this;
-    that.setColormap();
-    that.createLegendCanvas();
-    // this.initMessage(this.maxvalue, this.minvalue)
-    this.highInit([],this.maxvalue, this.minvalue);
-
+    this.initMessage(this.maxvalue, this.minvalue)
     
   },
   watch: {
@@ -332,7 +248,7 @@ export default {
 }
 .linecharts {
   width: 100%;
-  height: 70%;
+  height: 100%;
 }
 .neirong {
   width: 100%;

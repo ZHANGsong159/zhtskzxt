@@ -9,15 +9,15 @@
                     </div>
                 </div>
                 <div class="line"></div>
-                    <el-form label-width="140px" :inline="true">
+                    <el-form label-width="170px" :inline="true">
                         <el-form-item label="起始频率(MHz)" class="inpotBox">
-                            <el-input v-model.number="pdsmFrom.startRate" placeholder="请输入"></el-input>
+                            <el-input v-model.number="fxpdFrom.startRate" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model.number="pdsmFrom.endRate" placeholder="请输入"></el-input>
+                            <el-input v-model.number="fxpdFrom.endRate" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="分辨率(KHz)" class="inpotBox">
-                            <el-select v-model="pdsmFrom.resolution" placeholder="请选择">
+                            <el-select v-model="fxpdFrom.resolution" placeholder="请选择">
                                 <el-option
                                     v-for="device in SMfbl"
                                     :key="device.value"
@@ -32,7 +32,7 @@
            
         </div>
         <div class="rightMain">
-            <hightEchartsVue :shebeiID='PPSMshebeiID'></hightEchartsVue>       
+            <hightEchartsVue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hightEchartsVue>       
         </div>
         <div class="rightBox">
             <el-collapse v-model="activeNames" @change="handleChange" v-for="(item,index) in collapseList" :key='index'>
@@ -65,18 +65,14 @@
                             <div>调制样式：调制样式调制样式调制样式</div>
                         </div>
                     </div>
-
                 </el-collapse-item>
             </el-collapse>
-
         </div>
-
     </div>
 </template>
 <script>
 import hightEchartsVue from './hightEcharts.vue';
 import {getCmdRate}  from "@/api/api.js"
-
 export default {
     components: { hightEchartsVue },
     data() {
@@ -86,6 +82,10 @@ export default {
             pdsmStart:true,
             selectedDeviceQJSM:'',
             pdsmFrom:{
+                qspl:'',
+                zzpl:'',
+            },
+            fxpdFrom:{
                 scanType:'rateBand',
                 startRate:'',
                 endRate:'',
@@ -94,10 +94,10 @@ export default {
             collapseList:[
                 {title:'1',content:'',id:'01',value:'122'},
                 {title:'2',content:'',id:'02',value:'200'},
-
             ],
             SMfbl: [
                 { value: 0, label: '1000K' },
+                { value: 1, label: '2000K' },
                 { value: 3, label: '12800K' },
                 { value: 4, label: '6400K' },
                 { value: 5, label: '3200K' },
@@ -113,9 +113,12 @@ export default {
                 { value: 15, label: '3.125K' },
                 { value: 16, label: '1.5625K' },
             ],
-
-
-
+            allFBL:'',
+            fblbeishu:0,
+            minvalueZJ:0,
+            maxvalueZJ:100,
+            messages:[],
+            ymessages:[],
         }
     
     },
@@ -123,22 +126,101 @@ export default {
         handleChange(){
 
         },
-        //发送频谱请求接口
-        getCmdRateFun(){
-          getCmdRate().then(res => {
-            return res.data
-          }).then(res=>{
-            console.log(res,'getCmdRategetCmdRate');
-          })
+         //发送频谱请求接口
+        async getCmdRateFun(params){
+            if(params.resolution){
+                this.allFBL=params.resolution
+            }else{
+                this.allFBL=0
+            }
+            getCmdRate(params).then(res => {
+                return res.data
+            }).then(res=>{
+                console.log(res,'getCmdRategetCmdRate');
+            })
         },
         StartFXFD(){
-            
+            this.getCmdRateFun(this.fxpdFrom)
         },
         clickQJSM(){
-          
         }
     },
     mounted() {
+        this.$store.state.socket.on('message', (data) => {
+                console.log(data,'message');
+                let min=data.ratePushDTO.startRate
+                let max=data.ratePushDTO.endRate
+                this.allFBL=data.ratePushDTO.resolution
+                if(data.ratePushDTO.segmentStartRate==min){
+                    this.messages=[]
+                    this.ymessages=[]
+                    this.minvalueZJ=min
+                    this.maxvalueZJ=max
+                }
+                data.ratePushDTO.values.forEach((item,index)=>{
+                    this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
+                    this.ymessages.push(item)
+                })
+                this.$store.state.messages=this.messages
+                this.$store.state.ymessages=this.ymessages
+        }); 
+    },
+    watch:{
+         allFBL(){
+            switch(this.allFBL){
+                case 0:
+                    this.fblbeishu=1000
+                    break;
+                case 1:
+                    this.fblbeishu=2000
+                    break;
+                case 3:
+                    this.fblbeishu=12800
+                    break;
+                case 4:
+                    this.fblbeishu=6400
+                    break;
+                case  5:
+                    this.fblbeishu=3200
+                    break;
+                case  6:
+                    this.fblbeishu=1600
+                    break;
+                case  7:
+                    this.fblbeishu=800
+                    break;
+                case 8:
+                    this.fblbeishu=400
+                    break;
+                case   9:
+                    this.fblbeishu=200
+                    break;
+                case  10:
+                    this.fblbeishu=100
+                    break;
+                case  11:
+                    this.fblbeishu=50
+                    break;
+                case  12:
+                    this.fblbeishu=25
+                    break;
+                case  13:
+                    this.fblbeishu=12.5
+                    break;
+                case  14:
+                    this.fblbeishu=6.25
+                    break;
+                case  15:
+                    this.fblbeishu=3.125
+                    break;
+                case  16:
+                    this.fblbeishu=1.5625
+                    break;
+
+                    
+            }
+        }
+
     },
     
 }

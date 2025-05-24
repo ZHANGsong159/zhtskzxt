@@ -135,8 +135,8 @@
                 <el-input 
                 v-model="formAdd.disturbDto.param.gain" 
                 type="number"
-                oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>2000)value=100;if(value<5)value=null"
-                placeholder="范围5~2000"></el-input>
+                oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>63)value=63;if(value<0  )value=null"
+                placeholder="范围0~63"></el-input>
             </el-form-item>
             <!-- <el-form-item label="干扰功率">
                 <el-input v-model="formAdd.disturbDto.param.disturbPower" placeholder="请输入干扰功率"></el-input>
@@ -357,7 +357,6 @@ export default {
                 { value: 1, label: '30-512MHZ' },
                 { value: 2, label: '512-2000MHZ' },
                 { value: 3, label: '2000-3000MHZ' },
-
             ],
 
 
@@ -551,7 +550,6 @@ export default {
                     }
             }
             this.innerVisible=true
-
         },
         generateRandomId() {
             return Math.floor(Math.random() * 90000000000) + 10000000000;
@@ -573,22 +571,13 @@ export default {
                         console.log(item,'itemresresresresGR');
                     });
                 }
-                // else if(res.code==401){
-                //     if (this.$router.currentRoute.path !== '/login') {
-                //         this.$router.push('/login')
-                //     }
-
-
-                // }
+               
             })
         },
-
     },
     mounted(){
         this.getGanRaoList()
- 
     },
-   
 }
 </script>
 <style lang="less" scoped>
@@ -607,12 +596,8 @@ export default {
     ::v-deep .el-form-item__content::after{
         width: 0px;
     }
-
-
 }
-
 /* 自定义 ElementUI 组件的样式 */
-
 .el-form--inline{
     .inpotBox{
         margin-bottom: 15px;
@@ -625,10 +610,6 @@ export default {
     width: 45%;
     background: #ffffff26;
  }
-
-
-
-
 .dialogBox{
     .dialogBoxMain{
         height: 500px;
@@ -636,36 +617,26 @@ export default {
         flex-flow: row;
         .dialogBoxLeft{
             width: 25%;
-            // height: 100%;
             padding: 10px 20px;
             border-right: 1px solid #ffffff4c;
-            // background: #222;
         }
         .dialogBoxRight{
             width: 75%;
             padding: 10px 20px;
-
-            // height: 100%;
-            // background: #fff;
         }
     }
     .dialogBoxFooter{
         height: 80px;
     }
-
 }
-
-
 .duoxuan{
     ::v-deep .el-form-item__content::after{
         width: 0px;
     }
-    
 }
 ::v-deep .el-radio__label{
     color: #fff;
 }
-
 ::v-deep .el-form-item .el-form-item__content{
     width: auto !important;
 }

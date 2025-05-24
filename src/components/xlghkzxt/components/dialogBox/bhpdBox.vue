@@ -87,7 +87,6 @@ export default {
       formAdd: {
         startRate: "",
         endRate: "",
-        rateId: "",
       },
     };
   },
@@ -96,10 +95,8 @@ export default {
         return Math.floor(Math.random() * 90000000000) + 10000000000;
     },
     confirm() {
-        // this.formAdd.rateId = this.generateRandomId();
         if(this.formAdd.startRate&&this.formAdd.endRate){
             if(this.formAdd.startRate<this.formAdd.endRate){
-                // console.log(this.formAdd, "postProtectFrequency");
                 this.postProtectFrequency(this.formAdd)
             }else{
                 this.$message.error("请正确填写频段范围");
@@ -143,7 +140,7 @@ export default {
             this.formAdd = {
               startRate: "",
               endRate: "",
-              rateId: "",
+              // rateId: "",
             }
             this.$message.success("添加成功");
             this.getProtectFrequency()

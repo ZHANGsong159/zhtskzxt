@@ -37,12 +37,6 @@ export default {
         getCmdRateFun(){
           getCmdRate().then(res => {
             return res.data
-          }).then(res=>{
-            if(res.code==401){
-              if (this.$router.currentRoute.path !== '/login') {
-                  this.$router.push('/login');
-              }
-            }
           })
         },
     },

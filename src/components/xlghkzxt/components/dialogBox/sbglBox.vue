@@ -39,16 +39,32 @@
                     prop="systemType"
                     align='center'
                     label="所属系统">
+                    <template slot-scope="scope">
+                        <!-- TK = 通抗分系统, LK = 类抗分系统, DK = 电抗分系统 -->
+                        {{scope.row.systemType=='TK'?'通抗分系统':scope.row.systemType=='LK'?'类抗分系统':scope.row.systemType=='DK'?'电抗分系统':''}}
+                    </template>
                 </el-table-column>
                  <el-table-column
                     prop="deviceType"
                     align='center'
                     label="装备类型">
+                    <template slot-scope="scope">
+                        {{scope.row.deviceType=='TK'?'通抗设备'
+                        :scope.row.deviceType=='LK'?'类抗设备'
+                        :scope.row.deviceType=='DK-HW'?'红外设备'
+                        :scope.row.deviceType=='DK-106'?'1.06激光设备'
+                        :scope.row.deviceType=='DK-15'?'1.5激光设备'
+                        :scope.row.deviceType=='DK-GJ'?'告警天线'
+                        :scope.row.deviceType=='DK-GR'?'偏引干扰机':''}}
+                    </template>
                 </el-table-column>
                  <el-table-column
                     prop="state"
                     align='center'
                     label="状态">
+                    <template slot-scope="scope">
+                        {{scope.row.state=='outline'?'离线':scope.row.state=='standby'?'待机':scope.row.state=='disturb'?'干扰中':scope.row.state=='simulate'?'模拟中':''}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="longitude"
@@ -67,7 +83,6 @@
                     <template slot-scope="scope">
                         <el-button @click="handleClickUpdata(scope.row)" type="text" size="small">编辑</el-button>
                         <el-button @click="handleClickClose(scope.row)" type="text" size="small">删除</el-button>
-
                     </template>
                 </el-table-column>
                 </el-table>
@@ -109,18 +124,10 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="是否部署" >
-
                 <el-radio-group v-model="formAdd.isDeploy" style="padding-left:15px;">
                     <el-radio :label="0">未部署</el-radio>
                     <el-radio :label="1">已部署</el-radio>
                 </el-radio-group>
-
-
-                <!-- <el-radio v-model="formAdd.isDeploy" label="0" style="padding-left:20px">未部署</el-radio>
-                <el-radio v-model="formAdd.isDeploy" label="1">已部署</el-radio>
-                {{formAdd.isDeploy}} -->
-
-                <!-- <el-input v-model="formAdd.isDeploy" placeholder="状态"></el-input> -->
             </el-form-item>
             <el-form-item label="状态">
                 <el-select v-model="formAdd.state" placeholder="请选择设备状态">
@@ -133,9 +140,6 @@
             <el-form-item label="纬度">
                 <el-input v-model="formAdd.latitude" placeholder="纬度"></el-input>
             </el-form-item>
-
-
-
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="innerVisible = false">取 消</el-button>
@@ -188,16 +192,16 @@ export default {
             ],
             tableData: [],
             formAdd:{
-                deviceId: 1,
-                deviceCode: '01',
-                deviceName: '测试设备',
-                deviceIp: '192.168.1.1',
-                systemType: 'TK',
-                deviceType: 'TK',
-                isDeploy: '0',
-                state:'outline',
-                longitude: '122',
-                latitude: '21',
+                // deviceId: 1,
+                deviceCode: '',
+                deviceName: '',
+                deviceIp: '',
+                systemType: '',
+                deviceType: '',
+                isDeploy: '',
+                state:'',
+                longitude: '',
+                latitude: '',
             },
         
         }
@@ -278,16 +282,16 @@ export default {
         },
         addSbgl(){
             this.formAdd={
-                deviceId: 1,
-                deviceCode: '01',
-                deviceName: '测试设备',
-                deviceIp: '192.168.1.1',
-                systemType: 'TK',
-                deviceType: 'TK',
-                isDeploy: '0',
-                state:'outline',
-                longitude: '122',
-                latitude: '21',
+                deviceId: '',
+                deviceCode: '',
+                deviceName: '',
+                deviceIp: '',
+                systemType: '',
+                deviceType: '',
+                isDeploy: '',
+                state:'',
+                longitude: '',
+                latitude: '',
             }
             this.innerVisible=true
 

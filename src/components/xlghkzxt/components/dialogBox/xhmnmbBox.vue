@@ -86,7 +86,7 @@
                 <el-input v-model="topForm.time" type="number" placeholder="请输入"></el-input>
             </el-form-item>
             <el-form-item label="信号类型">
-                <el-select v-model="signalType" @change='ganraoChange' placeholder="请选择" :disabled="dialogTitle =='模版更新'">
+                <el-select v-model="signalType" @change='ganraoChange' placeholder="请选择" >
                         <el-option
                             v-for="device in XHLXoption"
                             :key="device.value"
@@ -96,8 +96,14 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="发射增益">
-                <el-input v-model="gain" type="number" placeholder="5-2000db" @blur="handleTimeInput(gain,2000,5,'fszy')"> </el-input>
+                <el-input 
+                v-model="gain" 
+                type="number" 
+                placeholder="0~63db" 
+                oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>63)value=63;if(value<0  )value=null"
+                > </el-input>
             </el-form-item>
+      
             <el-button type="primary"  @click="saveXinData('save')">保存</el-button>
             <el-button type="primary" icon="el-icon-circle-plus-outline" @click="addXinHao">添加信号</el-button>
 
@@ -130,8 +136,17 @@
                 <el-form-item label="信号频率(MHZ)">
                     <el-input v-model="formAdd.param.signalRate" type="number" placeholder="1.5~3000" @blur="handleTimeInput(formAdd.param.signalRate,3000,1.5,'shpl')"></el-input>
                 </el-form-item>
+                <el-form-item label="频率范围(MHZ)">
+                        <el-select v-model="formAdd.param.PLfanwei"  placeholder="请选择">
+                                <el-option
+                                    v-for="device in MNPLFWoption"
+                                    :key="device.value"
+                                    :label="device.label"
+                                    :value="device.value"
+                                ></el-option>
+                        </el-select>
+                </el-form-item>
                 <el-form-item label="信号带宽(MHZ)">
-                    <!-- <el-input v-model="formAdd.param.signalBandwidth" placeholder="信号带宽(MHZ)"></el-input> -->
                     <el-select v-model="formAdd.param.signalBand"  placeholder="请选择">
                         <el-option
                             v-for="device in XHDKoption"
@@ -183,11 +198,10 @@
                 </el-form-item>
             </el-form>
 
-            <div class="PinLvJin" v-if="Boxright">
+            <div class="PinLvJin" v-if="Boxright&&signalType==1">
                 <div class="pinlvjiMain">
                     <div class="pinlvjiTittle">
                         频率集（MHz）
-
                     </div>
                     <div class="pinlvjiMainsmall">
                         <div class="mainBox" v-for="(item,index) in pinlvji" :key='index'>
@@ -318,6 +332,12 @@ export default {
                     {value:2,label:'Walsh序列'},
                 ],
             },
+            MNPLFWoption:[
+                { value: 0, label: '1.5-30MHZ' },
+                { value: 1, label: '30-512MHZ' },
+                { value: 2, label: '512-2000MHZ' },
+                { value: 3, label: '2000-3000MHZ' },
+            ],
         }
     },
     methods:{
@@ -619,7 +639,6 @@ export default {
             let max=this.formAdd.param.sweepEndRate
             let step=this.formAdd.param.sweepNum
             this.generateAndSortNumbers(min,max,step)
-
         },
         changeZZPL(value){
             console.log(value,this.formAdd.param.sweepStartRate,'changeZZPLchangeZZPL');
@@ -646,7 +665,6 @@ export default {
             const min = minvalue;
             const max = maxvalue;
             const step = 0.025; // 设置步长为0.025
-            
             // 计算可能的数值范围
             const minSteps = Math.ceil(min / step);
             const maxSteps = Math.floor(max / step);
@@ -735,7 +753,7 @@ export default {
     padding: 0 !important;
 }
 .XHMNinputBox{
-    width: 80%;
+    width: 75%;
     padding: 20px 20px;
     // height: 84px;
     display: flex;
