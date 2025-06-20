@@ -308,7 +308,7 @@ export default {
             getShebeiList(params).then(res=>{
                 return res.data
             }) .then(res=>{
-                console.log(res,'getShebeiListgetShebeiList');
+                // console.log(res,'getShebeiListgetShebeiList');
                 if(res.code==200){
                     this.tableData=res.data.list
                     this.total=res.data.total

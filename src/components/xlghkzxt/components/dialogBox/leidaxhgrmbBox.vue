@@ -204,88 +204,11 @@
             <el-button type="primary" @click="confirm" >确 定</el-button>
         </div>
     </el-dialog>
-
-
-
-
-
-    <!-- 暂时搁置 -->
-    <!-- <div class="dialogBox" v-if="zanshigezhi">
-        <div class="dialogBoxMain">
-            <div class="dialogBoxLeft">
-                <el-form  :inline="true">
-                        <el-form-item label="起始频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.qspl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.zzpl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.zzpl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.zzpl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.zzpl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item  class="inpotBox duoxuan">
-                            <el-radio-group v-model="grmbFrom.zzpl" >
-                                <el-radio :label="0">未部署</el-radio>
-                                <el-radio :label="1">已部署</el-radio>
-                                <el-radio :label="2">已部署</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
-                        <el-form-item   class="inpotBox selectBox">
-                            <el-select v-model="value" placeholder="请选择" >
-                                <el-option
-                                v-for="item in GRYSoption"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item   class="inpotBox selectBox">
-                            <el-select v-model="value" placeholder="请选择" >
-                                <el-option
-                                v-for="item in GRYSoption"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-
-
-
-                </el-form>
-
-            </div>
-
-            <div class="dialogBoxRight">
-                <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                    <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
-                    <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
-                    <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-                    <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
-                </el-tabs>
-
-            </div>
-
-
-        </div>
-        <div class="dialogBoxFooter">
-
-        </div>
-
-    </div> -->
 </div>
     
 </template>
 <script>
 import '@/assets/css/mbBox.less';
-
 import {getTongKangGR,postTongKangGR,putTongKangGR,deleteTongKangGR} from '@/api/api'
 export default {
     props: {
@@ -358,11 +281,6 @@ export default {
                 { value: 2, label: '512-2000MHZ' },
                 { value: 3, label: '2000-3000MHZ' },
             ],
-
-
-
-
-
             tableData: [],
             formAdd:{
                     name:'',

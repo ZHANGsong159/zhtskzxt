@@ -7,7 +7,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('@/components/xlghkzxt/XlghkzxtIndex.vue'),
+    component: () => import('@/views/XlghkzxtIndex.vue'),
     redirect: '/xlghkzxt',
     meta: { isAuth: true, title:'主页' },
 
@@ -15,12 +15,12 @@ const routes = [
   {
     path: '/login',
     name: '登录',
-    component: () => import('@/components/xlghkzxt/xlghkzxtLogin.vue'),
+    component: () => import('@/views/xlghkzxtLogin.vue'),
   },
   {
     path: '/xlghkzxt',
     name: '训练规划与电磁环境控制系统',
-    component: () => import('@/components/xlghkzxt/XlghkzxtIndex.vue'),
+    component: () => import('@/views/XlghkzxtIndex.vue'),
     meta: {
       isAuth: true,  // 需要登录
       title: '训练规划与电磁环境控制系统'     // 页面标题
@@ -29,7 +29,7 @@ const routes = [
   {
     path: '/pinpuindex',
     name: '频谱图',
-    component: () => import('@/components/xlghkzxt/PinpuIndex.vue'),
+    component: () => import('@/views/PinpuIndex.vue'),
     meta: {
       isAuth: true,  // 需要登录
       title: '频谱图'     // 页面标题

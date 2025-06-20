@@ -639,7 +639,7 @@ export default {
       console.log(this.formAdd.name, this.GRoption, "changePL");
       this.GRoption.forEach((item) => {
         if (item.name == this.formAdd.name) {
-          console.log(item, "itemresresresresGR");
+          // console.log(item, "itemresresresresGR");
           this.formAdd = JSON.parse(JSON.stringify(item));
         }
       });
@@ -748,7 +748,7 @@ export default {
             this.shebeiList = res.data.list;
             this.shebeiList.forEach((item) => {
               this.addLabel(item);
-              console.log(item, "getShebeiListgetShebeiList");
+              // console.log(item, "getShebeiListgetShebeiList");
             });
           }
         });
