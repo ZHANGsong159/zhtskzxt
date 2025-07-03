@@ -12,11 +12,11 @@
         class="pinPuBody-box"
         v-for="(item, index) in leftPinpu"
         :key="index"
-        @click="clickPinPu(item.id)"
+        @click="clickPinPu(item.deviceId)"
       >
         <div class="pinPuBody-box-tittle">
           <span class="pinpuTextLite">
-            {{ item.name }}
+            {{ item.deviceName }}
           </span>
           <img
             class="pinpuTextLiteImg"
@@ -25,7 +25,7 @@
           />
         </div>
         <div class="pinPuBody-box-body">
-          <hightEcharts :shebeiID='item.id'></hightEcharts>
+          <hightEcharts :shebeiID='item.deviceId.toString()'></hightEcharts>
         </div>
       </div>
     </div>
@@ -33,6 +33,7 @@
 </template>
 <script>
 import hightEcharts from "./xlghkzxt/components/hightEcharts.vue";
+import {getShebeiList} from "@/api/api";
 export default {
   components: {
     hightEcharts,
@@ -42,32 +43,28 @@ export default {
       messages:[],
       leftPinpu: [
         {
-          name: "设备一",
-          img: "@/assets/img/组21_@1x.png",
-          id: "sheibei1",
-        },
-        {
-          name: "设备二",
-          img: "@/assets/img/组21_@1x.png",
-          id: "sheibei2",
-        },
-        {
-          name: "设备三",
-          img: "@/assets/img/组21_@1x.png",
-          id: "sheibei3",
-        },
-        {
-          name: "设备四",
-          img: "@/assets/img/组21_@1x.png",
-          id: "sheibei4",
+          deviceName: "",
+          deviceId: "",
         },
       ],
     };
   },
   methods:{
+    getShebeiList(){
+      getShebeiList().then(res=>{
+        return res.data
+      }).then(res=>{
+        if(res.code==200){
+          this.leftPinpu=res.data.list
+        }
+      })
+    },
     clickPinPu(id){
       this.$emit('clickPinPu',id)
     }
+  },
+  created() {
+    this.getShebeiList()
   },
   
 

@@ -54,14 +54,6 @@
                             {{scope.row.disturbDto.param.gain}}
                         </template>
                     </el-table-column>
-                    <!-- <el-table-column
-                        prop="disturbPower"
-                        align='center'
-                        label="干扰功率">
-                        <template slot-scope="scope">
-                            {{scope.row.disturbDto.param.disturbPower}}瓦
-                        </template>
-                    </el-table-column> -->
                     <el-table-column
                         prop="disturbRate"
                         align='center'
@@ -99,7 +91,7 @@
       :title="dialogTitle"
       :visible.sync="innerVisible"
       append-to-body>
-        <el-form  :model="formAdd" :inline="true">
+        <el-form  :model="formAdd" :inline="true" class="tankuang" style="flex-warp:wrap !important;" >
             <el-form-item label="模板名称">
                 <el-input v-model="formAdd.name" placeholder="请输入模板名称"></el-input>
             </el-form-item>
@@ -121,7 +113,6 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="干扰频率范围">
-                <!-- <el-input v-model="formAdd.disturbDto.param.rateRange" placeholder="选择干扰频率范围"></el-input> -->
                 <el-select v-model="formAdd.disturbDto.param.rateRange" @change="GRPLchange"  placeholder="请选择">
                     <el-option
                         v-for="device in GRPLFWoption"
@@ -138,9 +129,6 @@
                 oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>63)value=63;if(value<0  )value=null"
                 placeholder="范围0~63"></el-input>
             </el-form-item>
-            <!-- <el-form-item label="干扰功率">
-                <el-input v-model="formAdd.disturbDto.param.disturbPower" placeholder="请输入干扰功率"></el-input>
-            </el-form-item> -->
             <el-form-item label="干扰频率">
                 <el-input 
                 v-model="formAdd.disturbDto.param.disturbRate" 
@@ -151,7 +139,6 @@
             </el-form-item>
 
             <el-form-item label="干扰带宽" v-if='formAdd.disturbDto.disturbStyle==0 || formAdd.disturbDto.disturbStyle==1'>
-                <!-- <el-input v-model="formAdd.disturbDto.param.disturbBand" placeholder="请输入干扰带宽"></el-input> -->
                 <el-select v-model="formAdd.disturbDto.param.disturbBand"  placeholder="请选择">
                     <el-option
                         v-for="device in GRDKoption"
@@ -165,7 +152,6 @@
 
 
             <el-form-item label="扫频带宽" v-if='formAdd.disturbDto.disturbStyle==2'>
-                <!-- <el-input v-model="formAdd.disturbDto.param.sweepBand" placeholder="请输入扫频带宽"></el-input> -->
                 <el-select v-model="formAdd.disturbDto.param.sweepBand" placeholder="请选择">
                     <el-option
                         v-for="device in SPDKoption"
@@ -177,7 +163,6 @@
                 
             </el-form-item>
             <el-form-item label="谱线间隔" v-if='formAdd.disturbDto.disturbStyle==3'>
-                <!-- <el-input v-model="formAdd.disturbDto.param.lineInterval" placeholder="请输入谱线间隔"></el-input> -->
                 <el-select v-model="formAdd.disturbDto.param.lineInterval"  placeholder="请选择">
                     <el-option
                         v-for="device in PXJGoption"
@@ -188,7 +173,6 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="谱线数量" v-if='formAdd.disturbDto.disturbStyle==3'>
-                <!-- <el-input v-model="formAdd.disturbDto.param.lineNum" placeholder="请输入谱线数量"></el-input> -->
                 <el-select v-model="formAdd.disturbDto.param.lineNum"  placeholder="请选择">
                     <el-option
                         v-for="device in PXSLoption"
@@ -205,81 +189,6 @@
         </div>
     </el-dialog>
 
-
-
-
-
-    <!-- 暂时搁置 -->
-    <!-- <div class="dialogBox" v-if="zanshigezhi">
-        <div class="dialogBoxMain">
-            <div class="dialogBoxLeft">
-                <el-form  :inline="true">
-                        <el-form-item label="起始频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.qspl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.zzpl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.zzpl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.zzpl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model="grmbFrom.zzpl" placeholder="请输入"></el-input>
-                        </el-form-item>
-                        <el-form-item  class="inpotBox duoxuan">
-                            <el-radio-group v-model="grmbFrom.zzpl" >
-                                <el-radio :label="0">未部署</el-radio>
-                                <el-radio :label="1">已部署</el-radio>
-                                <el-radio :label="2">已部署</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
-                        <el-form-item   class="inpotBox selectBox">
-                            <el-select v-model="value" placeholder="请选择" >
-                                <el-option
-                                v-for="item in GRYSoption"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item   class="inpotBox selectBox">
-                            <el-select v-model="value" placeholder="请选择" >
-                                <el-option
-                                v-for="item in GRYSoption"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-
-
-
-                </el-form>
-
-            </div>
-
-            <div class="dialogBoxRight">
-                <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                    <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
-                    <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
-                    <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-                    <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
-                </el-tabs>
-
-            </div>
-
-
-        </div>
-        <div class="dialogBoxFooter">
-
-        </div>
-
-    </div> -->
 </div>
     
 </template>
@@ -488,7 +397,6 @@ export default {
             console.log(foram,'foramforamforamforam');
             
             postTongKangGR(foram).then(res=>{
-                console.log(res,'resresresre')
                 if(res.data.code==200){
                     this.innerVisible=false
                     this.getGanRaoList()
@@ -504,9 +412,7 @@ export default {
 
         //更新
         Updataganrao(params){
-            console.log(params,'params');
             putTongKangGR(params).then(res=>{
-                console.log(res,'resresresres');
                 if(res.data.code==200){
                     this.innerVisible=false
                     this.getGanRaoList()
@@ -567,11 +473,7 @@ export default {
                 if(res.code==200){
                     this.tableData=res.data.list
                     this.total=res.data.total
-                    // this.tableData.forEach(item => {
-                        // console.log(item,'itemresresresresGR');
-                    // });
                 }
-               
             })
         },
     },
@@ -603,13 +505,7 @@ export default {
         margin-bottom: 15px;
     }
 }        
-::v-deep .el-form-item__label{
-        width: 100px !important;
-}
- ::v-deep .el-form-item{
-    width: 45%;
-    background: #ffffff26;
- }
+
 .dialogBox{
     .dialogBoxMain{
         height: 500px;
@@ -634,10 +530,20 @@ export default {
         width: 0px;
     }
 }
-::v-deep .el-radio__label{
-    color: #fff;
+
+::v-deep .el-form--inline{
+    flex-wrap: wrap !important;
+    padding: 10px 20px;
 }
-::v-deep .el-form-item .el-form-item__content{
-    width: auto !important;
-}
+
+ ::v-deep .el-form-item{
+    width: 45%;
+    background: #ffffff26;
+ }
+ ::v-deep .el-form-item__label{
+    width: 120px !important;
+ }
+ ::v-deep .el-form-item__content{
+    width: calc(100% - 120px) !important;
+ }
 </style>

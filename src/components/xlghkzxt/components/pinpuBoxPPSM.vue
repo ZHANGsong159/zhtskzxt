@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="line"></div>
-                <el-form label-width="170px" :inline="true" v-model="qjsmFrom"  ref="qjsmFrom">
+                <el-form  :inline="true" v-model="qjsmFrom"  ref="qjsmFrom">
                         <el-form-item label="分辨率(KHz)" class="inpotBox" prop='resolution'>
                             <el-select v-model="qjsmFrom.resolution" placeholder="请选择" @change="fblChange(qjsmFrom.resolution)">
                                 <el-option
@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <div class="line"></div>
-                <el-form label-width="170px" :inline="true" v-model="pdsmFrom"  ref="pdsmFrom">
+                <el-form  :inline="true" v-model="pdsmFrom"  ref="pdsmFrom">
                         <el-form-item label="起始频率(MHz)" class="inpotBox" prop='startRate' >
                             <el-input v-model.number="pdsmFrom.startRate" placeholder="请输入"></el-input>
                         </el-form-item>
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div class="line"></div>
-                <el-form label-width="170px" :inline="true" v-model="dpksFrom"  ref="dpksFrom">
+                <el-form  :inline="true" v-model="dpksFrom"  ref="dpksFrom">
                         <el-form-item label="中心频率(MHz)" class="inpotBox" prop='centerRate'>
                             <el-input v-model.number="dpksFrom.centerRate" placeholder="请输入"></el-input>
                         </el-form-item>
@@ -100,8 +100,8 @@ export default {
             dpksStart:true,
             selectedDeviceQJSM:'',
             SMfbl: [
-                { value: 0, label: '1000K' },
-                { value: 1, label: '2000K' },
+                // { value: 0, label: '1000K' },
+                // { value: 1, label: '2000K' },
 
                 { value: 3, label: '12800K' },
                 { value: 4, label: '6400K' },
@@ -184,12 +184,17 @@ export default {
             getCmdRateStop().then(res => {
                 return res.data
             }).then(res=>{
-                console.log(res,'getCmdRateStop');
+                if(res.code==200){
+                    console.log();
+
+                }
             })
         },
         //发送频谱请求接口
         async getCmdRateFun(params){
-            // this.getCmdRateStop()
+            let deviceId = this.$route.params.id; 
+            params.deviceId=deviceId
+
             if(params.resolution){
                 this.allFBL=params.resolution
             }else{
@@ -198,7 +203,10 @@ export default {
             getCmdRate(params).then(res => {
                 return res.data
             }).then(res=>{
-                console.log(res,'getCmdRategetCmdRate');
+                if(res.code==200){
+                    console.log();
+
+                }
             })
         },
         clickQJSM(parame){
@@ -228,7 +236,6 @@ export default {
         },
         submitForm(formName,parameFrom) {
             this.$refs[formName].validate((valid) => {
-                console.log(valid,'submitForm');
                 if (valid) {
                     this.getCmdRateFun(parameFrom)
                     console.log(' submit!!');
@@ -344,7 +351,6 @@ export default {
         overflow: auto;
         .leftListBox{
             width: 100%;
-            // height: 150px;
             box-sizing: border-box;
             background: #FFFFFF26;
             margin-bottom: 20px;
@@ -357,8 +363,6 @@ export default {
                 margin: 5px 0px;
             }
             .inpotBox{
-                display: flex;
-                background-color: #FFFFFF26;
                 margin: 5px 0px;
             }
         }
@@ -391,7 +395,10 @@ export default {
     color: #fff!important;
 }
 ::v-deep .el-form-item__label{
-    text-align: center;
+    width: 135px;
+}
+::v-deep .el-form-item__content{
+    width: calc(100% - 135px);
 }
 
 </style>

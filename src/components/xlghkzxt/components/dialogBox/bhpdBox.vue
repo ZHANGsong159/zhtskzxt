@@ -1,20 +1,20 @@
 <template>
-  <!-- // 部署配置 -->
+  <!-- // 保护频段 -->
   <div class="PinPuPopor">
     <div class="PinPuPopor-title flexBox">
-      <el-form :inline="true">
+      <el-form :inline="true" >
         <el-form-item
           label="频段范围(MHz)"
           class="inpotBox"
           style="width: 100%"
         >
           <el-input
-            v-model="formAdd.startRate"
+            v-model.number="formAdd.startRate"
             placeholder="起始频段"
           ></el-input>
           ~
           <el-input
-            v-model="formAdd.endRate"
+            v-model.number="formAdd.endRate"
             placeholder="结束频段"
           ></el-input>
         </el-form-item>
@@ -113,8 +113,8 @@ export default {
     //获取列表数据
     getProtectFrequency() {
       let params = {
-        // pageNum: 1,
-        // pageSize: 10,
+        pageNum: 1,
+        pageSize: 10000,
       };
       getProtectFrequency(params)
         .then((res) => {
@@ -166,9 +166,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-::v-deep .el-form--inline {
-  flex-flow: nowrap;
-}
+
 ::v-deep .el-button {
   background-color: #1c735e;
   color: #fff;
@@ -243,5 +241,8 @@ export default {
       }
     }
   }
+}
+.el-form--inline{
+  flex-wrap: nowrap;
 }
 </style>

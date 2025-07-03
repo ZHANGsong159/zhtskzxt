@@ -5,7 +5,7 @@
       <xlghkzxtTittle></xlghkzxtTittle>
     </div>
     <div class="body zIndex10">
-      <!-- <xlghkzxtBodyVue></xlghkzxtBodyVue> -->
+      <xlghkzxtBodyVue></xlghkzxtBodyVue>
     </div>
     <div class="leftPinpu zIndex40">
       <xlghkzxtPinpu @clickPinPu='clickPinPu'></xlghkzxtPinpu>
@@ -28,14 +28,14 @@
             <img src="@/assets/img/组21Right_@1x.png" alt="" />
           </div>
         </template>
-        <components class="componentsStyle" :is='componentsment' :closeDiaLog='closeDiaLog' @closeDialogZD='closeDialogZD'></components>
+        <components :is='componentsment' :closeDiaLog='closeDiaLog' @closeDialogZD='closeDialogZD'></components>
       </el-dialog>
     </div>
   </div>
 </template>
 <script>
 import xlghkzxtTittle from "@/components/xlghkzxtTittle.vue";
-import xlghkzxtBodyVue from "@/components/xlghkzxt/components/xlghkzxtBody.vue";
+import xlghkzxtBodyVue from "@/components/xlghkzxtBody.vue";
 import xlghkzxtPinpu from "@/components/xlghkzxtPinpu.vue";
 import xlghkzxtMenu from "@/components/xlghkzxtMenu.vue";
 import dialogPinPU from "@/components/xlghkzxt/components/dialogPinPU.vue";
@@ -50,6 +50,9 @@ import bspzBOX from '@/components/xlghkzxt/components/dialogBox/bspzBox.vue';
 import bhpdBOX from '@/components/xlghkzxt/components/dialogBox/bhpdBox.vue';
 
 import taskmanageBox from '@/components/xlghkzxt/components/dialogBox/taskmanageBox.vue';
+import plandesignvue from '@/components/xlghkzxt/components/dialogBox/plandesignBox.vue';
+import plandesignTable from '@/components/xlghkzxt/components/dialogBox/plandesignTable.vue';
+
 
 // import {getCmdRate}  from "@/api/api.js"
 export default {
@@ -66,7 +69,9 @@ export default {
     xhgrmbBox,
     bspzBOX,
     bhpdBOX,
-    taskmanageBox
+    taskmanageBox,
+    plandesignvue,
+    plandesignTable
   },
 
   data() {
@@ -92,7 +97,8 @@ export default {
           break;
         case "1-3":
           this.dialogTitle = '方案规划'
-          this.componentsment = 'taskmanageBox'
+          // this.componentsment = 'plandesignvue'
+          this.componentsment = 'plandesignTable'
           this.dialogVisible = true
           break;
         case "1-4":
@@ -161,7 +167,13 @@ export default {
       // this.componentsment = 'dialogPinPU'
       clearInterval(this.$store.state.tiemer)
       
-      this.$router.push('/pinpuindex')
+      
+      this.$router.push({
+        name: 'pingputu',  // 必须用路由的 name（不能用 path）
+        params: {
+          id: id
+        }
+      })
     },
     handleClose(done) {
         done();
@@ -218,11 +230,6 @@ export default {
       transparent 30%,
       #022920e5 80%
     );
-    // background: radial-gradient(#02292000 1%, #022920 100%);
-    // background: radial-gradient( circle at center,
-    //   transparent 0%,
-    //   transparent 40%,
-    //   #022920e5 80%);
     background: #022920e5;
 
 
@@ -243,7 +250,6 @@ export default {
   }
   .buttomMenu{
     width: 1540px;
-    // height: 80px;
     position: absolute;
     bottom:30px;
     left: calc(50% - 770px);
@@ -263,10 +269,5 @@ export default {
 
 
 }
-::v-deep .el-dialog__body{
-  padding:15px 0px !important;
-}
-.componentsStyle{
-  padding: none;
-}
+
 </style>

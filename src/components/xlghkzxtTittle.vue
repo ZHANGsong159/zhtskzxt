@@ -1,6 +1,6 @@
 <template>
   <div class="tittlemain ">
-    <div class="tittleText">训练规划及电磁环境系统</div>
+    <div class="tittleText">训练规划及电磁环境控制分系统</div>
     <div class="tittelImg">
       <img src="@/assets/img/组28_@1x.png" alt="">  
       <div class="currentTime" v-if="bosShow">
@@ -71,7 +71,6 @@ export default {
           type: 'warning'
         }).then(() => {
           postLoginOut().then(res=>{
-            console.log(res,'postLoginOut')
             if(res.data.code==200){
               if (this.$router.currentRoute.path !== '/login') {
                   this.$router.push('/login');

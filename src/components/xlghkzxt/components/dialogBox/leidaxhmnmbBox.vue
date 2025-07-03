@@ -715,30 +715,30 @@ export default {
         padding-bottom: 15px;
         border-bottom: 1px solid #1C735E;
         justify-content: left;
-        .buttonBox{
-            width: 100%;
-            display: flex;
-            justify-content: left;
-            margin-left:30px;
-            .el-button{
-                width: 104px;
-                height: 44px;
-                border-radius: 0;
-                background-color: #1C735E;
-                border: 1px solid #FFFFFF4C;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                .buttonBoxImge{
-                    img{
-                        width: 24px;
-                        height: 24px;
-                        margin-right: 10px;
-                    }
+        // .buttonBox{
+        //     width: 100%;
+        //     display: flex;
+        //     justify-content: left;
+        //     margin-left:30px;
+        //     .el-button{
+        //         width: 104px;
+        //         height: 44px;
+        //         border-radius: 0;
+        //         background-color: #1C735E;
+        //         border: 1px solid #FFFFFF4C;
+        //         display: flex;
+        //         justify-content: center;
+        //         align-items: center;
+        //         .buttonBoxImge{
+        //             img{
+        //                 width: 24px;
+        //                 height: 24px;
+        //                 margin-right: 10px;
+        //             }
 
-                }
-            }
-        }
+        //         }
+        //     }
+        // }
     }
 }
 
@@ -749,9 +749,9 @@ export default {
     // width: 320px;
 }
 
-::v-deep .el-dialog__body{
-    padding: 0 !important;
-}
+// ::v-deep .el-dialog__body{
+//     padding: 0 !important;
+// }
 .XHMNinputBox{
     width: 75%;
     padding: 20px 20px;

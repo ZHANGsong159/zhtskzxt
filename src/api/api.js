@@ -176,3 +176,62 @@ export function deleteListAPI(params){
 }
 
 
+
+//任务管理
+export function getRenWu(params){ 
+    return http.get(`${resquest}/sys-task`,params)
+}
+
+export function addRenWu(params){ 
+    return http.post(`${resquest}/sys-task`,params)
+}
+
+
+
+//规划方案
+export function getGuiHua(params){ 
+    return http.get(`${resquest}/sys-plan`,params)
+}
+export function addGuiHua(params){ 
+    return http.post(`${resquest}/sys-plan`,params)
+}
+
+export function deleteGuiHua(params){ 
+    return http.delete(`${resquest}/sys-plan/${params}`)
+}
+
+export function getGuiHuaxiafa(params){ 
+    return http.get(`${resquest}/sys-plan/issue/${params}`)
+}
+
+
+
+//规划设备任务
+export function addGuiHuaShebei(params){ 
+    return http.post(`${resquest}/sys-plan-device-task`,params)
+}
+
+export function deleteGuiHuaShebei(params){ 
+    return http.delete(`${resquest}/sys-plan-device-task/${params}`)
+}
+
+export function getGuiHuaListShebei(id,pageNum,pageSize){
+    return http.get(`${resquest}/sys-plan-device-task?deviceId=${id}&pageSize=${pageSize}&pageNum=${pageNum}`)
+}
+
+export function getGuiHuaListShebeiByid(params){ 
+    return http.get(`${resquest}/sys-plan-device-task/${params}`)
+}
+
+
+export function putGuihuaYStime(params){ 
+    return http.put(`${resquest}/sys-plan-device-task/delayed`,params)
+}
+
+
+
+
+
+
+
+

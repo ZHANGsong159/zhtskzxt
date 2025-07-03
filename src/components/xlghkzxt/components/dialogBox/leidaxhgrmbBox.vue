@@ -522,7 +522,7 @@ export default {
     }
 }        
 ::v-deep .el-form-item__label{
-        width: 100px !important;
+        // width: 100px !important;
 }
  ::v-deep .el-form-item{
     width: 45%;
@@ -551,9 +551,6 @@ export default {
     ::v-deep .el-form-item__content::after{
         width: 0px;
     }
-}
-::v-deep .el-radio__label{
-    color: #fff;
 }
 ::v-deep .el-form-item .el-form-item__content{
     width: auto !important;

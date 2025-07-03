@@ -27,12 +27,6 @@ service.interceptors.request.use(config => {
      'Content-Type':'application/json', //配置请求头
      'Authorization':token
    }
-   //如有需要：注意使用token的时候需要引入cookie方法或者用本地localStorage等方法，推荐js-cookie
-   //const token = getCookie('名称');//这里取token之前，你肯定需要先拿到token,存一下
-   //if(token){ 
-      //config.params = {'token':token} //如果要求携带在参数中
-      //config.headers.token= token; //如果要求携带在请求头中
-    //}
   return config
 }, error => { 
    
@@ -41,11 +35,12 @@ service.interceptors.request.use(config => {
 
 // 3.响应拦截器
 service.interceptors.response.use(response => { 
+  if (!response.data) {
+    return Promise.reject(new Error('接口返回数据为空'));
+  }
    
   //接收到响应数据并成功后的一些共有的处理，关闭loading等
-  // console.log(response,'接收到响应数据');
   if(response.data.code==4000){
-    // vm.$message.error(response.data.message)
     if (vm && vm.$message) {
       vm.$message.error(response.data.message)
     } else {
@@ -57,6 +52,8 @@ service.interceptors.response.use(response => {
     if (vm && vm.$router) {
         if (vm.$router.currentRoute.path != '/login') {
             vm.$message.error(response.data.message)
+            console.log('Vue instance not set in request.js');
+            
             vm.$router.push('/login');
         }
     } else {
@@ -68,6 +65,16 @@ service.interceptors.response.use(response => {
   
   return response
 }, error => { 
+  console.log(error,'error.response');
+  
+  if (!error.response) {
+    // 无响应情况（网络错误/请求超时）
+    // console.log(error,'无响应情况（网络错误/请求超时）');
+    // return Promise.reject({
+    //   code: 'NETWORK_ERROR',
+    //   message: '网络连接异常，请检查网络设置'
+    // })
+  }
    
    /***** 接收到异常响应的处理开始 *****/
   if (error && error.response) { 
@@ -113,14 +120,13 @@ service.interceptors.response.use(response => {
       case 505:
         error.message = 'http版本不支持该请求'
         break;
-      // case 4000:
-      //   // error.message = 'http版本不支持该请求'
-      //   this.$message.error(error.message)
-      //   break;
+      case 4000:
+        // error.message = 'http版本不支持该请求'
+        this.$message.error(error.message)
+        break;
       default:
-        error.message = `连接错误${ 
-     error.response.status}`
-    }
+        error.message = `连接错误${ error.response.status}`
+      }
   } else { 
    
     // 超时处理

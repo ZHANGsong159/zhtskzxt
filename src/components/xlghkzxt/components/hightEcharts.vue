@@ -2,7 +2,7 @@
   <div class="pingPuBox">
     <div class="main">
       <!-- 频谱图 -->
-      <div class="linecharts" :id="shebeiID"></div>
+      <div class="linecharts" :id="shebeiID+'pinpu'"></div>
       <div class="neirong">
         <!--图例-->
         <div class="legend">
@@ -158,7 +158,7 @@ export default {
       this.options.series[0].data = data;
       this.options.xAxis.min=min;
       this.options.xAxis.max=max;
-      Highcharts.chart(this.shebeiID, this.options);
+      Highcharts.chart(this.shebeiID+'pinpu', this.options);
     },
     // 创建颜色库
     setColormap() {

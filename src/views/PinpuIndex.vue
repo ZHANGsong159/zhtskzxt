@@ -7,8 +7,6 @@
     <div class="body">
         <pinpuBOX></pinpuBOX>
     </div>
-    
-    
   </div>
 </template>
 <script>
@@ -132,8 +130,5 @@ export default {
   text-align: center;
 
 
-}
-::v-deep .el-dialog__body{
-  padding:15px 0px !important;
 }
 </style>

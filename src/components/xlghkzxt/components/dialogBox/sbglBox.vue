@@ -34,6 +34,7 @@
                     label="设备IP"
                     align='center'
                     width="180">
+                    
                 </el-table-column>
                 <el-table-column
                     prop="systemType"
@@ -103,15 +104,16 @@
       :title="dialogTitle"
       :visible.sync="innerVisible"
       append-to-body>
-        <el-form  :model="formAdd" :inline="true">
+        <el-form  :model="formAdd"  :inline="true" style="flex-flow:row warp;padding:10px 20px">
             <el-form-item label="设备编号">
-                <el-input v-model="formAdd.deviceCode" placeholder="设备编号"></el-input>
+                <el-input v-model="formAdd.deviceCode" maxlength="15" placeholder="设备编号"></el-input>
             </el-form-item>
             <el-form-item label="设备名称">
-                <el-input v-model="formAdd.deviceName" placeholder="设备名称"></el-input>
+                <el-input v-model="formAdd.deviceName" maxlength="15" placeholder="设备名称"></el-input>
             </el-form-item>
-            <el-form-item label="设备IP">
-                <el-input v-model="formAdd.deviceIp" placeholder="设备IP"></el-input>
+            <el-form-item label="设备IP" prop="deviceIp">
+                <!-- <el-input v-model="formAdd.deviceIp" placeholder="设备IP"></el-input> -->
+                <ip-inputbox v-model="formAdd.deviceIp"></ip-inputbox>
             </el-form-item>
             <el-form-item label="所属系统" >
                 <el-select v-model="formAdd.systemType" placeholder="请选择所属系统">
@@ -124,7 +126,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="是否部署" >
-                <el-radio-group v-model="formAdd.isDeploy" style="padding-left:15px;">
+                <el-radio-group v-model="formAdd.isDeploy" class="radioBox" >
                     <el-radio :label="0">未部署</el-radio>
                     <el-radio :label="1">已部署</el-radio>
                 </el-radio-group>
@@ -151,6 +153,7 @@
 </template>
 <script>
 import '@/assets/css/mbBox.less';
+import IpInputbox from '@/components/chartBox/IPinputbox.vue'
 import { postAddShebei,getShebeiList,deleteShebeiById,putShebeiUpdata } from '@/api/api'
 export default {
     props: {
@@ -159,7 +162,20 @@ export default {
         default: false,
         }
     },
+    components: {
+        IpInputbox
+    },
     data() {
+        const validateIP = (rule, value, callback) => {
+            const ipRegex = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
+            if (!value) {
+                callback(new Error('IP地址不能为空'));
+            } else if (!ipRegex.test(value)) {
+                callback(new Error('请输入有效的IP地址'));
+            } else {
+                callback();
+            }
+        };
         return {
             pageNum:1,
             pageSize:10,
@@ -203,11 +219,18 @@ export default {
                 longitude: '',
                 latitude: '',
             },
+
+            rules: {
+                deviceIp: [
+                { required: true, validator: validateIP, trigger: 'blur' }
+                ],
+            },
         
         }
     
     },
     methods:{
+ 
         // 分页
         handleCurrentChange(parame){
             console.log(parame,'parameparameparame');
@@ -222,14 +245,28 @@ export default {
         },
         //列表删除
         handleClickClose(params){
-            deleteShebeiById(params.deviceId).then(res=>{
-                if(res.data.code==200){
-                    this.$message.success('删除成功');
-                    this.getShebeiList()
-                }else{
-                    this.$message.error('删除失败');
-                }
-            })
+            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                deleteShebeiById(params.deviceId).then(res=>{
+                    if(res.data.code==200){
+                        this.$message.success('删除成功');
+                        this.getShebeiList()
+                    }else{
+                        this.$message.error('删除失败');
+                    }
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });          
+            });
+
+
+            
         },
 
 
@@ -268,7 +305,6 @@ export default {
         //更新设备
         UpdataShebei(params){
             putShebeiUpdata(params).then(res=>{
-                console.log(res,'resresresres');
                 if(res.data.code==200){
                     this.innerVisible=false
                     this.getShebeiList()
@@ -308,7 +344,6 @@ export default {
             getShebeiList(params).then(res=>{
                 return res.data
             }) .then(res=>{
-                // console.log(res,'getShebeiListgetShebeiList');
                 if(res.code==200){
                     this.tableData=res.data.list
                     this.total=res.data.total
@@ -328,10 +363,27 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.el-dialog__body{
+    padding:10px 20px;
+}
+::v-deep .el-form--inline{
+    flex-wrap: wrap !important;
+}
  ::v-deep .el-form-item{
     width: 45%;
  }
  ::v-deep .el-form-item__label{
     width: 90px;
+ }
+ ::v-deep .el-form-item__content{
+    width: calc(100% - 90px);
+ }
+ .radioBox{
+    // display:flex;
+    padding-left:15px;
+    // height: 100%;
+
+    // justify-content: center;
+    // align-items: center;
  }
 </style>

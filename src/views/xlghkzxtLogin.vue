@@ -2,13 +2,13 @@
   <div class="loginMain">
     <div class="loginMainLeft">
       <div class="loginLogo">
-        <div class="logoTittle">Vigtel(任意logo)</div>
-        <div class="logoTest">训练规划及电磁环境训练领域解决专家(任意标语)</div>
+        <!-- <div class="logoTittle">Vigtel(任意logo)</div>
+        <div class="logoTest">训练规划及电磁环境训练领域解决专家(任意标语)</div> -->
       </div>
     </div>
     <div class="loginMainRight">
       <div class="content">
-        <div class="contentTittle">训练规划及电磁环境系统</div>
+        <div class="contentTittle">训练规划及电磁环境控制分系统</div>
         <div class="contentBody">
           <div class="contentBodyBox flexBox">
             <el-form
@@ -74,7 +74,6 @@ export default {
         postLogin(this.loginForm).then(res => {
           return res.data
         }).then(res=>{
-          console.log(res,'postLogin')
           if(res.code==200){
             sessionStorage.setItem('userID', res.data.userId)
             sessionStorage.setItem('token', res.data.token)

@@ -2,6 +2,12 @@
     box-sizing: border-box;
     // font-size: 18px;
 }
+body {
+    -webkit-user-select: none; /* Safari/Chrome */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE/Edge */
+    user-select: none;         /* 标准语法 */
+}
 
 body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,
 pre,form,fieldset,legend,button,input,textarea,th,td {
@@ -225,9 +231,31 @@ input[type=number]::-webkit-outer-spin-button {
             color: #fff!important;
         }
     }
+    .el-dialog__body{
+        padding: 15px 0px !important;
+
+    }
+}
+
+
+.el-form-item{
+    margin: 0;
+    background: #FFFFFF26;
+    border:1px solid #FFFFFF4C !important;
+    box-sizing: border-box;
+    padding: 0 10px;
 }
 .el-form-item__label{
+    // width: 150px;
+    font-size: 18px !important;
     color: #fff!important;
+    text-align: center;
+}
+.el-input__inner{
+    color: #fff !important; 
+}
+.el-form-item__content{
+    // width: calc(100% - 150px) !important;
 }
 .el-form-item__content::after{
     width: 2px;
@@ -277,6 +305,7 @@ input[type=number]::-webkit-outer-spin-button {
 .el-table {
     background-color: transparent !important;
     color: #fff;
+    font-size: 16px !important;
 }
 .el-table tr {
     background-color: transparent !important;
@@ -305,12 +334,14 @@ input[type=number]::-webkit-outer-spin-button {
     border-bottom: 1px solid #FFFFFF4C !important;
 }
 
-
-.el-form-item{
-    border:1px solid #FFFFFF4C !important;
-    box-sizing: border-box;
-    padding: 0 10px;
+.el-table::before {
+    height: 0px !important;
 }
+.el-table__cell{
+    padding: 10px 0px !important;
+}
+
+
 
 //自定义按钮
 .buttonBox{
@@ -328,14 +359,18 @@ input[type=number]::-webkit-outer-spin-button {
         justify-content: center;
         align-items: center;
         .buttonBoxImge{
+            font-size: 18px;
             img{
                 width: 24px;
                 height: 24px;
                 margin-right: 10px;
             }
-
         }
     }
+    .buttonQvxiao{
+        background: #FFFFFF4C;
+    }
+    
 }
 .el-button:focus, .el-button:hover {
     background-color: #2CE5BA4c !important;
@@ -359,6 +394,9 @@ input[type=number]::-webkit-outer-spin-button {
 .el-select-dropdown__item.selected{
     color: #fff !important;
 }
+.el-radio__label{
+    color: #fff;
+}
 .el-radio__input.is-checked+.el-radio__label{
     color: #fff !important;
 }
@@ -370,9 +408,7 @@ input[type=number]::-webkit-outer-spin-button {
 .el-button--text{
     color: #2CE5BA !important;
 }
-.el-table::before {
-    height: 0px !important;
-}
+
 .el-pagination.is-background .el-pager li:not(.disabled).active{
     background-color: #2CE5BA4c !important;
 }
@@ -383,7 +419,6 @@ input[type=number]::-webkit-outer-spin-button {
 }
 .el-pagination.is-background .el-pager li:not(.disabled):hover{
     color: #2CE5BA !important;
-
 }
 
 
@@ -395,22 +430,20 @@ input[type=number]::-webkit-outer-spin-button {
     margin-bottom: 20px !important;
     background: transparent;
     .el-collapse-item__header{
-        background: #ffffff26;
+        background: #ffffff33;
         color: #fff;
         justify-content: space-between !important;
-        border: 1px solid #FFFFFF4C;
+        border: none;
     }
     .el-collapse-item__content{
         padding: 10px 10px;
-        border: 1px solid #FFFFFF4C;
-
     }
 }
 .el-collapse-item__arrow{
     display: none !important;
 }
 .el-collapse-item__wrap{
-    background: #ffffff26 !important;
+    background: transparent !important;
     border-bottom: 0px;
 }
 
@@ -454,6 +487,7 @@ input[type=number]::-webkit-outer-spin-button {
 .el-button--small{
     background-color: transparent !important;
     color: #fff ;
+    font-size: 16px !important;
 }
 .el-button--primary{
     background-color: #1C735E !important;

@@ -9,7 +9,7 @@
                     </div>
                 </div>
                 <div class="line"></div>
-                    <el-form label-width="170px" :inline="true">
+                    <el-form  :inline="true">
                         <el-form-item label="起始频率(MHz)" class="inpotBox">
                             <el-input v-model.number="fxpdFrom.startRate" placeholder="请输入"></el-input>
                         </el-form-item>
@@ -96,8 +96,8 @@ export default {
                 {title:'2',content:'',id:'02',value:'200'},
             ],
             SMfbl: [
-                { value: 0, label: '1000K' },
-                { value: 1, label: '2000K' },
+                // { value: 0, label: '1000K' },
+                // { value: 1, label: '2000K' },
                 { value: 3, label: '12800K' },
                 { value: 4, label: '6400K' },
                 { value: 5, label: '3200K' },
@@ -133,6 +133,8 @@ export default {
             }else{
                 this.allFBL=0
             }
+            let deviceId = this.$route.params.id; 
+            params.deviceId=deviceId
             getCmdRate(params).then(res => {
                 return res.data
             }).then(res=>{
@@ -271,7 +273,6 @@ export default {
 
 }
 .inpotBox{
-    display: flex;
     background-color: #FFFFFF26;
     margin: 5px 0px;
 }
@@ -325,6 +326,12 @@ export default {
         align-items: flex-start;
         text-align: left;
     }
+}
+::v-deep .el-form-item__label{
+    width: 135px;
+}
+::v-deep .el-form-item__content{
+    width: calc(100% - 140px);
 }
 
 </style>

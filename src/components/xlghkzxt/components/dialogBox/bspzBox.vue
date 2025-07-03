@@ -24,7 +24,7 @@
                             {{item.deviceName}}
                         <!-- 模拟对抗设备1 -->
                         </div>
-                        <el-form  :model="formAdd" :inline="true"   :ref="`form${index}`">
+                        <el-form  :model="formAdd" :inline="true"   :ref="`form${index}`" >
                             <el-form-item 
                             label="经度" 
                             prop="longitude"     
@@ -82,15 +82,12 @@ export default {
                 latitude:'',
             },
         }
-    
     },
     methods:{
         getFormattedTime() {
             return moment().format('YYYY-MM-DD HH:mm:ss');
         },
         selectDeviceChange(key){
-            
-            // console.log(key,now,'key');
             this.UpdataDeployNote(key)
             
 
@@ -100,30 +97,7 @@ export default {
         },
 
         async confirm(){
-            // let arr=this.tableData.map((item, index) => {
-                // console.log(`form${index}`,'tableData');
-                // return this.$refs[`form${index}`][0].validate((valid)=>{
-                //     console.log(valid,item,'valid');
-                    
-                // })
-
-                // return this.$refs[`form${index}`][0].validate()
-
-            // })
-            // console.log(arr,'arr');
-            
-                // console.log(validations ,'tableData');
-
-            // try {
-            //     await Promise.all(validations)
-            //     // 所有动态表单验证通过
-            // } catch (error) {
-            //     console.log('动态表单验证失败', error)
-            // }
-            // console.log(this.tableData,'saveLngLatsaveLngLat');
             this.saveLngLat(this.tableData)
-
-
         },
         generateRandomId() {
             return Math.floor(Math.random() * 90000000000) + 10000000000;
@@ -133,7 +107,6 @@ export default {
             getShebeiList().then(res=>{
                 return res.data
             }) .then(res=>{
-                // console.log(res,'getShebeiListgetShebeiList');
                 if(res.code==200){
                     this.tableData=res.data.list
                 }
@@ -144,8 +117,10 @@ export default {
             getDeployNote('deploy').then(res=>{
                 return res.data
             }).then(res=>{
-                console.log(res,'getBuShugetBuShu');
-                this.selectedDeviceBSFA=res.data.configValue
+                if(res.code==200){
+                    console.log();
+                    this.selectedDeviceBSFA=res.data.configValue
+                }
 
             })
         },
@@ -163,7 +138,6 @@ export default {
             UpdataDeployNote(params).then(res=>{
                 return res.data
             }).then(res=>{
-                console.log(res,'UpdataDeployNoteUpdataDeployNote');
                 if(res.code==200){
                     this.$message.success('部署方式修改成功')
                 }
@@ -226,7 +200,6 @@ export default {
             flex-flow: column;
             justify-content: space-between;
             .mndksbList-body{
-
                 .mndksbList{
                     width: 100%;
                     display: flex;
@@ -234,7 +207,6 @@ export default {
                     justify-content: space-between;
                     box-sizing: border-box;
                     border-top: 1px solid #1C735E;
-                    // border-bottom: 1px solid #1C735E;
                     padding: 20px 20px;
                     .ListBox{
                         width: 48%;
@@ -243,6 +215,7 @@ export default {
                          align-items: center;
                          margin-bottom: 20px;
                         .listbox-title{
+                            width: 150px;
                             font-size: 16px;
                             color: #fff;
                         }
@@ -256,9 +229,17 @@ export default {
                 align-items: center;
                 padding-right: 20px;
                 border-top: 1px solid #1C735E;
-
             }
         }
     }
+}
+.el-form--inline{
+  flex-wrap: nowrap;
+}
+::v-deep .el-form-item__label{ 
+    width: 100px;
+}
+::v-deep .el-form-item__content{
+    width: calc(100% - 100px);
 }
 </style>

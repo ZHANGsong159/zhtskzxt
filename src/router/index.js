@@ -19,16 +19,16 @@ const routes = [
   },
   {
     path: '/xlghkzxt',
-    name: '训练规划与电磁环境控制系统',
+    name: '训练规划及电磁环境控制分系统',
     component: () => import('@/views/XlghkzxtIndex.vue'),
     meta: {
       isAuth: true,  // 需要登录
-      title: '训练规划与电磁环境控制系统'     // 页面标题
+      title: '训练规划及电磁环境控制分系统'     // 页面标题
     },
   },
   {
-    path: '/pinpuindex',
-    name: '频谱图',
+    path: '/pinpuindex/:id',
+    name: 'pingputu',
     component: () => import('@/views/PinpuIndex.vue'),
     meta: {
       isAuth: true,  // 需要登录
@@ -60,6 +60,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   //如果路由需要跳转
   // console.log(to,'tototo');
+  document.title = to.meta.title || '训练规划系统';
   
   if (to.meta.isAuth) {
       //判断 如果school本地存储是qinghuadaxue的时候，可以进去
@@ -67,7 +68,9 @@ router.beforeEach((to, from, next) => {
           next()  //放行
       } else {
           // alert('登录信息失效，请重新登录。')
-          router.push('/login')
+          if(from.path!='/login'){
+            router.push('/login')
+          }
       }
   } else {
       // 否则，放行

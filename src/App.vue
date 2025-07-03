@@ -3,6 +3,7 @@
     <router-view/>
   </div>
 </template>
+
 <script>
 import WebSocketService from './utils/websocket.js';
 import {getCmdRate}  from "@/api/api.js"
