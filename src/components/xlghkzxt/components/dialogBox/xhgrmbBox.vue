@@ -67,7 +67,7 @@
                         align='center'
                         width="150">
                         <template slot-scope="scope">
-                            <el-button  type="text" size="small" class="buttonStyle">复制</el-button>
+                            <el-button @click="handleClickCopy(scope.row)" type="text" size="small" class="buttonStyle">复制</el-button>
                             <el-button  @click="handleClickUpdata(scope.row)" type="text" size="small" class="buttonStyle">修改</el-button>
                             <el-button  @click="handleClickDelete(scope.row)" type="text" size="small" class="buttonStyle deleteStyle">删除</el-button>
                         </template>
@@ -98,7 +98,7 @@
             <el-form-item label="生效时间(秒)">
                 <el-input 
                 v-model="formAdd.time"
-                type="number"
+                @blur="handleBlur(formAdd.time)"
                 oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>3600)value=3600;if(value<0)value=null"
                 placeholder="范围0~3600"></el-input>
             </el-form-item>
@@ -124,8 +124,8 @@
             </el-form-item>
             <el-form-item label="发射增益">
                 <el-input 
-                v-model="formAdd.disturbDto.param.gain" 
-                type="number"
+                v-model.number="formAdd.disturbDto.param.gain" 
+                @blur="handleBlur(formAdd.disturbDto.param.gain)"
                 oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>63)value=63;if(value<0  )value=null"
                 placeholder="范围0~63"></el-input>
             </el-form-item>
@@ -137,7 +137,6 @@
                 @blur="handleTimeInput(formAdd.disturbDto.param.disturbRate,maxvalueGRPL,minvalueGRPL,'grpl')"
                 placeholder="请输入干扰频率"></el-input>
             </el-form-item>
-
             <el-form-item label="干扰带宽" v-if='formAdd.disturbDto.disturbStyle==0 || formAdd.disturbDto.disturbStyle==1'>
                 <el-select v-model="formAdd.disturbDto.param.disturbBand"  placeholder="请选择">
                     <el-option
@@ -207,7 +206,6 @@ export default {
         return {
             minvalueGRPL:0,
             maxvalueGRPL:100,
-
             zanshigezhi:false,
             pageNum:1,
             pageSize:10,
@@ -220,9 +218,7 @@ export default {
             grmbFrom: {
                 zzpl:'',
                 qspl:'',
-                
             },
-            
             GRYSoption: [
                 { value: 0, label: '窄带噪声干扰' },
                 { value: 1, label: '宽带噪声干扰' },
@@ -267,11 +263,6 @@ export default {
                 { value: 2, label: '512-2000MHZ' },
                 { value: 3, label: '2000-3000MHZ' },
             ],
-
-
-
-
-
             tableData: [],
             formAdd:{
                     name:'',
@@ -291,9 +282,14 @@ export default {
                     }
             }
         }
-    
     },
     methods:{
+        handleBlur(param) {
+            if (isNaN(param)) {
+                param = null; // 或设置为默认值
+                this.$message.error('请输入有效数字！');
+            }
+        },
         //  干扰频率范围change
         GRPLchange(key){
             switch(key){
@@ -320,7 +316,6 @@ export default {
         },
         //输入框数字限制
         handleTimeInput(value,maxvalue,minvalue,key) {
-            console.log(value,'handleTimeInputhandleTimeInputhandleTimeInput');
             let num = value.replace(/\D/g, '');
             if (num > maxvalue) num = maxvalue;
             if (num < minvalue) num = minvalue;
@@ -347,6 +342,13 @@ export default {
             
 
         },
+        handleClickCopy(params){
+            this.dialogTitle='模版复制'
+            this.formAdd=params
+            this.formAdd.id=''
+            this.innerVisible=true
+
+        },
         handleClickUpdata(params){
             this.dialogTitle='模版更新'
             this.formAdd=params
@@ -368,29 +370,18 @@ export default {
                     message: '已取消删除'
                 });          
             });
-
         },
         //列表删除
         handleClickClose(params){
             console.log(params);
             
         },
-
-
-        
         confirm(){
-            if(this.dialogTitle=='干扰模版新增'){
-                // this.formAdd.deviceId=this.generateRandomId()
-                console.log(this.formAdd,'formAddformAddformAdd新增设备');
-                
-     
-                this.Addgairao(this.formAdd)
-            }else if(this.dialogTitle=='模版更新'){
+            if(this.dialogTitle=='模版更新'){
                 this.Updataganrao(this.formAdd)
-    
+            }else{
+                this.Addgairao(this.formAdd)
             }
-            
-            
         },
         // 新增
         Addgairao(foram){
@@ -475,6 +466,10 @@ export default {
                     this.total=res.data.total
                 }
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
     },
     mounted(){

@@ -1,7 +1,6 @@
 <template>
 <div class="PinPuPopor">
     <div class="PinPuPopor-title flexBox">
-       
         <div class="buttonBox">
             <el-button type="primary" @click="addMNMB">
                 <div class="buttonBoxImge flexBox">
@@ -50,14 +49,12 @@
                     align='center'
                     >
                     <template slot-scope="scope">
-                        <el-button  type="text" size="small" class="buttonStyle">复制</el-button>
+                        <el-button  @click="handleClickCopy(scope.row)" type="text" size="small" class="buttonStyle">复制</el-button>
                         <el-button  @click="handleClickUpdata(scope.row)" type="text" size="small" class="buttonStyle">修改</el-button>
                         <el-button  @click="handleClickDelete(scope.row)" type="text" size="small" class="buttonStyle deleteStyle">删除</el-button>
                     </template>
                 </el-table-column>
                 </el-table>
-
-
             </template>
             <el-pagination
             style="margin-top: 20px;"
@@ -112,7 +109,7 @@
                 <div class="XHMNBoxleftmain-left">{{index+1}}</div>
                 <div class="XHMNBoxleftmain-right">
                     <div class="XHMNBoxleftmain-right-top">信号类型：{{item.signalType==0?'定频':item.signalType==1?'跳频':'扩频'}}  调制方式：{{TZFFChange(item.param.modStyle)}}</div>
-                    <div class="XHMNBoxleftmain-right-bottom">信号频率：{{item.param.signalRate}}MHZ  码元速率：{{item.param.codeRate}}KHZ</div>
+                    <div class="XHMNBoxleftmain-right-bottom">信号频率：{{item.param.signalRate}}MHZ  码元速率：{{setMYSL(item.param.codeRate)}}KHZ</div>
                 </div>
                 <i class="el-icon-close closeButton" @click.stop="deleteDataBoxright(item,index)"></i>
             </div>
@@ -283,8 +280,6 @@ export default {
                     {value:2,label:'512KHz'},
                     {value:1,label:'1024KHz'},
                     {value:0,label:'2048KHz'},
-
-
                 ],
             },
             TPoption:{
@@ -333,9 +328,28 @@ export default {
         }
     },
     methods:{
-        handleTimeInput(value, maxvalue, minvalue, key) {
-            console.log(value, maxvalue, minvalue, key,'handleTimeInput');
+        //变换码元速率
+        setMYSL(key){
+            let label=''
+            let alldata=[
+                    {value:7,label:'16KHz'},
+                    {value:6,label:'32KHz'},
+                    {value:5,label:'64KHz'},
+                    {value:4,label:'128KHz'},
+                    {value:3,label:'256KHz'},
+                    {value:2,label:'512KHz'},
+                    {value:1,label:'1024KHz'},
+                    {value:0,label:'2048KHz'},
+            ]
             
+            alldata.forEach(item=>{
+                if(item.value==key){
+                   label=item.label
+                }
+            })
+            return label
+        },
+        handleTimeInput(value, maxvalue, minvalue, key) {
             // 修改正则表达式，允许小数点
             let num = String(value).replace(/[^\d.]/g, ''); // 只保留数字和小数点
             
@@ -416,34 +430,13 @@ export default {
             this.selectedIndex=index
             this.formAdd=JSON.parse(JSON.stringify(params)) 
             this.Boxright=true
-            console.log(params,'BoxleftClickBoxleftClick');
             this.optionSet(params.signalType)
             if(params.signalType===1){
                 this.changPL()
             }
         },
-        saveXinData(save){
-            if(this.topForm.id ==''){
-                let param={
-                    name:this.topForm.name,
-                    time:this.topForm.time,
-                    gain:this.gain
-                   
-                }
-               
-                postTongKangMN(param).then(res=>{ 
-                    return res.data
-                }).then(res=>{
-                    if(res.code==200){
-                        this.$message.success('保存成功')
-                        this.topForm.id=res.data.id
-                        this.getTongKangMN()
-                    }  
-                })
-            }else{
-                if(this.signalType === ''){
-                    this.$message.error('请选择信号类型')
-                }else{ 
+        //添加模拟数据模版
+        indculdeFuntion(save){
                     if(this.selectedIndex===''){
                         this.formAdd.signalType=this.signalType
                         this.formAdd.gain=this.gain
@@ -462,7 +455,13 @@ export default {
                         this.BoxleftList[this.selectedIndex].gain =this.gain
                         this.topForm.simulateList=this.BoxleftList 
                         this.selectedIndex = ''
+                        console.log(this.topForm.simulateList,'this.topForm.simulateList[0].signalType');
+
                     }
+
+
+                    console.log(this.topForm.simulateList,'this.topForm.simulateList[0].signalType');
+                    
                     if(this.topForm.simulateList[0].signalType!=0){
                         if(this.topForm.simulateList.length>1){
                             this.$message.error('该信号类型不允许存在多个信号')
@@ -472,15 +471,43 @@ export default {
                         }
                     }else{
                         this.AddTongKangMN(this.topForm,save)                    
-
                     }
-                    
-   
+
+        },
+        //保存按钮
+        saveXinData(save){
+            if(this.topForm.id ==''){
+                if(this.dialogTitle=='新增模版'){
+                    let param={
+                        name:this.topForm.name,
+                        time:this.topForm.time,
+                        gain:this.gain
+                    }
+                    postTongKangMN(param).then(res=>{ 
+                        return res.data
+                    }).then(res=>{
+                        if(res.code==200){
+                            this.$message.success('保存成功')
+                            this.topForm.id=res.data.id
+                            this.getTongKangMN()
+                        }  
+                    })
+                    .catch(error => {
+                        console.error('请求失败:', error); // 避免 Uncaught Error
+                        this.$message.error('网络错误，请求失败');
+                    });
+                }else{
+                    this.indculdeFuntion(save)
+                }
+            }else{
+                if(this.signalType === ''){
+                    this.$message.error('请选择信号类型')
+                }else{ 
+                    this.indculdeFuntion(save)
                 }
             }
         },
         async addXinHao(){
-
             if(this.topForm.id==''){
                 this.$message.error('请先保存信息')
             }else{ 
@@ -508,10 +535,7 @@ export default {
                         this.selectedIndex=''
                     }
                 }
-                
-                
             }
-            
         },
 
         //删除数据条数
@@ -527,6 +551,29 @@ export default {
             this.getTongKangMN()
             
 
+        },
+
+         handleClickCopy(params){
+            let gaindata
+            if(params.param){
+                gaindata=params.param
+                if(gaindata.length>0){
+                    this.gain=JSON.parse(gaindata)[0].gain
+                }
+            }
+            this.topForm.name=params.name
+            this.topForm.time=params.time
+            this.topForm.id ==''
+            this.Boxright=false
+            if(JSON.parse(params.param)){
+                this.signalType=JSON.parse(params.param)[0].signalType
+            }else{
+                this.signalType=''
+            }
+            if(params.param) this.BoxleftList=JSON.parse(params.param)
+            this.dialogTitle='模版复制'
+            this.selectedIndex=''
+            this.innerVisible=true
         },
         handleClickUpdata(params){
             console.log(params,'paramsparamsparams');
@@ -545,6 +592,7 @@ export default {
 
             if(JSON.parse(params.param)){
                 this.signalType=JSON.parse(params.param)[0].signalType
+                
             }else{
                 this.signalType=''
             }
@@ -572,16 +620,15 @@ export default {
                             break;
                         case 'save':
                             this.Boxright=false
-
                             this.$message.success('保存成功')
                             break;
                         case 'delete':
                             this.Boxright=false
-
                             this.$message.success('删除成功')
                             break;
                     }
                 }else{
+                    this.BoxleftList.splice(1)
                     this.$message.error(res.data.message)
                 }
             })
@@ -602,10 +649,11 @@ export default {
 
 
         addMNMB(){
+            this.dialogTitle='新增模版'
             this.topForm={
+                id:'',
                 name:'',
                 time:'',
-                id:'',
                 simulateList:[],
             }
             this.formAdd={
@@ -615,19 +663,11 @@ export default {
                     signalRate:'',
                     codeRate:'',
                 },
-                // time:'',
             },
             this.BoxleftList=[]
             this.innerVisible=true
 
         },
-
-
-        generateRandomId() {
-            return Math.floor(Math.random() * 90000000000) + 10000000000;
-        },
-
-
         //获取列表数据
         getTongKangMN(){
         let params={
@@ -659,7 +699,6 @@ export default {
                     this.$message.error('开始频率差值大于20MHz')
                 }
                 this.changPL()
-                
             }else{
                 this.$message.error('请先填写开始频率')
             }

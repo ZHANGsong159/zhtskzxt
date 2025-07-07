@@ -186,9 +186,12 @@ export default {
             }).then(res=>{
                 if(res.code==200){
                     console.log();
-
                 }
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
         //发送频谱请求接口
         async getCmdRateFun(params){
@@ -208,6 +211,10 @@ export default {
 
                 }
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
         clickQJSM(parame){
             let parameFrom={}

@@ -125,7 +125,7 @@
                     <el-option v-for="(item,index) in SBLXoption " :label="item.label" :value="item.value" :key='index'></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="是否部署" >
+            <!-- <el-form-item label="是否部署" >
                 <el-radio-group v-model="formAdd.isDeploy" class="radioBox" >
                     <el-radio :label="0">未部署</el-radio>
                     <el-radio :label="1">已部署</el-radio>
@@ -141,7 +141,7 @@
             </el-form-item>
             <el-form-item label="纬度">
                 <el-input v-model="formAdd.latitude" placeholder="纬度"></el-input>
-            </el-form-item>
+            </el-form-item> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="innerVisible = false">取 消</el-button>
@@ -214,10 +214,10 @@ export default {
                 deviceIp: '',
                 systemType: '',
                 deviceType: '',
-                isDeploy: '',
-                state:'',
-                longitude: '',
-                latitude: '',
+                // isDeploy: '',
+                // state:'',
+                // longitude: '',
+                // latitude: '',
             },
 
             rules: {
@@ -324,10 +324,12 @@ export default {
                 deviceIp: '',
                 systemType: '',
                 deviceType: '',
-                isDeploy: '',
-                state:'',
-                longitude: '',
-                latitude: '',
+
+
+                // isDeploy: '',
+                // state:'',
+                // longitude: '',
+                // latitude: '',
             }
             this.innerVisible=true
 

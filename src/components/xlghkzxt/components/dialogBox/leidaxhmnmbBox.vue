@@ -442,6 +442,10 @@ export default {
                         this.getTongKangMN()
                     }  
                 })
+                .catch(error => {
+                    console.error('请求失败:', error); // 避免 Uncaught Error
+                    this.$message.error('网络错误，请求失败');
+                });
             }else{
                 if(this.signalType === ''){
                     this.$message.error('请选择信号类型')

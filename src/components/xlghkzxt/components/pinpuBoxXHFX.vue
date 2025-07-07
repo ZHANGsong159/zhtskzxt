@@ -140,6 +140,10 @@ export default {
             }).then(res=>{
                 console.log(res,'getCmdRategetCmdRate');
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
         StartFXFD(){
             this.getCmdRateFun(this.fxpdFrom)

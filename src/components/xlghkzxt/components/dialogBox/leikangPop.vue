@@ -104,6 +104,10 @@ export default {
                     this.tableData = res.data.list
                 }
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
         getShebeiList(){
             getShebeiList().then(res=>{
@@ -127,6 +131,10 @@ export default {
 
                 }
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         }
     },
     

@@ -5,6 +5,7 @@ import store from './store'
 import './assets/css/global.less' // 引入全局样式文件
 import './assets/fonts/font.css'
 import request from './utils/request'
+// import { Message } from 'element-ui'; // 添加这行
 
 
 // import 'vue-ip-input/dist/vue-ip-input.css';
@@ -15,7 +16,6 @@ import 'element-ui/lib/theme-chalk/index.css' // 引入样式文件
 Vue.use(ElementUI) // 全局注册组件
 
 Vue.config.productionTip = false
-
 
 request.setVueInstance(new Vue({
   router,

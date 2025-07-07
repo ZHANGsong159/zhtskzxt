@@ -162,9 +162,12 @@ export default {
             }).then(res=>{
                 if(res.code==200){
                     console.log();
-                    
                 }
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
         clickPPSM(){
             this.getCmdRateFun(this.wtfxFrom)

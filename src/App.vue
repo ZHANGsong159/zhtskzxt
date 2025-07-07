@@ -54,6 +54,13 @@ export default {
 
 
 
+          window.addEventListener('unhandledrejection', event => {
+            console.error('未捕获的 Promise 错误:', event.reason);
+            event.preventDefault(); // 阻止浏览器默认报错
+            // 可选：发送错误日志到服务器
+            // logErrorToServer(event.reason);
+          });
+
           // this.socket.on('message', (data) => {
           //   console.log('message');
             

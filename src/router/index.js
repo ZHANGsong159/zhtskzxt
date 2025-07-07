@@ -38,7 +38,7 @@ const routes = [
   {
     path: '/test',
     name: '测试',
-    component: () => import('@/components/xlghkzxt/components/testTIEME.vue'),
+    component: () => import('@/components/xlghkzxt/testTIEME.vue'),
     meta: {
       // isAuth: true,  // 需要登录
       title: '测试'     // 页面标题

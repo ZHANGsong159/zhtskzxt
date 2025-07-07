@@ -31,7 +31,7 @@
                             :rules="[
                             { required: true, message: '请输入经度', trigger: 'blur' },]"
                             >
-                                <el-input v-model="item.longitude" placeholder="请填写"></el-input>
+                                <el-input v-model="item.longitude" placeholder="请填写" :disabled="selectedDeviceBSFA == '0'"></el-input>
                             </el-form-item>
                             <el-form-item 
                             label="纬度" 
@@ -39,7 +39,7 @@
                              :rules="[
                             { required: true, message: '请输入经度', trigger: 'blur' },]"
                             >
-                                <el-input v-model="item.latitude" placeholder="请填写"></el-input>
+                                <el-input v-model="item.latitude" placeholder="请填写" :disabled="selectedDeviceBSFA == '0'"></el-input>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -123,6 +123,10 @@ export default {
                 }
 
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
         //修改部署方式
         UpdataDeployNote(){
@@ -142,6 +146,10 @@ export default {
                     this.$message.success('部署方式修改成功')
                 }
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
         //手动保存经纬度
         saveLngLat(params){
@@ -154,6 +162,10 @@ export default {
                     // this.$message.error('请先填写必要数据')
                 }
             })
+            .catch(error => {
+                console.error('请求失败:', error); // 避免 Uncaught Error
+                this.$message.error('网络错误，请求失败');
+            });
         },
 
     },
