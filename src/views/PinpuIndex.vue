@@ -11,7 +11,7 @@
 </template>
 <script>
 import xlghkzxtTittle from "../components/xlghkzxtTittle.vue";
-import pinpuBOX from "../components/xlghkzxt/components/pinpuBox.vue";
+import pinpuBOX from "../components/xlghkzxt/components/PinPu/pinpuBox.vue";
 
 
 // import {getListAPI}  from "@/api/api.js"

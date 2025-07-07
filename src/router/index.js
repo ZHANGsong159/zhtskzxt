@@ -47,7 +47,7 @@ const routes = [
   {
     path: '/testtime',
     name: 'testtime',
-    component: () => import('@/components/xlghkzxt/components/dialogPinPU.vue'),
+    component: () => import('@/components/xlghkzxt/components/PinPu/dialogPinPU.vue'),
   },
 ]
 

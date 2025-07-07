@@ -87,7 +87,7 @@
     </div>
 </template>
 <script>
-import hightEchartsVue from './hightEcharts.vue';
+import hightEchartsVue from '../PinPu/hightEcharts.vue';
 import {getCmdRate,getCmdRateStop}  from "@/api/api.js"
 
 export default {

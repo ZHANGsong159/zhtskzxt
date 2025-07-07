@@ -324,8 +324,6 @@ export default {
                 deviceIp: '',
                 systemType: '',
                 deviceType: '',
-
-
                 // isDeploy: '',
                 // state:'',
                 // longitude: '',

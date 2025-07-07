@@ -38,20 +38,20 @@ import xlghkzxtTittle from "@/components/xlghkzxtTittle.vue";
 import xlghkzxtBodyVue from "@/components/xlghkzxtBody.vue";
 import xlghkzxtPinpu from "@/components/xlghkzxtPinpu.vue";
 import xlghkzxtMenu from "@/components/xlghkzxtMenu.vue";
-import dialogPinPU from "@/components/xlghkzxt/components/dialogPinPU.vue";
-import sbglBOX  from "@/components/xlghkzxt/components/dialogBox/sbglBox.vue";
-import xhmnmbBox from "@/components/xlghkzxt/components/dialogBox/xhmnmbBox.vue";
-import leidaxhmnmbBox from "@/components/xlghkzxt/components/dialogBox/leidaxhmnmbBox.vue";
+import dialogPinPU from "@/components/xlghkzxt/components/PinPu/dialogPinPU.vue";
+import sbglBOX  from "@/components/xlghkzxt/components/SystemManagement/sbgl/sbglBox.vue";
+import xhmnmbBox from "@/components/xlghkzxt/components/TKmoban/MNmodle/xhmnmbBox.vue";
+import leidaxhmnmbBox from "@/components/xlghkzxt/components/LKmoban/leidaxhmnmbBox.vue";
 
-import xhgrmbBox from '@/components/xlghkzxt/components/dialogBox/xhgrmbBox.vue';
-import leidaxhgrmbBox from '@/components/xlghkzxt/components/dialogBox/leidaxhgrmbBox.vue';
+import xhgrmbBox from '@/components/xlghkzxt/components/TKmoban/RGmodle/xhgrmbBox.vue';
+import leidaxhgrmbBox from '@/components/xlghkzxt/components/LKmoban/leidaxhgrmbBox.vue';
 
-import bspzBOX from '@/components/xlghkzxt/components/dialogBox/bspzBox.vue';
-import bhpdBOX from '@/components/xlghkzxt/components/dialogBox/bhpdBox.vue';
+import bspzBOX from '@/components/xlghkzxt/components/SystemManagement/bspz/bspzBox.vue';
+import bhpdBOX from '@/components/xlghkzxt/components/SystemManagement/bhpd/bhpdBox.vue';
 
-import taskmanageBox from '@/components/xlghkzxt/components/dialogBox/taskmanageBox.vue';
-import plandesignvue from '@/components/xlghkzxt/components/dialogBox/plandesignBox.vue';
-import plandesignTable from '@/components/xlghkzxt/components/dialogBox/plandesignTable.vue';
+import taskmanageBox from '@/components/xlghkzxt/components/Trainingplanning/rwgl/taskmanageBox.vue';
+import plandesignvue from '@/components/xlghkzxt/components/Trainingplanning/fagh/plandesignBox.vue';
+import plandesignTable from '@/components/xlghkzxt/components/Trainingplanning/fagh/plandesignTable.vue';
 
 
 // import {getCmdRate}  from "@/api/api.js"

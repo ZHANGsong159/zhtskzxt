@@ -82,7 +82,7 @@
 </div>
 </template>
 <script>
-import FanganGuihuaPop  from "./fanganguihuapop.vue";
+import FanganGuihuaPop  from "@/components/xlghkzxt/components/Trainingplanning/fagh/fanganguihuapop.vue";
 import tittleBg from "@/components/chartBox/tittleBackground.vue"
 import {getShebeiList,addGuiHua,getGuiHua,getGuiHuaxiafa} from "@/api/api";
 export default {

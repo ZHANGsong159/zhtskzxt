@@ -5,19 +5,19 @@
                 <div class="leftPinpu-title">
                     <div class="leftText">
                         <img src="@/assets/img/组21_@1x.png" alt="" />
-                        <span class="pinputext">分析频段</span>
+                        <span class="pinputext">网台分选</span>
                     </div>
                 </div>
                 <div class="line"></div>
-                    <el-form  :inline="true">
+                    <el-form :inline="true">
                         <el-form-item label="起始频率(MHz)" class="inpotBox">
-                            <el-input v-model.number="fxpdFrom.startRate" placeholder="请输入"></el-input>
+                            <el-input v-model="wtfxFrom.startRate" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="终止频率(MHz)" class="inpotBox">
-                            <el-input v-model.number="fxpdFrom.endRate" placeholder="请输入"></el-input>
+                            <el-input v-model="wtfxFrom.endRate" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="分辨率(KHz)" class="inpotBox">
-                            <el-select v-model="fxpdFrom.resolution" placeholder="请选择">
+                            <el-select v-model="wtfxFrom.resolution" placeholder="请选择">
                                 <el-option
                                     v-for="device in SMfbl"
                                     :key="device.value"
@@ -26,13 +26,28 @@
                                 ></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-button type="primary" class="confimeButton" @click='StartFXFD'><i class="el-icon-check"></i> 确认</el-button>
+                        <div class="butonconfimeButton">
+                            <el-button type="primary" class="confimeButton" @click="clickPPSM">
+                                <img src="@/assets/img/scan-2-line@1x.png" alt="" style="vertical-align:middle;">
+                                频谱扫描
+                            </el-button>
+                            <el-button type="primary" class="confimeButton" >              
+                                <img src="@/assets/img/stackshare-line@1x.png" alt="" style="vertical-align:middle;">
+                                网台分选
+                            </el-button>
+                        </div>
                     </el-form>
             </div>
            
         </div>
         <div class="rightMain">
-            <hightEchartsVue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hightEchartsVue>       
+            <div class="rightMain-top">
+                <hightEchartsVue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hightEchartsVue>       
+            </div>
+            <div class="rightMain-bottom">
+                <hightEchartsVue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hightEchartsVue>       
+
+            </div>
         </div>
         <div class="rightBox">
             <el-collapse v-model="activeNames" @change="handleChange" v-for="(item,index) in collapseList" :key='index'>
@@ -40,38 +55,35 @@
                     <template slot="title">
                         <div class="COLLAPSEtitleleft">
                             <img src="@/assets/img/路径_@1x.png" class="titleicon" alt="">
-                            <span>频率：{{item.value}}MHz</span>
+                            <span>{{item.name}}</span>
                         </div>
 
                         <div class="rightButton">
-                            <el-button type="primary" class="startButton" size="small" v-if="pdsmStart" @click="clickQJSM(item.id)"><i class="el-icon-video-play"></i> 开始</el-button>
-                            <el-button type="primary" class="stopButton" size="small" v-else @click="clickQJSM(item.id)"><i class="el-icon-video-pause"></i> 终止</el-button>
+                            <el-button type="primary" class="startButton" size="small" v-if="pdsmStart" >
+                                 xx跳/秒</el-button>
                         </div>
-
                     </template>
                     <div class="collapseBox">
-                        <el-form label-width="140px" :inline="true">
-                            <el-form-item label="中心频率(MHz)" class="inpotBox">
-                                <el-input v-model="pdsmFrom.qspl" placeholder="请输入"></el-input>
-                            </el-form-item>
-                            <el-form-item label="分析带宽(MHz)" class="inpotBox">
-                                <el-input v-model="pdsmFrom.zzpl" placeholder="请输入"></el-input>
-                    
-                            </el-form-item>
-                        </el-form>
                         <div class="textBox">
+                            <div class="title">频率集(MHz)</div>
+                            <div class="mainbody">
+                                
+                            </div>
                             <div>开始时间：2024-05-16 05:15:11</div>
                             <div>结束时间：2024-12-16 05:15:11</div>
                             <div>调制样式：调制样式调制样式调制样式</div>
                         </div>
                     </div>
+
                 </el-collapse-item>
             </el-collapse>
+
         </div>
+
     </div>
 </template>
 <script>
-import hightEchartsVue from './hightEcharts.vue';
+import hightEchartsVue from '../PinPu/hightEchartsPLFX.vue';
 import {getCmdRate}  from "@/api/api.js"
 export default {
     components: { hightEchartsVue },
@@ -81,19 +93,29 @@ export default {
             PPSMshebeiID:'PPSM',
             pdsmStart:true,
             selectedDeviceQJSM:'',
-            pdsmFrom:{
-                qspl:'',
-                zzpl:'',
+            devicesQJSM: [
+                { label: '1920*1080', value: '1920*1080' },
+                { label: '1280*720', value: '1280*720' },
+                { label: '960*540', value: '960*540' },
+                { label: '640*360', value: '640*360' },
+                { label: '480*270', value: '480*270' },
+            ],
+            qjsmFrom:{
+                fbl:'',
             },
-            fxpdFrom:{
+            wtfxFrom:{
                 scanType:'rateBand',
                 startRate:'',
                 endRate:'',
                 resolution:'',
             },
+            dpksFrom:{
+                zxpl:'',
+                dl:'',
+            },
             collapseList:[
-                {title:'1',content:'',id:'01',value:'122'},
-                {title:'2',content:'',id:'02',value:'200'},
+                {title:'1',content:'',id:'01',value:'122',name:'网台网台1'},
+                {title:'2',content:'',id:'02',value:'200',name:'网台网台2'},
             ],
             SMfbl: [
                 // { value: 0, label: '1000K' },
@@ -126,7 +148,7 @@ export default {
         handleChange(){
 
         },
-         //发送频谱请求接口
+        //发送频谱请求接口
         async getCmdRateFun(params){
             if(params.resolution){
                 this.allFBL=params.resolution
@@ -138,17 +160,17 @@ export default {
             getCmdRate(params).then(res => {
                 return res.data
             }).then(res=>{
-                console.log(res,'getCmdRategetCmdRate');
+                if(res.code==200){
+                    console.log();
+                }
             })
             .catch(error => {
                 console.error('请求失败:', error); // 避免 Uncaught Error
                 this.$message.error('网络错误，请求失败');
             });
         },
-        StartFXFD(){
-            this.getCmdRateFun(this.fxpdFrom)
-        },
-        clickQJSM(){
+        clickPPSM(){
+            this.getCmdRateFun(this.wtfxFrom)
         }
     },
     mounted() {
@@ -169,7 +191,7 @@ export default {
                 })
                 this.$store.state.messages=this.messages
                 this.$store.state.ymessages=this.ymessages
-        }); 
+        });
     },
     watch:{
          allFBL(){
@@ -221,9 +243,7 @@ export default {
                     break;
                 case  16:
                     this.fblbeishu=1.5625
-                    break;
-
-                    
+                    break;  
             }
         }
 
@@ -266,6 +286,13 @@ export default {
         height: 100%;
         padding: 0px 20px;
         box-sizing: border-box;
+
+        .rightMain-top{
+            height: 50%;
+        }
+        .rightMain-bottom{
+            height: 50%;
+        }
     }
     .rightBox{
         width: 20%;
@@ -295,12 +322,18 @@ export default {
 ::v-deep .el-input__inner{
     color: #fff!important;
 }
-.confimeButton{
+.butonconfimeButton{
     width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.confimeButton{
+    width: 49%;
     height: 40px;
     border: 1px solid #1C735E;
     background-color: #1C735E;
     border-radius: 0px;
+
 }
 .COLLAPSEtitleleft{
     display: flex;
@@ -335,7 +368,7 @@ export default {
     width: 135px;
 }
 ::v-deep .el-form-item__content{
-    width: calc(100% - 140px);
+    width: calc(100% - 135px);
 }
 
 </style>

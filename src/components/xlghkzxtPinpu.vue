@@ -32,7 +32,7 @@
   </div>
 </template>
 <script>
-import hightEcharts from "./xlghkzxt/components/hightEcharts.vue";
+import hightEcharts from "./xlghkzxt/components/PinPu/hightEcharts.vue";
 import {getShebeiList} from "@/api/api";
 export default {
   components: {

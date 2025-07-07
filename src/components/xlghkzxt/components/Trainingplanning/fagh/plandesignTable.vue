@@ -68,20 +68,11 @@
     :before-close="handleClose">
         <plandesignvue :updatadata='updatadata' @closeDialogZD='closeDialogZD'></plandesignvue>
     </el-dialog>
-
-
-
-
-
-   
 </div>
-    
 </template>
 <script>
 import '@/assets/css/mbBox.less';
-import plandesignvue from '@/components/xlghkzxt/components/dialogBox/plandesignBox.vue';
-
-
+import plandesignvue from '@/components/xlghkzxt/components/Trainingplanning/fagh/plandesignBox.vue';
 import {getGuiHua,deleteGuiHua} from '@/api/api'
 export default {
     props: {
