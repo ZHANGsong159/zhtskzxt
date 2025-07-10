@@ -129,7 +129,7 @@
                 oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>63)value=63;if(value<0  )value=null"
                 placeholder="范围0~63"></el-input>
             </el-form-item>
-            <el-form-item label="干扰频率">
+            <el-form-item label="干扰频率(MHz)">
                 <el-input 
                 v-model="formAdd.disturbDto.param.disturbRate" 
                 @change="ganraoChange" 
@@ -331,7 +331,6 @@ export default {
             switch(key){
                 case 0:
                     break;
-                    
             }
             
         },
@@ -339,8 +338,6 @@ export default {
         handleCurrentChange(parame){
             this.pageNum=parame
             this.getGanRaoList()
-            
-
         },
         handleClickCopy(params){
             this.dialogTitle='模版复制'
@@ -351,7 +348,7 @@ export default {
         },
         handleClickUpdata(params){
             this.dialogTitle='模版更新'
-            this.formAdd=params
+            this.formAdd=JSON.parse(JSON.stringify(params)) 
             this.innerVisible=true
         },
         handleClickDelete(params){
@@ -392,13 +389,11 @@ export default {
                     this.innerVisible=false
                     this.getGanRaoList()
                     this.$message.success('新增成功')
-
                 }else{
                     this.$message.error('新增失败')
                 }
                 
             })
-
         },
 
         //更新
@@ -536,9 +531,9 @@ export default {
     background: #ffffff26;
  }
  ::v-deep .el-form-item__label{
-    width: 120px !important;
+    width: 150px !important;
  }
  ::v-deep .el-form-item__content{
-    width: calc(100% - 120px) !important;
+    width: calc(100% - 150px) !important;
  }
 </style>

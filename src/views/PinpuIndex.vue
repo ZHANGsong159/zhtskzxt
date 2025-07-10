@@ -14,7 +14,6 @@ import xlghkzxtTittle from "../components/xlghkzxtTittle.vue";
 import pinpuBOX from "../components/xlghkzxt/components/PinPu/pinpuBox.vue";
 
 
-// import {getListAPI}  from "@/api/api.js"
 export default {
   components: {
     xlghkzxtTittle,

@@ -32,7 +32,7 @@
   </div>
 </template>
 <script>
-import hightEcharts from "./xlghkzxt/components/PinPu/hightEcharts.vue";
+import hightEcharts from "@/components/xlghkzxt/components/PinPu/hightEcharts.vue";
 import {getShebeiList} from "@/api/api";
 export default {
   components: {
@@ -55,7 +55,11 @@ export default {
         return res.data
       }).then(res=>{
         if(res.code==200){
-          this.leftPinpu=res.data.list
+          console.log(res.data.list,'getShebeiListgetShebeiList');
+          let TKdatalist=res.data.list.filter(item=>{
+            return item.deviceType=='TK'
+          })
+          this.leftPinpu=TKdatalist
         }
       })
       .catch(error => {

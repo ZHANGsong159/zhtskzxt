@@ -5,7 +5,7 @@
       <xlghkzxtTittle></xlghkzxtTittle>
     </div>
     <div class="body zIndex10">
-      <xlghkzxtBodyVue></xlghkzxtBodyVue>
+      <xlghkzxtBodyVue :saveLngLatMAP='saveLngLatMAP'></xlghkzxtBodyVue>
     </div>
     <div class="leftPinpu zIndex40">
       <xlghkzxtPinpu @clickPinPu='clickPinPu'></xlghkzxtPinpu>
@@ -28,7 +28,7 @@
             <img src="@/assets/img/组21Right_@1x.png" alt="" />
           </div>
         </template>
-        <components :is='componentsment' :closeDiaLog='closeDiaLog' @closeDialogZD='closeDialogZD'></components>
+        <components :is='componentsment' :closeDiaLog='closeDiaLog' @closeDialogZD='closeDialogZD' @saveLngLat='saveLngLat'></components>
       </el-dialog>
     </div>
   </div>
@@ -81,9 +81,14 @@ export default {
       closeDiaLog:false,
       showSheBeiID:false,
       componentsment:'dialogPinPU',
+      saveLngLatMAP:false,
     };
   },
   methods:{
+    saveLngLat(){
+      this.saveLngLatMAP=!this.saveLngLatMAP
+      
+    },
     closeDialogZD(){
       this.dialogVisible = false
     },
@@ -162,12 +167,7 @@ export default {
     },
     clickPinPu(id){
       console.log(this.$store.state.tiemer,id,'clickPinPu');
-      // this.dialogTitle='频谱图'
-      // this.dialogVisible = true;
-      // this.componentsment = 'dialogPinPU'
       clearInterval(this.$store.state.tiemer)
-      
-      
       this.$router.push({
         name: 'pingputu',  // 必须用路由的 name（不能用 path）
         params: {
@@ -184,8 +184,6 @@ export default {
   },
   mounted() {
     // console.log(sbglBOX,'sbglBOXsbglBOX');
-    
-    
   },
 };
 </script>

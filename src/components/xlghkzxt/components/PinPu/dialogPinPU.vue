@@ -90,7 +90,7 @@
     
 </template>
 <script>
-import hightEcharts from "./hightEcharts.vue";
+import hightEcharts from "./hightEchartsPop.vue";
 
 
 export default {

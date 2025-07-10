@@ -134,7 +134,6 @@ export default {
         },
         geRenWu(){
             getRenWu().then(res=>{
-                console.log(res,'getShebeiList');
                 return res.data
             }).then(res=>{
                 if(res.code==200){

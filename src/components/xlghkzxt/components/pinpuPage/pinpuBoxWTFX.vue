@@ -90,7 +90,7 @@ export default {
     data() {
         return {
             activeNames:'',
-            PPSMshebeiID:'PPSM',
+            PPSMshebeiID:'',
             pdsmStart:true,
             selectedDeviceQJSM:'',
             devicesQJSM: [

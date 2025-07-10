@@ -497,7 +497,6 @@ export default {
           return res.data;
         })
         .then((res) => {
-          console.log(res.data.list, "getShebeiList");
           let listdata = res.data.list;
           listdata.forEach((item) => {
             switch (item.deviceType) {

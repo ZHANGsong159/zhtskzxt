@@ -216,10 +216,6 @@
 </template>
 <script>
 import {
-  getShebeiList,
-//   postControlCommand,
-//   postControlCommandPause,
-//   postControlCommandStop,
   postControlCommandSimulation,
   getTongKangMN,
 } from "@/api/api";
@@ -347,7 +343,6 @@ export default {
     },
     created() { 
         this.getTongKangMN();
-        // this.getShebeiList();
     },
     methods:{
       clickMN() {
@@ -474,20 +469,6 @@ export default {
         //       expandSeries: "",
         //     }
         // }
-        },
-        //获取设备列表
-        getShebeiList() {
-            getShebeiList().then((res) => {
-                return res.data;
-                })
-                .then((res) => {
-                if (res.data.list.length > 0) {
-                    this.shebeiList = res.data.list;
-                    this.shebeiList.forEach((item) => {
-                    this.addLabel(item);
-                    });
-                }
-            });
         },
     },
     

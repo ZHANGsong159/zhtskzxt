@@ -127,12 +127,7 @@
 </template>
 <script>
 import {
-  getShebeiList,
-//   postControlCommand,
-//   postControlCommandPause,
-//   postControlCommandStop,
   postControlCommandInterference,
-//   postControlCommandSimulation,
   getTongKangGR,
   getTongKangMN,
 } from "@/api/api";
@@ -204,7 +199,6 @@ export default {
     created() { 
         this.getTongKangGR();
         this.getTongKangMN();
-        // this.getShebeiList();
     },
     watch: {
 
@@ -241,21 +235,6 @@ export default {
                     this.GRoption = res.data.list;
                 }
                 });
-        },
-            //获取设备列表
-        getShebeiList() {
-        getShebeiList()
-            .then((res) => {
-            return res.data;
-            })
-            .then((res) => {
-            if (res.data.list.length > 0) {
-                this.shebeiList = res.data.list;
-                this.shebeiList.forEach((item) => {
-                this.addLabel(item);
-                });
-            }
-            });
         },
         //取消设备信号下发
         commentGRqvxiao() {

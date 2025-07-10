@@ -3,10 +3,6 @@ import http from '../utils/http'
 /** * @parms resquest 请求地址 例如：http://197.82.15.15:8088/request/... * @param '/testIp'代表vue-cil中config，index.js中配置的代理 */
 let resquest = "/fd"
 
-// get请求
-export function getListAPI(params){ 
-    return http.get(`${resquest}/sys-device`,params)
-}
 
 
 // post请求
@@ -21,10 +17,7 @@ export function postLoginOut(params){
     return http.post(`${resquest}/sys/logout`,params)
 }
 
-//设备列表
-export function getShebeiList(params){ 
-    return http.get(`${resquest}/sys-device`,params)
-}
+
 
 
 
@@ -40,6 +33,11 @@ export function getCmdRateStop(params){
 
 
 
+//设备列表
+export function getShebeiList(params){ 
+    return http.get(`${resquest}/sys-device`,params)
+}
+
 // 添加设备
 export function postAddShebei(params){ 
     return http.post(`${resquest}/sys-device`,params)
@@ -54,6 +52,11 @@ export function deleteShebeiById(params){
 //更新设备
 export function putShebeiUpdata(params){ 
     return http.put(`${resquest}/sys-device/`,params)
+}
+
+//手动保存经纬度
+export function saveLngLat(params){ 
+    return http.put(`${resquest}/sys-device/position`,params)
 }
 
 
@@ -112,10 +115,7 @@ export function UpdataDeployNote(params){
     return http.put(`${resquest}/sys-config`,params)
 }
 
-//手动保存经纬度
-export function saveLngLat(params){ 
-    return http.put(`${resquest}/sys-device/position`,params)
-}
+
 
 
 

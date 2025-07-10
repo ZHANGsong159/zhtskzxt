@@ -71,14 +71,14 @@
     </div>
 </template>
 <script>
-import hightEchartsVue from '../PinPu/hightEcharts.vue';
+import hightEchartsVue from '../PinPu/hightEchartsPop.vue';
 import {getCmdRate}  from "@/api/api.js"
 export default {
     components: { hightEchartsVue },
     data() {
         return {
             activeNames:'',
-            PPSMshebeiID:'PPSM',
+            PPSMshebeiID:'',
             pdsmStart:true,
             selectedDeviceQJSM:'',
             pdsmFrom:{
@@ -150,6 +150,9 @@ export default {
         },
         clickQJSM(){
         }
+    },
+    created() {
+        this.PPSMshebeiID=this.$route.params.id.toString()
     },
     mounted() {
         this.$store.state.socket.on('message', (data) => {

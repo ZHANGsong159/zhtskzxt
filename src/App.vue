@@ -51,30 +51,6 @@ export default {
             }
             this.socket.send(parame);
           });
-
-
-
-          window.addEventListener('unhandledrejection', event => {
-            console.error('未捕获的 Promise 错误:', event.reason);
-            event.preventDefault(); // 阻止浏览器默认报错
-            // 可选：发送错误日志到服务器
-            // logErrorToServer(event.reason);
-          });
-
-          // this.socket.on('message', (data) => {
-          //   console.log('message');
-            
-          //     if(data.ratePushDTO.segmentStartRate==1){
-          //       this.messages=[]
-          //       this.ymessages=[]
-          //     }
-          //     data.ratePushDTO.values.forEach((item,index)=>{
-          //         this.messages.push([index+Number(data.ratePushDTO.segmentStartRate),item]);
-          //         this.ymessages.push(item)
-          //     })
-          //     this.$store.state.messages=this.messages
-          //     this.$store.state.ymessages=this.ymessages
-          // });       
     },
     beforeDestroy() {
       clearInterval(this.$store.state.timer);

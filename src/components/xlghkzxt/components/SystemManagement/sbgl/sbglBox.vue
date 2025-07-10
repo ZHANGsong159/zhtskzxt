@@ -48,6 +48,7 @@
                  <el-table-column
                     prop="deviceType"
                     align='center'
+                    
                     label="装备类型">
                     <template slot-scope="scope">
                         {{scope.row.deviceType=='TK'?'通抗设备'
@@ -124,6 +125,12 @@
                 <el-select v-model="formAdd.deviceType" placeholder="请选择装备类型">
                     <el-option v-for="(item,index) in SBLXoption " :label="item.label" :value="item.value" :key='index'></el-option>
                 </el-select>
+            </el-form-item>
+
+
+            <el-form-item label="频谱IP" prop="rateIp">
+                <!-- <el-input v-model="formAdd.deviceIp" placeholder="设备IP"></el-input> -->
+                <ip-inputbox v-model="formAdd.rateIp"></ip-inputbox>
             </el-form-item>
             <!-- <el-form-item label="是否部署" >
                 <el-radio-group v-model="formAdd.isDeploy" class="radioBox" >

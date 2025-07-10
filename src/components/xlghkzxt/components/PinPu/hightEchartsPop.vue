@@ -3,6 +3,18 @@
     <div class="main">
       <!-- 频谱图 -->
       <div class="linecharts" :id="shebeiID + 'pinpu'"></div>
+
+
+
+      <!-- 添加框选信息显示区域 -->
+      <div  class="selection-info">
+        {{ selectionInfo }}
+      </div>
+
+
+
+
+
       <div class="neirong">
         <!--图例-->
         <div class="legend">
@@ -31,7 +43,7 @@ export default {
   props: {
     shebeiID: {
       type: String,
-      default: "333",
+      default: "",
     },
     minvalue: {
       type: Number,
@@ -129,6 +141,9 @@ export default {
       maxNum: 80, //图例最大值
       minNum: 0, //图例最小值
       messages: [],
+
+      selectedRange: null, // 存储选中的频率范围
+      selectionInfo: "" // 存储显示的信息
     };
   },
   methods: {
@@ -157,7 +172,8 @@ export default {
       let params = {
         deviceId: this.shebeiID,
       };
-      getCmdRateStop(params).then((res) => {
+      getCmdRateStop(params)
+        .then((res) => {
           return res.data;
         })
         .then((res) => {
@@ -193,12 +209,141 @@ export default {
       var num = Min + Math.round(Rand * Range); //四舍五入
       return num;
     },
+    getData(n) {
+      const arr = [];
+      let i, x, a, b, c, spike;
+      for (
+        i = 0, x = Date.UTC(new Date().getUTCFullYear(), 0, 1) - n * 36e5;
+        i < n;
+        i = i + 1, x = x + 36e5
+      ) {
+        if (i % 100 === 0) {
+          a = 2 * Math.random();
+        }
+        if (i % 1000 === 0) {
+          b = 2 * Math.random();
+        }
+        if (i % 10000 === 0) {
+          c = 2 * Math.random();
+        }
+        if (i % 50000 === 0) {
+          spike = 10;
+        } else {
+          spike = 0;
+        }
+        arr.push([
+          x,
+          2 * Math.sin(i / 100) + a + b + c + spike + Math.random(),
+        ]);
+      }
+      return arr;
+    },
+    // 处理框选事件
+    handleSelection(minFreq, maxFreq) {
+      console.log(minFreq, maxFreq, '处理框选事件');
+      
+      if (!this.currentChartData || this.currentChartData.length === 0) {
+        console.warn('没有可用的图表数据');
+        return;
+      }
+      
+      this.selectedRange = {
+        min: minFreq,
+        max: maxFreq
+      };
+      
+      // 使用存储的图表数据
+      const visibleData = this.currentChartData.filter(
+        point => point[0] >= minFreq && point[0] <= maxFreq
+      );
+      
+      if (visibleData.length === 0) {
+        this.selectionInfo = `选中范围: ${minFreq.toFixed(2)}-${maxFreq.toFixed(2)} MHz | 无数据`;
+        return;
+      }
+      
+      const avgValue = visibleData.reduce((sum, point) => sum + point[1], 0) / visibleData.length;
+      this.selectionInfo = `选中范围: ${minFreq.toFixed(2)}-${maxFreq.toFixed(2)} MHz | 平均强度: ${avgValue.toFixed(2)} dB`;
+      
+      // 可选：添加峰值检测
+      let peakValue = -Infinity;
+      let peakFrequency = 0;
+      
+      visibleData.forEach(point => {
+        if (point[1] > peakValue) {
+          peakValue = point[1];
+          peakFrequency = point[0];
+        }
+      });
+      
+      this.selectionInfo += ` | 峰值: ${peakValue.toFixed(2)} dB @ ${peakFrequency.toFixed(2)} MHz`;
+    },
+
+
+    
     //频谱渲染值
     highInit(data, max, min) {
       this.options.series[0].data = data;
       this.options.xAxis.min = min;
       this.options.xAxis.max = max;
-      Highcharts.chart(this.shebeiID + "pinpu", this.options);
+      // Highcharts.chart(this.shebeiID + "pinpu", this.options);
+      ///////////////////////
+      const n = 5000;
+      const datay = this.getData(n);
+
+      Highcharts.chart(this.shebeiID + "pinpu", {
+        chart: {
+          zooming: {
+            type: "x",
+          },
+          events: {
+            selection: (event)=> {
+              if (event.xAxis) {
+                const minFreq = event.xAxis[0].min;
+                const maxFreq = event.xAxis[0].max;
+                console.log(minFreq, maxFreq,'处理框选事件');
+                
+                // 处理框选区域
+                this.handleSelection(minFreq, maxFreq,datay);
+              }
+              return true; // 允许缩放
+            }
+          },
+        },
+        
+        title: {
+          text: "Highcharts drawing " + " points",
+          align: "left",
+        },
+        subtitle: {
+          text: "Using the Boost module",
+          align: "left",
+        },
+        accessibility: {
+          screenReaderSection: {
+            beforeChartFormat:
+              "<{headingTagName}>" +
+              "{chartTitle}</{headingTagName}><div>{chartSubtitle}</div>" +
+              "<div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>" +
+              "{yAxisDescription}</div>",
+          },
+        },
+        tooltip: {
+          valueDecimals: 2,
+        },
+        xAxis: {
+          type: "datetime",
+        },
+        series: [
+          {
+            data: datay,
+            lineWidth: 0.5,
+            name: "Hourly data points",
+          },
+        ],
+      });
+
+      ///////////////////////
     },
     // 创建颜色库
     setColormap() {
@@ -223,6 +368,7 @@ export default {
         1,
         that.colormap.length
       );
+
       for (let i = 0; i < that.colormap.length; i++) {
         const color = that.colormap[i];
         imageData.data[imageData.data.length - i * 4 + 0] = color[0];
@@ -257,7 +403,6 @@ export default {
       if (that.$refs[this.shebeiID] !== undefined) {
         let canvasHeight = 1;
         if (that.waterFallHeight == 0) {
-          console.log("that.waterFallHeight", that.waterFallHeight);
           clearInterval(this.timer);
         } else {
           canvasHeight = Math.floor(
@@ -341,12 +486,13 @@ export default {
     },
   },
   mounted() {
+    console.log(this.shebeiID, "shebeiIDshebeiIDshebeiIDshebeiIDshebeiID");
+
     let that = this;
     that.setColormap();
-    that.createLegendCanvas();
+    // that.createLegendCanvas();
     // this.initMessage(this.maxvalue, this.minvalue)
     this.highInit([], this.maxvalue, this.minvalue);
-    this.getCmdRateFun();
   },
   watch: {
     "$store.state.messages": {
@@ -357,14 +503,27 @@ export default {
     },
   },
   beforeDestroy() {
-    let that = this;
-    clearInterval(that.timer);
-    that.getCmdRateStop();
+    // let that = this;
+    // clearInterval(that.timer);
+    // that.getCmdRateStop();
   },
 };
 </script>
 
 <style lang="less" scoped>
+.selection-info {
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #00ffff;
+  border: 1px solid #00ffff;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 4px;
+}
+
+
 .pingPuBox {
   height: 100%;
   width: 100%;

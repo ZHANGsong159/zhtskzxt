@@ -24,21 +24,17 @@
                             {{item.deviceName}}
                         <!-- 模拟对抗设备1 -->
                         </div>
-                        <el-form  :model="formAdd" :inline="true"   :ref="`form${index}`" >
+                        <el-form  :model="item" :inline="true"   :ref="`form${index}`" >
                             <el-form-item 
                             label="经度" 
                             prop="longitude"     
-                            :rules="[
-                            { required: true, message: '请输入经度', trigger: 'blur' },]"
-                            >
+                            :rules="[{ required: true, message: '请输入经度', trigger: 'blur' },]">
                                 <el-input v-model="item.longitude" placeholder="请填写" :disabled="selectedDeviceBSFA == '0'"></el-input>
                             </el-form-item>
                             <el-form-item 
                             label="纬度" 
                             prop="latitude"
-                             :rules="[
-                            { required: true, message: '请输入经度', trigger: 'blur' },]"
-                            >
+                            :rules="[{ required: true, message: '请输入经度', trigger: 'blur' },]">
                                 <el-input v-model="item.latitude" placeholder="请填写" :disabled="selectedDeviceBSFA == '0'"></el-input>
                             </el-form-item>
                         </el-form>
@@ -53,6 +49,16 @@
 
         </div>
     </div>
+
+    <el-pagination
+        style="margin-top: 20px;"
+        background
+        :page-size="pageSize"
+        layout="prev, pager, next"
+        @current-change="handleCurrentChange"
+        :total="total">
+    </el-pagination>
+    
 
 
 </div>
@@ -71,6 +77,9 @@ export default {
     },
     data() {
         return {
+            total:0,
+            pageNum:1,
+            pageSize:16,
             selectedDeviceBSFA:'0',
             devicesBSFA:[
                 {value: '0', label: '自动'},
@@ -84,6 +93,11 @@ export default {
         }
     },
     methods:{
+        handleCurrentChange(val){
+            this.pageNum = val
+            this.getShebeiList()
+
+        },
         getFormattedTime() {
             return moment().format('YYYY-MM-DD HH:mm:ss');
         },
@@ -104,12 +118,20 @@ export default {
         },
         //获取列表数据
         getShebeiList(){
-            getShebeiList().then(res=>{
+            let params={
+                pageNum:this.pageNum,
+                pageSize:this.pageSize
+            }
+            getShebeiList(params).then(res=>{
                 return res.data
             }) .then(res=>{
                 if(res.code==200){
                     this.tableData=res.data.list
+                    this.total=res.data.total
                 }
+            }).catch(err=>{ 
+                console.log(err,'err');
+                
             })
         },
         //获取部署方式
@@ -158,8 +180,7 @@ export default {
             }).then(res=>{
                 if(res.code==200){
                     this.$message.success('保存成功')
-                }else if(res.code==4000){
-                    // this.$message.error('请先填写必要数据')
+                    this.$emit('saveLngLat')
                 }
             })
             .catch(error => {
@@ -167,7 +188,6 @@ export default {
                 this.$message.error('网络错误，请求失败');
             });
         },
-
     },
     mounted(){
         this.getShebeiList()
@@ -190,23 +210,22 @@ export default {
 .PinPuPopor{
     width: 100%;
     .PinPuPopor-title{
-        // width: 100%;
         padding-left: 30px;
         padding-bottom: 15px;
         box-sizing: border-box;
-        // border-bottom: 1px solid #1C735E;
         justify-content: left;
-
     }
     .PinPuPopor-content{
         width: 100%;
         height: 636px;
         box-sizing: border-box;
         padding: 0px;
+        border-bottom: #1C735E 1px solid;
         .PinPuPopor-content-right{
             width: 100%;
             height: 100%;
             padding: 0px;
+            overflow: auto;
             background: transparent;
             display: flex;
             flex-flow: column;

@@ -75,6 +75,14 @@ export default {
     minglinGr,
     minglinMn
   },
+  props: {
+    saveLngLatMAP: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+
   data() {
     return {
       shebeiData: {},
@@ -219,9 +227,17 @@ export default {
       runing: false,
     };
   },
+  watch: { 
+    saveLngLatMAP(){
+
+      this.getShebeiList();
+      this.$nextTick(()=>{
+        this.viewer.render()
+      })
+
+    },
+  },
   created() {
-    // this.getTongKangGR();
-    // this.getTongKangMN();
     this.getShebeiList();
   },
   mounted() {
@@ -452,7 +468,8 @@ export default {
               });
             }
           }
-          
+        }).catch((err) => {
+          console.log(err);
         });
     },
     //初始化地图
@@ -460,17 +477,13 @@ export default {
       this.mapObject = new TCesium("my-map"); // 注意，这个my-map就是我们div的id
       this.viewerBF = this.mapObject.viewer; //将创建的地图资源进行赋值
       // 右键显示菜单
-      new Cesium.ScreenSpaceEventHandler(
-        this.viewerBF.scene.canvas
-      ).setInputAction((e) => {
-        console.log("点击右键", this.viewerBF.scene.pick(e.position), e);
-        // e.preventDefault();
+      new Cesium.ScreenSpaceEventHandler(this.viewerBF.scene.canvas).setInputAction((e) => {
         if (this.viewerBF.scene.pick(e.position)) {
           this.tankuang = true;
           this.$refs.tankuang.style.top = e.position.y + "px";
           this.$refs.tankuang.style.left = e.position.x + "px";
           this.rightClickId = this.viewerBF.scene.pick(e.position).id._name;
-          (this.formAdd = {
+          this.formAdd = {
             name: "",
             time: "",
             disturbDto: {
@@ -486,22 +499,20 @@ export default {
                 lineNum: "",
               },
             },
-          }),
-            this.shebeiList.forEach((item) => {
+          }
+          this.shebeiList.forEach((item) => {
               if (item.deviceId == this.rightClickId) {
                 this.shebeiData = item;
               }
-            });
-          // this.viewerBF.scene.screenSpaceCameraController.enableInputs = false;
+          });
         }
-      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+      },
+      Cesium.ScreenSpaceEventType.RIGHT_CLICK);
       // 左键隐藏菜单
-      new Cesium.ScreenSpaceEventHandler(
-        this.viewerBF.scene.canvas
-      ).setInputAction(() => {
-        console.log("点击左键");
+      new Cesium.ScreenSpaceEventHandler(this.viewerBF.scene.canvas).setInputAction(() => {
         this.tankuang = false;
-      }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+      },
+      Cesium.ScreenSpaceEventType.LEFT_DOWN);
     },
 
     //鼠标右键事件监听
@@ -510,18 +521,10 @@ export default {
         //设置监听方法
         var scene = this.viewerBF.scene;
         let pick = scene.pick(evt.position);
-        // cartesian = scene.pickPosition(evt.position);    // 获取鼠标位置
-        // cameraHeight = Math.ceil(viewer.camera.positionCartographic.height);     // 获取相机高度
 
         if (pick == undefined) {
           console.log("空白处右键菜单");
           document.getElementById("hamburger_example").style.display = ""; //显示div
-          //调用页面菜单
-          // $(document).ready(function () {
-          //     $("body").gizmoMenu({
-          //     menu: "gizmoBurger",
-          //     });
-          // });
         } else {
           console.log("实体处右键菜单，实体ID为：", pick.id.id);
           document.getElementById("modelRightMenu").innerHTML =
@@ -529,12 +532,6 @@ export default {
           //显示模型菜单
           document.getElementById("gizmo").style.display = ""; //显示div
           //调用模型菜单
-          // $(document).ready(function () {
-          //     // MODEL的菜单
-          //     $("body").gizmoMenu({
-          //     menu: "gizmoDropDown",
-          //     });
-          // });
           this.viewerBF.trackedEntity = undefined;
         }
       }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);

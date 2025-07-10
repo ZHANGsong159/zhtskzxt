@@ -87,14 +87,14 @@
     </div>
 </template>
 <script>
-import hightEchartsVue from '../PinPu/hightEcharts.vue';
+import hightEchartsVue from '../PinPu/hightEchartsPop.vue';
 import {getCmdRate,getCmdRateStop}  from "@/api/api.js"
 
 export default {
     components: { hightEchartsVue },
     data() {
         return {
-            PPSMshebeiID:'PPSM',
+            PPSMshebeiID:'',
             qjsmStart:true,
             pdsmStart:true,
             dpksStart:true,
@@ -197,18 +197,19 @@ export default {
         async getCmdRateFun(params){
             let deviceId = this.$route.params.id; 
             params.deviceId=deviceId
-
             if(params.resolution){
                 this.allFBL=params.resolution
             }else{
                 this.allFBL=0
             }
+            console.log(params,'getCmdRateFun');
+            
+
             getCmdRate(params).then(res => {
                 return res.data
             }).then(res=>{
                 if(res.code==200){
-                    console.log();
-
+                    console.log(res);
                 }
             })
             .catch(error => {

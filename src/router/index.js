@@ -69,7 +69,7 @@ router.beforeEach((to, from, next) => {
       } else {
           // alert('登录信息失效，请重新登录。')
           if(from.path!='/login'){
-            router.push('/login')
+            next('/login')
           }
       }
   } else {
