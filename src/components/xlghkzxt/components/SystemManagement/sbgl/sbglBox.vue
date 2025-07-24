@@ -195,12 +195,12 @@ export default {
             
             SSXToption: [
                 { value: 'TK', label: '通抗分系统' },
-                { value: 'LK', label: '类抗分系统' },
-                { value: 'DK', label: '电抗分系统' },
+                { value: 'LK', label: '雷抗分系统' },
+                { value: 'DK', label: '光抗分系统' },
             ],
             SBLXoption:[
                 { value: 'TK', label: '通抗分系统' },
-                { value: 'LK', label: '类抗分系统' },
+                { value: 'LK', label: '雷抗分系统' },
                 { value: 'DK-HK', label: '红外设备' },
                 { value: 'DK-106', label: '1.06激光设备' },
                 { value: 'DK-15', label: '1.5激光设备' },
@@ -305,6 +305,8 @@ export default {
                     this.$message.error('新增失败')
                 }
                 
+            }).catch(error=>{
+                console.log(error);
             })
 
         },
@@ -321,6 +323,8 @@ export default {
                     this.$message.error('编辑失败')
                 }
 
+            }).catch(error=>{
+                console.log(error);
             })
         },
         addSbgl(){
@@ -355,8 +359,8 @@ export default {
                     this.tableData=res.data.list
                     this.total=res.data.total
                 }
-                
-
+            }).catch(error=>{
+                console.log(error);
             })
         },
 

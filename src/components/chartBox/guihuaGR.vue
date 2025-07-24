@@ -128,6 +128,10 @@ export default {
             default: function () {
                 return {}
             }
+        },
+        changetype:{
+            type: String,
+            default: "add"
         }
     },
     data(){
@@ -187,10 +191,11 @@ export default {
     },
     watch:{
         QRXH: function () {
-            this.$emit('QRXH',this.formAdd)
+          this.$emit('QRXH',this.formAdd)
         },
         Grdata: function () { 
-            this.formAdd=this.Grdata;
+          console.log(this.Grdata,'Grdata');
+          this.formAdd=this.Grdata;
         },
     },
     created() { 
@@ -234,8 +239,9 @@ export default {
         changePL() {
             this.GRoption.forEach((item) => {
                 if (item.name == this.formAdd.name) {
-                // console.log(item, "itemresresresresGR");
+                console.log(item, "itemresresresresGR");
                 this.formAdd = JSON.parse(JSON.stringify(item));
+                this.formAdd.id=''
                 }
             });
         },

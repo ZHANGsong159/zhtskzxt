@@ -8,6 +8,9 @@
 </template>
 <script>
 import Highcharts from "highcharts";
+import Boost from 'highcharts/modules/boost';
+Boost(Highcharts);
+
 export default {
   props: {
     shebeiID: {
@@ -39,6 +42,9 @@ export default {
         credits: {
           //版权
           enabled: false,
+        },
+        exporting: {
+          enabled: false // 完全禁用导出功能（包括上下文菜单）
         },
         yAxis: {
           title: {
@@ -73,7 +79,9 @@ export default {
           text: "",
         },
         boost: {
-          useGPUTranslations: true,
+          enabled: true, // 必须开启
+          useGPUTranslations: true, // 启用GPU加速
+          seriesThreshold: 1 // 当序列数超过阈值时启用boost
         },
         legend: {
           enabled: false,
@@ -89,6 +97,13 @@ export default {
             color: "#00ffff",
             marker: {
               enabled: false,
+            },
+            turboThreshold: 0,
+            boostThreshold: 1,  // 强制所有系列使用boost
+            dataGrouping: {
+              enabled: true,    // ✅ 关键：在boost模式下启用分组
+              approximation: 'average',
+              groupPixelWidth: 4
             },
             animation: false,
             enableMouseTracking: false,

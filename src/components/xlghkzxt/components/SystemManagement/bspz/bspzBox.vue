@@ -29,13 +29,27 @@
                             label="经度" 
                             prop="longitude"     
                             :rules="[{ required: true, message: '请输入经度', trigger: 'blur' },]">
-                                <el-input v-model="item.longitude" placeholder="请填写" :disabled="selectedDeviceBSFA == '0'"></el-input>
+                                <el-input 
+                                v-model="item.longitude" 
+                                placeholder="请填写" 
+                                type="number"
+                                :disabled="selectedDeviceBSFA == '0'"
+                                @input="handleNumberInput($event, 'longitude', index)"
+                                @blur="validateLongitude(item.longitude, index)"
+                                ></el-input>
                             </el-form-item>
                             <el-form-item 
                             label="纬度" 
                             prop="latitude"
                             :rules="[{ required: true, message: '请输入经度', trigger: 'blur' },]">
-                                <el-input v-model="item.latitude" placeholder="请填写" :disabled="selectedDeviceBSFA == '0'"></el-input>
+                                <el-input 
+                                v-model="item.latitude" 
+                                placeholder="请填写" 
+                                type="number"
+                                :disabled="selectedDeviceBSFA == '0'"
+                                @input="handleNumberInput($event, 'latitude', index)"
+                                @blur="validateLatitude(item.latitude, index)"
+                                ></el-input>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -93,6 +107,39 @@ export default {
         }
     },
     methods:{
+
+
+         // 处理数字输入
+        handleNumberInput(value, field, index) {
+            // 限制只能输入数字和小数点
+            this.tableData[index][field] = value.replace(/[^\d.]/g, '')
+            .replace(/\.{2,}/g, '.')  // 只保留一个小数点
+            .replace(/^\./g, '');     // 不能以小数点开头
+        },
+        
+        // 验证经度范围
+        validateLongitude(value, index) {
+            const num = parseFloat(value) || 0;
+            if (num < -180 || num > 180) {
+            this.$message.error('经度范围应在 -180 到 180 之间');
+            this.tableData[index].longitude = '';
+            }
+        },
+        
+        // 验证纬度范围
+        validateLatitude(value, index) {
+            const num = parseFloat(value) || 0;
+            if (num < -90 || num > 90) {
+            this.$message.error('纬度范围应在 -90 到 90 之间');
+            this.tableData[index].latitude = '';
+            }
+        },
+
+
+
+
+
+
         handleCurrentChange(val){
             this.pageNum = val
             this.getShebeiList()

@@ -50,7 +50,7 @@
     </div>
     <div class="PinPuPopor-content">
         <div class="PinPuPopor-content-left">
-            <hightEcharts :shebeiID="shebeiBoxId" ></hightEcharts>
+            <hightEcharts  :shebeiID="shebeiBoxId" ></hightEcharts>
         </div>
         <div class="PinPuPopor-content-right ">
             <div class="PinPuPopor-content-righ-title leftPinpu-title">
@@ -90,7 +90,7 @@
     
 </template>
 <script>
-import hightEcharts from "./hightEchartsPop.vue";
+import hightEcharts from "./hightEchartsPPSM.vue";
 
 
 export default {

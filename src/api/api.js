@@ -32,6 +32,18 @@ export function getCmdRateStop(params){
 }
 
 
+//频谱查询开始信号分析
+export function getCmdRateXHFX(params){ 
+    return http.get(`${resquest}/cmd/signal/identify`,params)
+}
+
+
+
+
+
+
+
+
 
 //设备列表
 export function getShebeiList(params){ 
@@ -211,12 +223,21 @@ export function addGuiHuaShebei(params){
     return http.post(`${resquest}/sys-plan-device-task`,params)
 }
 
+
+//修改设备设置
+export function putGuihuaYSRenWu(params){ 
+    return http.put(`${resquest}/sys-plan-device-task`,params)
+}
+
+
+
+
 export function deleteGuiHuaShebei(params){ 
     return http.delete(`${resquest}/sys-plan-device-task/${params}`)
 }
 
-export function getGuiHuaListShebei(id,pageNum,pageSize){
-    return http.get(`${resquest}/sys-plan-device-task?deviceId=${id}&pageSize=${pageSize}&pageNum=${pageNum}`)
+export function getGuiHuaListShebei(id,pageNum,pageSize,planId){
+    return http.get(`${resquest}/sys-plan-device-task?deviceId=${id}&pageSize=${pageSize}&pageNum=${pageNum}&planId=${planId}`)
 }
 
 export function getGuiHuaListShebeiByid(params){ 
@@ -224,11 +245,75 @@ export function getGuiHuaListShebeiByid(params){
 }
 
 
+
+
 export function putGuihuaYStime(params){ 
     return http.put(`${resquest}/sys-plan-device-task/delayed`,params)
 }
 
 
+
+
+
+
+//雷抗干扰模版
+export function getLeiKangGR(params){ 
+    return http.get(`${resquest}/lk-template-disturb/`,params)
+}
+
+
+export function postLeiKangGR(params){ 
+    return http.post(`${resquest}/lk-template-disturb/`,params)
+}
+
+export function putLeiKangGR(params){ 
+    return http.put(`${resquest}/lk-template-disturb/`,params)
+}
+
+
+export function deleteLeiKangGR(id){ 
+    return http.delete(`${resquest}/lk-template-disturb/${id}`)
+}
+
+
+
+
+
+
+
+//雷抗模拟模版
+export function getLeiKangMN(params){ 
+    return http.get(`${resquest}/lk-template-simulate`,params)
+}
+
+export function postLeiKangMN(params){ 
+    return http.post(`${resquest}/lk-template-simulate`,params)
+}
+
+export function putLeiKangMN(params){ 
+    return http.put(`${resquest}/lk-template-simulate`,params)
+}
+
+
+export function deleteLeiKangMN(id){ 
+    return http.delete(`${resquest}/lk-template-simulate/${id}`)
+}
+
+
+
+
+//规划设备
+export function getGHdevice(params){ 
+    return http.get(`${resquest}/sys-plan-device?planId=${params}`)
+}
+
+export function postGHdevice(params){ 
+    return http.post(`${resquest}/sys-plan-device`,params)
+}
+
+export function putGHdevice(params){ 
+    return http.put(`${resquest}/sys-plan-device`,params)
+}
 
 
 

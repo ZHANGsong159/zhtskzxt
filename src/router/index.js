@@ -54,28 +54,23 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+document.title = '训练规划系统';
 
 
+// router.beforeEach((to, from, next) => {
+//   //如果路由需要跳转
+//   // console.log(to,'tototo');
+//   document.title = to.meta.title || '训练规划系统';
 
-router.beforeEach((to, from, next) => {
-  //如果路由需要跳转
-  // console.log(to,'tototo');
-  document.title = to.meta.title || '训练规划系统';
+//   // 确保每个分支都调用 next()
+//   if (to.path === '/login') {
+//     // 确保没有多余的导航调用
+//     next()
+//   } else {
+//     // 避免在异步回调中调用 next()
+//     next()
+//   }
   
-  if (to.meta.isAuth) {
-      //判断 如果school本地存储是qinghuadaxue的时候，可以进去
-      if (sessionStorage.getItem('token')) {        
-          next()  //放行
-      } else {
-          // alert('登录信息失效，请重新登录。')
-          if(from.path!='/login'){
-            next('/login')
-          }
-      }
-  } else {
-      // 否则，放行
-      next()
-  }
-})
+// })
 
 export default router

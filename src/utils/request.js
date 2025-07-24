@@ -9,7 +9,7 @@ const service = axios.create({
   // 公共接口--这里注意后面会讲
   baseURL: process.env.BASE_API,
   // 超时时间 单位是ms，这里设置了3s的超时时间
-  timeout: 3 * 1000
+  timeout: 15 * 1000
 })
 let vm
 service.setVueInstance = function(vueInstance) {
@@ -41,6 +41,7 @@ service.interceptors.response.use(response => {
     if (vm && vm.$router) {
         if (vm.$router.currentRoute.path != '/login') {
             vm.$message.error(response.data.message)
+            console.error('401错误',response.data.message)
             vm.$router.push('/login');
         }
     }
@@ -52,7 +53,7 @@ service.interceptors.response.use(response => {
   if (!error.response) {
     if (!error.response) {
       // 处理网络错误/超时
-      console.error('请求出错:', error);
+      // console.error('请求出错:', error);
       //  alert(`请求失败: ${error.message}`); // 或用 UI 库的 message/toast
        return Promise.resolve({ code: 500 }); // 阻止错误传播
       // throw error;

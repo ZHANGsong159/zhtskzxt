@@ -9,7 +9,7 @@
                     </div>
                     <div class="rightButton">
                          <el-button type="primary" class="startButton" size="small" v-if="qjsmStart" @click="clickQJSM('qjsmStart')"><i class="el-icon-video-play"></i> 开始</el-button>
-                         <el-button type="primary" class="stopButton" size="small" v-else @click="getCmdRateStop()"><i class="el-icon-video-pause"></i> 终止</el-button>
+                         <el-button type="primary" class="stopButton" size="small" v-else @click="getCmdRateStop('qjsmStart')"><i class="el-icon-video-pause"></i> 终止</el-button>
                     </div>
                 </div>
                 <div class="line"></div>
@@ -34,7 +34,7 @@
                     </div>
                     <div class="rightButton">
                          <el-button type="primary" class="startButton" size="small" v-if="pdsmStart" @click="clickQJSM('pdsmStart')"><i class="el-icon-video-play"></i> 开始</el-button>
-                         <el-button type="primary" class="stopButton" size="small" v-else @click="getCmdRateStop()"><i class="el-icon-video-pause"></i> 终止</el-button>
+                         <el-button type="primary" class="stopButton" size="small" v-else @click="getCmdRateStop('pdsmStart')"><i class="el-icon-video-pause"></i> 终止</el-button>
                     </div>
                 </div>
                 <div class="line"></div>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="rightButton">
                          <el-button type="primary" class="startButton" size="small" v-if="dpksStart" @click="clickQJSM('dpksStart')"><i class="el-icon-video-play"></i> 开始</el-button>
-                         <el-button type="primary" class="stopButton" size="small" v-else @click="getCmdRateStop()"><i class="el-icon-video-pause"></i> 终止</el-button>
+                         <el-button type="primary" class="stopButton" size="small" v-else @click="getCmdRateStop('dpksStart')"><i class="el-icon-video-pause"></i> 终止</el-button>
                     </div>
                 </div>
                 <div class="line"></div>
@@ -81,13 +81,15 @@
             </div>
         </div>
         <div class="rightMain">
-            <hightEchartsVue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hightEchartsVue>       
+            <hight-echarts-vue  :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hight-echarts-vue>       
         </div>
 
     </div>
 </template>
 <script>
-import hightEchartsVue from '../PinPu/hightEchartsPop.vue';
+// import hightEchartsVue from '../PinPu/hightEchartsPop.vue';
+import hightEchartsVue from '@/components/xlghkzxt/components/PinPu/hightEchartsPPSM.vue';
+
 import {getCmdRate,getCmdRateStop}  from "@/api/api.js"
 
 export default {
@@ -180,12 +182,25 @@ export default {
             
         },
         //停止发送接口
-        getCmdRateStop(){
-            getCmdRateStop().then(res => {
+        getCmdRateStop(dataparam){
+            let params = {
+                deviceId: this.PPSMshebeiID,
+            };
+            getCmdRateStop(params).then(res => {
                 return res.data
             }).then(res=>{
                 if(res.code==200){
-                    console.log();
+                    switch(dataparam){
+                        case 'qjsmStart':
+                            this.qjsmStart=!this.qjsmStart
+                            break;
+                        case 'pdsmStart':
+                            this.pdsmStart=!this.pdsmStart
+                            break;
+                        case 'dpksStart':
+                            this.dpksStart=!this.dpksStart
+                            break;
+                    }
                 }
             })
             .catch(error => {
@@ -203,8 +218,6 @@ export default {
                 this.allFBL=0
             }
             console.log(params,'getCmdRateFun');
-            
-
             getCmdRate(params).then(res => {
                 return res.data
             }).then(res=>{
@@ -222,17 +235,17 @@ export default {
             let parameName=''
             switch(parame){
                 case 'qjsmStart':
-                    // this.qjsmStart=!this.qjsmStart
+                    this.qjsmStart=!this.qjsmStart
                     parameFrom=this.qjsmFrom
                     parameName='qjsmFrom'
                     break;
                 case 'pdsmStart':
-                    // this.pdsmStart=!this.pdsmStart
+                    this.pdsmStart=!this.pdsmStart
                     parameFrom=this.pdsmFrom
                     parameName='pdsmFrom'
                     break;
                 case 'dpksStart':
-                    // this.dpksStart=!this.dpksStart
+                    this.dpksStart=!this.dpksStart
                     parameFrom=this.dpksFrom
                     parameName='dpksFrom'
                     break;
@@ -259,31 +272,34 @@ export default {
         },
     },
     mounted() {
+        this.PPSMshebeiID=this.$route.params.id
         this.$store.state.socket.on('message', (data) => {
-                console.log(data,'message');
-                let min=data.ratePushDTO.startRate
-                let max=data.ratePushDTO.endRate
-                this.allFBL=data.ratePushDTO.resolution
-                if(data.ratePushDTO.segmentStartRate==min){
-                    this.messages=[]
-                    this.ymessages=[]
+            if(data.msgCode=="rate_data"){
+                    let min=data.ratePushDTO.startRate
+                    let max=data.ratePushDTO.endRate
+                    this.allFBL=data.ratePushDTO.resolution
                     this.minvalueZJ=min
                     this.maxvalueZJ=max
+                    if(data.ratePushDTO.segmentStartRate==min){
+                        this.messages=[]
+                        this.ymessages=[]
+                        // this.minvalueZJ=min
+                        // this.maxvalueZJ=max
+                        console.log('数据初始化');
+                    }
+                    data.ratePushDTO.values.forEach((item,index)=>{
+                        this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
+                        this.ymessages.push(item)
+                    })
+                    console.log(min,max,'messageTTTT');
+
+                    this.$store.state.messages=this.messages
+                    this.$store.state.ymessages=this.ymessages
                 }
-                data.ratePushDTO.values.forEach((item,index)=>{
-                    this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
-                    console.log(index,this.fblbeishu,data.ratePushDTO.segmentStartRate,'this.messagesthis.messages');
-
-                    
-                    this.ymessages.push(item)
-                })
-
-                this.$store.state.messages=this.messages
-                this.$store.state.ymessages=this.ymessages
         }); 
     },
     beforeDestroy() {
-        // this.getCmdRateStop()
+        this.getCmdRateStop()
     },
     watch:{
         allFBL(){

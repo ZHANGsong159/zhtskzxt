@@ -20,7 +20,6 @@
           <el-table-column prop="delayedTime" label="延迟（s）" > 
             <template slot-scope="scope" >
               <!-- <el-input v-model="scope.row.delayedTime" @keyup.enter="saveRow(row)" style="border:1px solid #DCDFE6"></el-input> -->
-
               <span v-if="!scope.row.isEditing"    @click="handleRowClick(scope.row)">{{ scope.row.delayedTime }}</span>
               <input
               v-else
@@ -39,9 +38,16 @@
                     align='center'
                     >
                     <template slot-scope="scope">
-                        <el-button  @click="openOptionclick(scope.row)" type="text" size="small" class="buttonStyle deleteStyle">查看</el-button>
-
-                        <el-button  @click="handleClickDelete(scope.row)" type="text" size="small" class="buttonStyle deleteStyle">删除</el-button>
+                        <el-button  
+                        @click="openOptionclick(scope.row)" 
+                        type="text" 
+                        size="small" 
+                        class="buttonStyle deleteStyle">查看</el-button>
+                        <el-button  
+                        @click="handleClickDelete(scope.row)" 
+                        type="text" 
+                        size="small" 
+                        class="buttonStyle deleteStyle">删除</el-button>
                     </template>
           </el-table-column>
         </el-table>
@@ -52,20 +58,18 @@
         <tittleBg :tittlename="'任务配置'"></tittleBg>
         <el-tabs type="border-card"  class="tabesstyle" v-model="activeName">
           <el-tab-pane label="干扰信号配置" name='GRXH'>
-            <guihua-gr :Grdata='Grdata'  :QRXH='ganraoQR' @QRXH='QRXHFUN' ></guihua-gr>
-            
-            
+            <guihua-gr :Grdata='Grdata' :QRXH='ganraoQR' :changetype='GRtype' @QRXH='QRXHFUN'></guihua-gr>
           </el-tab-pane>
           <el-tab-pane label="模拟信号配置" name='MNXH'>
-            <guihua-mn :Mndata='Mndata' :QRXH='muoniQR' @QRXH='QRXHFUN'></guihua-mn>
+            <guihua-mn :Mndata='Mndata' :QRXH='muoniQR' :changetype='GRtype' @QRXH='QRXHFUN'></guihua-mn>
           </el-tab-pane>
         </el-tabs>
       </div>
       <div class="buttonbox">
         <el-button @click='qvxiao'>取消</el-button>
         <el-button @click='reset'>重置</el-button>
-        <el-button type="primary" >更新</el-button>
-        <el-button type="primary" @click="xiafaGuihuaShebei()" >加入</el-button>
+        <el-button type="primary" @click="xiafaGuihuaShebei('updata')" >更新</el-button>
+        <el-button type="primary" @click="xiafaGuihuaShebei('add')" >加入</el-button>
 
       </div>
     </div>
@@ -75,16 +79,19 @@
 import tittleBg from "@/components/chartBox/tittleBackground.vue";
 import guihuaMn from "@/components/chartBox/guihuaMN.vue";
 import guihuaGr from "@/components/chartBox/guihuaGR.vue";
-import {
-  //   postControlCommand,
-  //   postControlCommandPause,
-  //   postControlCommandStop,
-  //   postControlCommandInterference,
-  //   postControlCommandSimulation,
-  getTongKangMN,
-} from "@/api/api";
 
-import { getShebeiList, getGuiHuaListShebei,getGuiHuaListShebeiByid,addGuiHuaShebei,deleteGuiHuaShebei,putGuihuaYStime} from "@/api/api";
+import { 
+  getShebeiList,
+  getGuiHuaListShebei,
+  getGuiHuaListShebeiByid,
+  addGuiHuaShebei,
+  deleteGuiHuaShebei,
+  putGuihuaYStime,
+
+
+  getTongKangMN,
+  putGuihuaYSRenWu,
+} from "@/api/api";
 export default {
   name: "plandesignBox",
   components: {
@@ -99,10 +106,14 @@ export default {
         return {};
       },
     },
+    planId:{
+      type: Number,
+      default: null
+    }
   },
-
   data() {
     return {
+      GRtype:'add',
       Mndata:{
         name: "",
         time: "",
@@ -270,6 +281,8 @@ export default {
   },
   watch: { 
     cansshudata(){
+      console.log(this.cansshudata,'cansshudata');
+      
       this.formRight.deviceName=this.cansshudata.deviceName
       this.getGuiHuaListShebei()
     },
@@ -292,7 +305,7 @@ export default {
         disturbDto: {},
       },
       this.Grdata={
-        disturbStyle: "",
+        disturbStyle:"",
         param: {
             rateRange: "",
             gain: "",
@@ -324,16 +337,20 @@ export default {
     saveRow(row) {
       console.log("保存数据:", row);
       row.isEditing = false
+      console.log(row,'messagesdata');
+      
       this.putGuihuaYStime(row)
       // 这里添加实际保存逻辑，例如：
-      
     },
     putGuihuaYStime(row){
+      console.log(row,'addGuiHuaShebei');
+      
       let param = {
         id:row.id,
-        delayedTime:row.delayedTime
+        delayedTime:row.delayedTime,
+        planId:row.planId,
+        deviceId:row.deviceId
       }
-
       putGuihuaYStime(param).then(res=>{ 
         if(res.data.code==200){
           this.$message.success('保存成功')
@@ -341,6 +358,9 @@ export default {
 
         }
       })
+      .catch(error=>{
+                console.log(error);
+            })
     },
     deleteGuiHuaShebei(id){
       deleteGuiHuaShebei(id).then(res=>{
@@ -350,10 +370,14 @@ export default {
           this.getGuiHuaListShebei()
         }
       })
+      .catch(error=>{
+                console.log(error);
+            })
 
     },
     openOptionclick(row){
       console.log(row,'openOptionclick');
+      this.GRtype='updata'
       this.getGuiHuaListShebeiByid(row.id)
     },
     handleClickDelete(row){
@@ -375,6 +399,7 @@ export default {
       let params={
         taskType:'disturb',
         deviceId:this.cansshudata.deviceId,
+        planId:this.planId,
         taskName:row.name,
         delayedTime:row.time,
         executeTime:row.time,
@@ -384,26 +409,58 @@ export default {
         }
       }
       
-       if(this.activeName=='GRXH'){
+      if(this.activeName=='GRXH'){
         params.taskType='disturb'
         params.expandDto.tkDisturbDto=row.disturbDto
       }else{
         params.taskType='simulate'
-        params.expandDto.tkSimulateDTOList=JSON.parse(row.param)
+        console.log(row,'row.param');
+        if(row.param){
+          params.expandDto.tkSimulateDTOList=JSON.parse(row.param)
+        }else{
+          params.expandDto.tkSimulateDTOList=row.disturbDto
+        }
       }
-      this.addGuiHuaShebei(params)
-      
+      // if(params.id){
+      //   this.updataShebei(params)
+      // }else{
+      //   this.addGuiHuaShebei(params)
+      // }
+
+      if(this.GRtype=='add'){
+        params.id=''
+        this.addGuiHuaShebei(params)
+      }else{
+        params.id=row.id
+        this.updataShebei(params)
+      }
     },
-    xiafaGuihuaShebei(){
+    xiafaGuihuaShebei(type){
+      this.GRtype=type
       if(this.activeName=='GRXH'){
         this.ganraoQR=!this.ganraoQR
       }else{
         this.muoniQR=!this.muoniQR
       }
     },
+    updataShebei(param){
+      console.log(param,'updataShebei');
+      
+      this.putGuihuaYSRenWu(param)
+    },
+    putGuihuaYSRenWu(param){
+      putGuihuaYSRenWu(param).then(res=>{
+        if(res.data.code==200){
+          this.$message.success('添加成功')
+          this.getGuiHuaListShebei()
+        }
+      }).catch(err=>{
+        console.log(err,'err');
+      })
+    },
     getListData(type) {
       switch (type) {
-        case "GK":
+        case "DK":
           return this.tableDataGK;
         case "TK":
           return this.tableDataTK;
@@ -419,8 +476,9 @@ export default {
           this.$message.success('添加成功')
           this.getGuiHuaListShebei()
         }
-        console.log(res,'addGuiHuaShebei');
-        
+      })
+      .catch(error=>{
+        console.log(error);
       })
     },
     getGuiHuaListShebeiByid(id){
@@ -430,12 +488,13 @@ export default {
         if(res.code==200){
           let data=res.data
           
-          console.log(res.data,'getGuiHuaListShebeiByid');
+          console.log(data,'getGuiHuaListShebeiByid');
           switch (data.expandDto.deviceType){
             case 'TK':{
               if(data.taskType=='disturb'){
                 this.activeName='GRXH'
                 let formAdd={
+                  id:id,
                   name:data.taskName,
                   time: data.executeTime,
                   disturbDto: data.expandDto.tkDisturbDto
@@ -444,40 +503,32 @@ export default {
               }else{
                 this.activeName='MNXH'
                 let MNtopformAdd={
+                  id:id,
                   name: data.taskName,
                   time: data.executeTime,
                   disturbDto: data.expandDto.tkSimulateDTOList
                 }
                 this.Mndata=MNtopformAdd
                 console.log(this.Mndata,'MndataMndata');
-                
               }
-
-            break;
-
+              break;
             }
             case 'LK':{
               this.Grdata=data.lkDisturbDto
               this.Mndata=data.lkSimulateDTOList
-            break;
-
+              break;
             }
-              
-
           }
-
-
-
         }
       })
       .catch(error => {
-                console.error('请求失败:', error); // 避免 Uncaught Error
-                this.$message.error('网络错误，请求失败');
-            });
+        console.error('请求失败:', error); // 避免 Uncaught Error
+        this.$message.error('网络错误，请求失败');
+      });
     },
     //获取规划方案
     getGuiHuaListShebei() {
-      getGuiHuaListShebei(this.cansshudata.deviceId,1,1000)
+      getGuiHuaListShebei(this.cansshudata.deviceId,1,1000,this.planId)
         .then((res) => {
           return res.data;
         })
@@ -506,7 +557,7 @@ export default {
               case "LK":
                 this.tableDataLK.push(item);
                 break;
-              case "GK":
+              case "DK":
                 this.tableDataGK.push(item);
                 break;
             }
@@ -517,7 +568,12 @@ export default {
 
     //模拟模版
     getTongKangMN() {
-      getTongKangMN()
+      console.log(this.planId,'getTongKangMN');
+      
+      let param={
+        planId:this.planId
+      }
+      getTongKangMN(param)
         .then((res) => {
           return res.data;
         })
@@ -564,7 +620,7 @@ export default {
     display: flex;
     flex-flow: column ;
     .plandesignbox {
-        // height: 100%;
+        height: calc(100% - 50px);
         flex-grow: 1;
         .tabesstyle{
             height: calc(100% - 50px);
@@ -692,7 +748,7 @@ export default {
     width: 40%;
     height: 100%;
     color: #fff;
-    overflow: auto;
+    // overflow: auto;
     border-right: 1px solid #ffffff4c;
     .XHMNBoxleftmain.selected {
       background: #1c735e;
@@ -736,6 +792,7 @@ export default {
     width: 60%;
     height: 100%;
     display: flex;
+
     flex-flow: column;
     ::v-deep .el-form {
       width: 100%;

@@ -144,10 +144,7 @@
           >
             <el-input
               v-model.number="localFormAdd.param.sweepEndRate"
-              @blur="
-                changPL();
-                changeZZPL(localFormAdd.param.sweepEndRate);
-              "
+              @blur="changPL();changeZZPL(localFormAdd.param.sweepEndRate);"
               type="number"
               placeholder="跳频终止频率"
             ></el-input>
@@ -159,15 +156,7 @@
             <el-input
               v-model.number="localFormAdd.param.sweepNum"
               type="number"
-              @blur="
-                changPL();
-                handleTimeInput(
-                  localFormAdd.param.sweepNum,
-                  256,
-                  0,
-                  'tiaodian'
-                );
-              "
+              @blur="changPL();handleTimeInput(localFormAdd.param.sweepNum,256,0,'tiaodian');"
               placeholder="0~256"
             ></el-input>
           </el-form-item>
@@ -175,14 +164,7 @@
             <el-input
               v-model.number="localFormAdd.param.sweepSpeed"
               type="number"
-              @blur="
-                handleTimeInput(
-                  localFormAdd.param.sweepSpeed,
-                  2000,
-                  5,
-                  'tiaosu'
-                )
-              "
+              @blur="handleTimeInput(localFormAdd.param.sweepSpeed,2000,5,'tiaosu')"
               placeholder="5~2000"
             ></el-input>
           </el-form-item>
@@ -440,13 +422,18 @@ export default {
       this.optionSet(key);
     },
     BoxleftClick(params, index) {
-      this.selectedIndex = index;
-      this.localFormAdd = JSON.parse(JSON.stringify(params));
-      this.Boxright = true;
-      this.optionSet(params.signalType);
-      if (params.signalType === 1) {
-        this.changPL();
-      }
+        console.log(params,'BoxleftClickBoxleftClick');
+        this.pinlvji=params.param.hopRateList
+
+
+        this.selectedIndex = index;
+        this.localFormAdd = JSON.parse(JSON.stringify(params));
+        this.Boxright = true;
+        this.optionSet(params.signalType);
+
+        // if (params.signalType === 1) {
+        //     this.changPL();
+        // }
     },
 
 

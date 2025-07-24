@@ -36,7 +36,7 @@
                     <div class="designboxContent">
                         <div class="contentData" v-for="(item, index) in getListData(allListitme.type)" :key="index">
                             <div class="custom-checkbox" >
-                                <el-checkbox   v-model="item.checked"></el-checkbox>
+                                <el-checkbox disabled  v-model="item.selected"  ></el-checkbox>
                             </div>
                             <div class="contentName">
                                 <span>{{item.deviceName}}</span>
@@ -44,10 +44,10 @@
                             <div class="JWd">
                                 <el-form   :inline="true">
                                     <el-form-item label="经度">
-                                        <el-input v-model="item.longitude" placeholder="经度"></el-input>
+                                        <el-input v-model="item.longitude" placeholder="经度" @change='LongLatChange(item)'></el-input>
                                     </el-form-item>
                                     <el-form-item label="纬度">
-                                        <el-input v-model="item.latitude" placeholder="纬度"></el-input>
+                                        <el-input v-model="item.latitude" placeholder="纬度"  @change='LongLatChange(item)'></el-input>
                                     </el-form-item>
                                 </el-form>
                             </div>
@@ -69,7 +69,7 @@
       :visible.sync="innerVisible"
       v-if="innerVisible"
       append-to-body>
-      <fangan-guihua-pop :cansshudata='cansshudata' @closeDialogZD='closeDialogZD' ></fangan-guihua-pop>
+      <fangan-guihua-pop :cansshudata='cansshudata' :planId='updatadata.planId' @closeDialogZD='closeDialogZD' ></fangan-guihua-pop>
     </el-dialog>
 
     <el-dialog title="任务列表" :visible.sync="dialogTableVisible" append-to-body>
@@ -84,7 +84,7 @@
 <script>
 import FanganGuihuaPop  from "@/components/xlghkzxt/components/Trainingplanning/fagh/fanganguihuapop.vue";
 import tittleBg from "@/components/chartBox/tittleBackground.vue"
-import {getShebeiList,addGuiHua,getGuiHua,getGuiHuaxiafa} from "@/api/api";
+import {getShebeiList,addGuiHua,getGuiHua,getGuiHuaxiafa,getGHdevice,postGHdevice} from "@/api/api";
 export default {
     components: {
         FanganGuihuaPop,
@@ -120,44 +120,23 @@ export default {
                 },
                 {
                     name:'光抗对抗设备参数配置',
-                    type:'GK'
+                    type:'DK'
                 }
             ],
             tableDataTK: [
-                {
-                    checked:false,
-                    deviceCode:'',
-                    deviceName:'111111111',
-                    longitude:'',
-                    latitude:'',
-                },
+                
             ],
             tableDataLK: [
-                {
-                    checked:false,
-                    deviceCode:'',
-                    deviceName:'111111111',
-                    longitude:'',
-                    latitude:'',
-                },
             ],
             tableDataGK: [
-                {
-                    checked:false,
-                    deviceCode:'',
-                    deviceName:'111111111',
-                    longitude:'',
-                    latitude:'',
-                },
             ],
         }
     },
     created(){
-        this.getShebeiList()
+        // this.getShebeiList()
     },
     watch:{ 
         updatadata(){
-
             if(this.updatadata.planId){
             this.formAdd=this.updatadata
             }else{
@@ -173,16 +152,72 @@ export default {
     mounted() { 
         if(this.updatadata.planId){
             this.formAdd=this.updatadata
-            }else{
-                this.formAdd={
-                    hdnm:'',
-                    name:'',
-                    scenario:'',
-                }
+            this.getGHdevice()
+         }else{
+            this.formAdd={
+                hdnm:'',
+                name:'',
+                scenario:'',
             }
-        
+        }
     },
     methods: { 
+        LongLatChange(param){
+            let paramdata={
+                id:param.id,
+                deviceId:param.deviceId,
+                longitude:param.longitude,
+                latitude:param.latitude,
+                planId:this.formAdd.planId
+            }
+            this.updataGHdevice(paramdata)
+            // console.log(param,this.formAdd,paramdata,'paramparam');
+            
+        },
+        //修改规划设备
+        updataGHdevice(params){
+            postGHdevice(params).then(res=>{
+                console.log(res,'postGHdevice');
+                if(res.data.code==200){
+                    this.$message.success('修改成功')
+                    this.getGHdevice()
+                }
+            }).catch(error=>{
+                console.log(error);
+            })
+        },
+        //获取规划设备列表
+        getGHdevice(){
+            // let param={
+            //     planId:this.formAdd.planId
+            // }
+            getGHdevice(this.formAdd.planId).then(res=>{
+                return res.data
+            }).then(res=>{
+                if(res.code==200){
+                    let listdata=res.data.list
+                    console.log(res,'getGHdevice');
+                    this.tableDataTK=[]
+                    this.tableDataLK=[]
+                    this.tableDataGK=[]
+                    listdata.forEach(item => {
+                        switch (item.systemType){
+                            case 'TK':
+                                this.tableDataTK.push(item)
+                                break;
+                            case 'LK':
+                                this.tableDataLK.push(item)
+                                break;
+                            case 'DK':
+                                this.tableDataGK.push(item)
+                                break;
+                        }
+                    });
+
+                }
+            }).catch(err=>console.log(err))
+        },
+
         closeDialogZD(){
             this.innerVisible = false
         },
@@ -198,6 +233,8 @@ export default {
                     this.$message.success('成功下发')
                 }
                 
+            }).catch(error=>{
+                console.log(error);
             })
         },
         
@@ -214,6 +251,9 @@ export default {
                         this.$emit('closeDialogZD')
                     }
                 })
+                .catch(error=>{
+                    console.log(error);
+                })
             }
 
         },
@@ -226,11 +266,13 @@ export default {
                 if(res.data.code==200){
                     this.gridData = res.data.data.list;
                 }
+            }).catch(error=>{
+                console.log(error);
             })
         },
         getListData(type){
             switch (type){
-                case 'GK':
+                case 'DK':
                     return this.tableDataGK
                 case 'TK':
                     return this.tableDataTK
@@ -253,14 +295,14 @@ export default {
                 if(res.code==200){
                     let listdata=res.data.list
                     listdata.forEach(item => {
-                        switch (item.deviceType){
+                        switch (item.systemType){
                             case 'TK':
                                 this.tableDataTK.push(item)
                                 break;
                             case 'LK':
                                 this.tableDataLK.push(item)
                                 break;
-                            case 'GK':
+                            case 'DK':
                                 this.tableDataGK.push(item)
                                 break;
                         }
@@ -347,6 +389,7 @@ export default {
         overflow: auto;
         padding: 0 20px;
         .plandesignbox{
+            height: 100%;
             .designboxTittle{
                 width: 100%;
             }

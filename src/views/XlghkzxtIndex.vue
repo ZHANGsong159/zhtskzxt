@@ -41,10 +41,10 @@ import xlghkzxtMenu from "@/components/xlghkzxtMenu.vue";
 import dialogPinPU from "@/components/xlghkzxt/components/PinPu/dialogPinPU.vue";
 import sbglBOX  from "@/components/xlghkzxt/components/SystemManagement/sbgl/sbglBox.vue";
 import xhmnmbBox from "@/components/xlghkzxt/components/TKmoban/MNmodle/xhmnmbBox.vue";
-import leidaxhmnmbBox from "@/components/xlghkzxt/components/LKmoban/leidaxhmnmbBox.vue";
+import leidaxhmnmbBox from "@/components/xlghkzxt/components/LKmoban/MNmodle/leidaxhmnmbBox.vue";
 
 import xhgrmbBox from '@/components/xlghkzxt/components/TKmoban/RGmodle/xhgrmbBox.vue';
-import leidaxhgrmbBox from '@/components/xlghkzxt/components/LKmoban/leidaxhgrmbBox.vue';
+import leidaxhgrmbBox from '@/components/xlghkzxt/components/LKmoban/RGmodle/leidaxhgrmbBox.vue';
 
 import bspzBOX from '@/components/xlghkzxt/components/SystemManagement/bspz/bspzBox.vue';
 import bhpdBOX from '@/components/xlghkzxt/components/SystemManagement/bhpd/bhpdBox.vue';

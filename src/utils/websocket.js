@@ -14,6 +14,8 @@ class WebSocketService {
 
         this.socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
+            // let time=new Date().getTime();
+
             console.log('收到消息:', data);
             this._executeCallback('message', data);
         };

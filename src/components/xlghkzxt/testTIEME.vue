@@ -1,153 +1,263 @@
 <template>
-  <div id="my-maptext"></div>
+  <div class="spectrum-container">
+    <div class="chart-container">
+      <div id="main-chart" ref="mainChart"></div>
+    </div>
+    <div class="chart-container">
+      <div id="detail-chart" ref="detailChart"></div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { TCesium } from "./components/js/TCesium";
-import geojson from "@/assets/country/china.json";
+import Highcharts from 'highcharts'
+import exporting from 'highcharts/modules/exporting'
+import exportData from 'highcharts/modules/export-data'
+import accessibility from 'highcharts/modules/accessibility'
+
+// 初始化Highcharts模块
+exporting(Highcharts)
+exportData(Highcharts)
+accessibility(Highcharts)
 
 export default {
-  name: "HomeView",
+  name: 'SpectrumChart',
   data() {
     return {
-      viewer: null,
-    };
+      mainChart: null,
+      detailChart: null,
+      spectrumData: []
+    }
   },
   mounted() {
-    this.init();
+    this.initCharts()
+    this.loadData()
   },
-
+  beforeDestroy() {
+    // 销毁图表实例
+    if (this.mainChart) {
+      this.mainChart.destroy()
+    }
+    if (this.detailChart) {
+      this.detailChart.destroy()
+    }
+  },
   methods: {
-    init() {
-      this.mapObject = new TCesium("my-maptext"); // 注意，这个my-map就是我们div的id
-      this.viewerBF = this.mapObject.viewer; //将创建的地图资源进行赋值
-      // setTimeout(() => {
-      //   this.flyToTarget(117.000923, 36.675807, 12000000, 0, -90, 0, 2);
-      // }, 2000);
-      // 添加一个基本标签
-      var entity  = this.viewerBF.entities.add({
-        name: '标点',
-        position: Cesium.Cartesian3.fromDegrees(117.000923, 36.675807, 10),
-        label: { //文字标签
-          text: "文字标签文字标签文字标签",
-          font: '500 30px Helvetica',// 15pt monospace
-          scale: 0.5,
-          style: Cesium.LabelStyle.FILL,
-          fillColor: Cesium.Color.WHITE,
-          pixelOffset: new Cesium.Cartesian2(0, -65), //偏移量
-          showBackground: true,
-          backgroundColor: new Cesium.Color(0, 0, 0, 0)
+    // 模拟或加载实际频谱数据
+    loadData() {
+      // 这里替换为实际的API调用
+      // this.fetchSpectrumData().then(data => {
+      //   this.spectrumData = data
+      //   this.updateCharts()
+      // })
+      
+      // 模拟数据
+      this.generateMockData().then(data => {
+        this.spectrumData = data
+        this.updateCharts()
+      })
+    },
+    
+    // 生成模拟频谱数据
+    generateMockData() {
+      return new Promise(resolve => {
+        const data = []
+        for (let i = 0; i < 1000; i++) {
+          // 模拟几个不同频率的峰值
+          const value = Math.random() * 0.5 + 
+            Math.sin(i / 20) * 0.5 + 
+            Math.sin(i / 5) * 0.3 + 
+            Math.sin(i / 50) * 0.2
+          data.push([i, Math.max(0, value)])
+        }
+        resolve(data)
+      })
+    },
+    
+    // 初始化图表
+    initCharts() {
+      // 主图表配置
+      this.mainChart = Highcharts.chart(this.$refs.mainChart, {
+        chart: {
+          type: 'line',
+          zoomType: 'x',
+          panning: true,
+          panKey: 'shift',
+          events: {
+            selection: event => this.handleSelection(event)
+          }
         },
-        billboard:{
-            image: require('@/assets/img/组 33@1x.png'),
-            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            width:187*2,
-            height: 178*2,
-            scale: 0.5,
+        title: {
+          text: '频谱图 - 框选区域查看细节'
+        },
+        xAxis: {
+          title: {
+            text: '频率 (Hz)'
+          }
+        },
+        yAxis: {
+          title: {
+            text: '振幅'
+          },
+          min: 0
+        },
+        legend: {
+          enabled: false
+        },
+        plotOptions: {
+          series: {
+            cursor: 'pointer',
+            point: {
+              events: {
+                click: event => this.handlePointClick(event.point)
+              }
+            }
+          }
+        },
+        series: [{
+          name: '频谱',
+          data: [],
+          color: '#06C',
+          lineWidth: 1,
+          marker: {
+            enabled: false
+          }
+        }],
+        tooltip: {
+          valueDecimals: 2
+        },
+        exporting: {
+          enabled: true
         }
       })
-      console.log(entity);
-      
-      // this.viewerBF.zoomTo(entity )
-      
 
-      
-    },
-
-    /**
-     * 相机视角移动函数 - by wjw
-     * @param lon 目标经度
-     * @param lat 目标纬度
-     * @param height  相机高度
-     * @param heading  航向角
-     * @param pitch  俯仰角
-     * @param roll   距中心的距离，以米为单位
-     * @param duration  飞行时间
-     */
-    flyToTarget(lon, lat, height, heading, pitch, roll, duration) {
-      this.viewerBF.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(lon, lat, height), // 经纬度以及相机离地高度
-        orientation: {
-          heading: Cesium.Math.toRadians(heading), // 航向角
-          pitch: Cesium.Math.toRadians(pitch), // 俯仰角
-          roll: roll, // 距中心的距离，以米为单位
+      // 细节图表配置
+      this.detailChart = Highcharts.chart(this.$refs.detailChart, {
+        chart: {
+          type: 'line'
         },
-        duration: duration, // 飞行时间
-      });
-
-      setTimeout(() => {
-        this.addBoundaryWall();
-      }, 2000);
-    },
-
-    // 多维数组转一维数组
-    flatten(arr) {
-      return [].concat(
-        ...arr.map((x) => (Array.isArray(x) ? this.flatten(x) : x))
-      );
-    },
-
-    //获取渐变色
-    getColorRamp(val){
-      if(val==null){
-        val={1:"#2CE5BA",0.90:"#2CE5BA",0.8:"#2CE5BA2F",0.3:"#2CE5BA"}
-      }
-      
-      var ramp=document.createElement('canvas');
-      ramp.width=1;
-      ramp.height=100;
-      var ctx=ramp.getContext('2d');
-      var grd=ctx.createLinearGradient(0,0,0,100);
-
-
-      for(var key in val){
-        grd.addColorStop(1-Number(key),val[key]);					
-      }
-      ctx.fillStyle=grd;
-      ctx.fillRect(0,0,1,100);
-      return ramp;
-
-
-    },
-    addBoundaryWall() {
-      // 绘制墙体的数据，将多维数组转成一维数组
-      let coordinates = this.flatten(geojson.features[0].geometry.coordinates[0]);
-
-      // 因为地图影像数据是贴地的，所以给个墙的高度设为负数则会有厚度的感觉
-      // 墙体最高为0
-      let maximumHeights = new Array(coordinates.length / 2).fill(6000);
-      // 墙体最低为-1600
-      let minimumHeights = new Array(coordinates.length / 2).fill(0);
-      let position = Cesium.Cartesian3.fromDegreesArray(coordinates);
-
-      const wallEntity = this.viewerBF.entities.add({
-        id: "wall",
-        wall: {
-          positions: position,
-          maximumHeights: maximumHeights,
-          minimumHeights: minimumHeights,
-
-          // material: Cesium.Color.fromCssColorString("rgba(0,255,255,0.4)")
-          material: new Cesium.ImageMaterialProperty({
-            transparent:true,//设置透明
-            image:this.getColorRamp()//Canvas
-          }),
-          outline: false, // 关闭默认边框
+        title: {
+          text: '选中区域的详细频谱'
         },
-      });
-      this.viewerBF.zoomTo(wallEntity);
+        xAxis: {
+          title: {
+            text: '频率 (Hz)'
+          },
+          min: 0,
+          max: 100
+        },
+        yAxis: {
+          title: {
+            text: '振幅'
+          },
+          min: 0
+        },
+        legend: {
+          enabled: false
+        },
+        series: [{
+          name: '详细频谱',
+          data: [],
+          color: '#06C',
+          lineWidth: 1,
+          marker: {
+            enabled: false
+          }
+        }],
+        tooltip: {
+          valueDecimals: 2
+        },
+        exporting: {
+          enabled: true
+        }
+      })
     },
-  },
-};
+    
+    // 更新图表数据
+    updateCharts() {
+      if (!this.mainChart || !this.detailChart) return
+      
+      this.mainChart.series[0].setData(this.spectrumData)
+      // 初始显示前100个点
+      this.updateDetailChart(0, 100)
+    },
+    
+    // 处理框选事件
+    handleSelection(event) {
+      if (event.xAxis) {
+        const min = Math.floor(event.xAxis[0].min)
+        const max = Math.ceil(event.xAxis[0].max)
+        this.updateDetailChart(min, max)
+      }
+      return true
+    },
+    
+    // 处理点击事件
+    handlePointClick(point) {
+      const range = 50 // 显示点击点前后50个点
+      const min = Math.max(0, point.x - range)
+      const max = Math.min(this.spectrumData.length - 1, point.x + range)
+      this.updateDetailChart(min, max)
+      
+      // 在主图上高亮显示选中区域
+      this.highlightSelection(min, max)
+    },
+    
+    // 更新细节图表
+    updateDetailChart(min, max) {
+      const filteredData = this.spectrumData.filter(
+        point => point[0] >= min && point[0] <= max
+      )
+      
+      this.detailChart.series[0].setData(filteredData)
+      this.detailChart.xAxis[0].setExtremes(min, max)
+      
+      // 在主图上高亮显示选中区域
+      this.highlightSelection(min, max)
+    },
+    
+    // 在主图上高亮选中区域
+    highlightSelection(min, max) {
+      this.mainChart.xAxis[0].removePlotBand('selection-band')
+      this.mainChart.xAxis[0].addPlotBand({
+        from: min,
+        to: max,
+        color: 'rgba(68, 170, 213, 0.2)',
+        id: 'selection-band'
+      })
+    },
+    
+    // 实际项目中从API获取数据的方法
+    async fetchSpectrumData() {
+      try {
+        const response = await this.$http.get('/api/spectrum')
+        return response.data.map((item, index) => [index, item.amplitude])
+      } catch (error) {
+        console.error('获取频谱数据失败:', error)
+        return []
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>
-#my-map {
+.spectrum-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  /* background-color: black; */
-  background-color: transparent;
+}
+
+.chart-container {
+  width: 100%;
+  height: 400px;
+  margin-bottom: 20px;
+}
+
+#main-chart,
+#detail-chart {
+  width: 100%;
+  height: 100%;
 }
 </style>
-

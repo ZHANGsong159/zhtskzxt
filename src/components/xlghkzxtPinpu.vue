@@ -10,8 +10,8 @@
     <div class="pinPuBody">
       <div
         class="pinPuBody-box"
-        v-for="(item, index) in leftPinpu"
-        :key="index"
+        v-for="(item) in leftPinpu"
+        :key="item.deviceId"
         @click="clickPinPu(item.deviceId)"
       >
         <div class="pinPuBody-box-tittle">
@@ -25,7 +25,12 @@
           />
         </div>
         <div class="pinPuBody-box-body">
-          <hightEcharts :shebeiID='item.deviceId.toString()'></hightEcharts>
+          <hightEcharts 
+          :shebeiID='item.deviceId.toString()' 
+          :messagesdata='item.messagesdata'  
+          :minvalue='item.minvalue'
+          :maxvalue="item.maxvalue"
+          :config="{ url: wssUrl, }" ></hightEcharts>
         </div>
       </div>
     </div>
@@ -41,21 +46,21 @@ export default {
   data() {
     return {
       messages:[],
-      leftPinpu: [
-        {
-          deviceName: "",
-          deviceId: "",
-        },
-      ],
+      ymessages:[],
+      leftPinpu: [],
+      wssUrl: 'ws://192.168.2.167:8001/websocket/push',
     };
   },
   methods:{
     getShebeiList(){
-      getShebeiList().then(res=>{
+      let parame={
+        "page":1,
+        "pageSize":1000
+      }
+      getShebeiList(parame).then(res=>{
         return res.data
       }).then(res=>{
         if(res.code==200){
-          console.log(res.data.list,'getShebeiListgetShebeiList');
           let TKdatalist=res.data.list.filter(item=>{
             return item.deviceType=='TK'
           })
@@ -73,6 +78,42 @@ export default {
   },
   created() {
     this.getShebeiList()
+  },
+  mounted() { 
+
+    this.$store.state.socket.on('message', (data) => {
+
+                // if(data.deviceId.toString()==this.shebeiID){
+                if(data.msgCode=="rate_data"){
+                  let min=data.ratePushDTO.startRate
+                  let max=data.ratePushDTO.endRate
+                  this.allFBL=data.ratePushDTO.resolution
+                  if(data.ratePushDTO.segmentStartRate==min){
+                      this.messages=[]
+                      this.ymessages=[]
+                      this.minvalueZJ=min
+                      this.maxvalueZJ=max
+                  }
+                  data.ratePushDTO.values.forEach((item,index)=>{
+                      this.messages.push([(index*100/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
+                      this.ymessages.push(item)
+                  })
+                  this.leftPinpu.forEach(item=>{ 
+                    if(item.deviceId==data.deviceId){
+                      this.$set(item,'messagesdata',{
+                        messages:this.messages,
+                        ymessages:this.ymessages
+                      })
+                      this.$set(item,'minvalue',min)
+                      this.$set(item,'maxvalue',max)
+
+                    }
+                  })
+                }
+                  
+
+    }); 
+    
   },
   
 

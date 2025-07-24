@@ -6,7 +6,6 @@
 
 <script>
 import WebSocketService from './utils/websocket.js';
-import {getCmdRate}  from "@/api/api.js"
 
 
 
@@ -16,11 +15,16 @@ export default {
             socket: null,
             messages: [],
             ymessages:[],
+            reconnectAttempts: 0,
+            reconnectTimer: null,
         };
     },
     methods: {
         connectWebSocket() {
-            this.socket = new WebSocketService('ws://192.168.2.167:8001/websocket/push');
+            // this.socket = new WebSocketService('ws://192.168.2.167:8001/websocket/push');
+            this.socket = new WebSocketService(`ws://${process.env.VUE_APP_API_BASE_URL || 'localhost'}:8001/websocket/push`);
+
+            
             this.socket.connect();
             this.$store.state.socket=this.socket
         },
@@ -33,12 +37,6 @@ export default {
             if (this.socket) {
                 this.socket.close();
             }
-        },
-        //发送频谱请求接口
-        getCmdRateFun(){
-          getCmdRate().then(res => {
-            return res.data
-          })
         },
     },
     mounted() {

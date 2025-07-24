@@ -39,13 +39,13 @@
       <!-- 对应 tab 展示区域 -->
       <div class="tab-show">
         <div v-if="tab == 0">
-          <pinpuBoxPPSM> </pinpuBoxPPSM>
+          <pinpuBoxPPSM v-if="tab == 0"> </pinpuBoxPPSM>
         </div>
         <div v-if="tab == 1">
-          <pinpuBoxXHFX> </pinpuBoxXHFX>
+          <pinpuBoxXHFX v-if="tab == 1"> </pinpuBoxXHFX>
         </div>
         <div v-if="tab == 2">
-          <pinpuBoxWTFX> </pinpuBoxWTFX>
+          <pinpuBoxWTFX v-if="tab == 2"> </pinpuBoxWTFX>
         </div>
       </div>
     </div>
@@ -53,9 +53,9 @@
 </template>
 <script>
 // import pinpuBoxXHFXVue from './pinpuBoxXHFX.vue';
-import pinpuBoxPPSM from '../pinpuPage/pinpuBoxPPSM.vue'
-import pinpuBoxXHFX from '../pinpuPage/pinpuBoxXHFX.vue'
-import pinpuBoxWTFX from '../pinpuPage/pinpuBoxWTFX.vue'
+import pinpuBoxPPSM from './pinpuBoxPPSM.vue'
+import pinpuBoxXHFX from './pinpuBoxXHFX.vue'
+import pinpuBoxWTFX from './pinpuBoxWTFX.vue'
 export default {
   components: {
     // pinpuBoxXHFXVue,

@@ -42,12 +42,11 @@
         </div>
         <div class="rightMain">
             <div class="rightMain-top">
-                <hightEchartsVue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hightEchartsVue>       
+                <hight-echarts-vue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hight-echarts-vue>       
             </div>
-            <div class="rightMain-bottom">
+            <!-- <div class="rightMain-bottom">
                 <hightEchartsVue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hightEchartsVue>       
-
-            </div>
+            </div> -->
         </div>
         <div class="rightBox">
             <el-collapse v-model="activeNames" @change="handleChange" v-for="(item,index) in collapseList" :key='index'>
@@ -60,18 +59,25 @@
 
                         <div class="rightButton">
                             <el-button type="primary" class="startButton" size="small" v-if="pdsmStart" >
-                                 xx跳/秒</el-button>
+                                 1000跳/秒</el-button>
                         </div>
                     </template>
                     <div class="collapseBox">
                         <div class="textBox">
                             <div class="title">频率集(MHz)</div>
                             <div class="mainbody">
+                                <div
+                                    class="mainBox"
+                                    v-for="(item, index) in pinlvji"
+                                    :key="index"
+                                >
+                                    {{ item }}
+                                </div>
                                 
                             </div>
-                            <div>开始时间：2024-05-16 05:15:11</div>
+                            <!-- <div>开始时间：2024-05-16 05:15:11</div>
                             <div>结束时间：2024-12-16 05:15:11</div>
-                            <div>调制样式：调制样式调制样式调制样式</div>
+                            <div>调制样式：调制样式调制样式调制样式</div> -->
                         </div>
                     </div>
 
@@ -83,12 +89,16 @@
     </div>
 </template>
 <script>
-import hightEchartsVue from '../PinPu/hightEchartsPLFX.vue';
+// import hightEchartsVue from '../PinPu/hightEchartsPLFX.vue';
+// import hightEchartsVue from '@/components/xlghkzxt/components/PinPu/hightEchartsPLFX.vue';
+import hightEchartsVue from '@/components/xlghkzxt/components/PinPu/hightEchartsPPSM.vue';
+
 import {getCmdRate}  from "@/api/api.js"
 export default {
     components: { hightEchartsVue },
     data() {
         return {
+            pinlvji:[],
             activeNames:'',
             PPSMshebeiID:'',
             pdsmStart:true,
@@ -145,6 +155,36 @@ export default {
     
     },
     methods: {
+        generateAndSortNumbers(min, max, step) {
+            // 生成随机数
+            const randomNumbers = this.generateRandomNumbers(min, max, step);
+            // 排序（升序）
+            this.sortedRandomNumbers = randomNumbers.sort((a, b) => a - b);
+            this.pinlvji = this.sortedRandomNumbers;
+        },
+        // 生成随机数
+        generateRandomNumbers(minvalue, maxvalue, allstep) {
+            const result = [];
+            const min = minvalue;
+            const max = maxvalue;
+            const step = 0.025; // 设置步长为0.025
+            // 计算可能的数值范围
+            const minSteps = Math.ceil(min / step);
+            const maxSteps = Math.floor(max / step);
+
+            for (let i = 0; i < allstep; i++) {
+                // 生成随机步数
+                const randomSteps =
+                Math.floor(Math.random() * (maxSteps - minSteps + 1)) + minSteps;
+
+                // 计算对应的数值
+                const randomNum = randomSteps * step;
+
+                result.push(parseFloat(randomNum.toFixed(3))); // 保留3位小数避免浮点数精度问题
+            }
+
+            return result;
+        },
         handleChange(){
 
         },
@@ -161,7 +201,7 @@ export default {
                 return res.data
             }).then(res=>{
                 if(res.code==200){
-                    console.log();
+                    console.log(res);
                 }
             })
             .catch(error => {
@@ -173,24 +213,29 @@ export default {
             this.getCmdRateFun(this.wtfxFrom)
         }
     },
+    created(){
+    },
     mounted() {
+        this.generateAndSortNumbers(0, 100, 1000)
         this.$store.state.socket.on('message', (data) => {
-                console.log(data,'message');
-                let min=data.ratePushDTO.startRate
-                let max=data.ratePushDTO.endRate
-                this.allFBL=data.ratePushDTO.resolution
-                if(data.ratePushDTO.segmentStartRate==min){
-                    this.messages=[]
-                    this.ymessages=[]
+                if(data.msgCode=="rate_data"){
+                    let min=data.ratePushDTO.startRate
+                    let max=data.ratePushDTO.endRate
                     this.minvalueZJ=min
                     this.maxvalueZJ=max
+                    this.allFBL=data.ratePushDTO.resolution
+                    if(data.ratePushDTO.segmentStartRate==min){
+                        this.messages=[]
+                        this.ymessages=[]
+              
+                    }
+                    data.ratePushDTO.values.forEach((item,index)=>{
+                        this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
+                        this.ymessages.push(item)
+                    })
+                    this.$store.state.messages=this.messages
+                    this.$store.state.ymessages=this.ymessages
                 }
-                data.ratePushDTO.values.forEach((item,index)=>{
-                    this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
-                    this.ymessages.push(item)
-                })
-                this.$store.state.messages=this.messages
-                this.$store.state.ymessages=this.ymessages
         });
     },
     watch:{
@@ -288,10 +333,7 @@ export default {
         box-sizing: border-box;
 
         .rightMain-top{
-            height: 50%;
-        }
-        .rightMain-bottom{
-            height: 50%;
+            height: 100%;
         }
     }
     .rightBox{
@@ -362,6 +404,22 @@ export default {
         justify-content: center;
         align-items: flex-start;
         text-align: left;
+        .mainbody{
+            display: flex;
+            flex-flow: row wrap;
+            height: 100px;
+            overflow: auto;
+        }
+
+        .mainBox {
+            width: 25%;
+            height: 30px;
+            background: #ffffff26;
+            border: 1px solid #ffffff4c;
+            color: #fff;
+            text-align: center;
+            line-height: 30px;
+          }
     }
 }
 ::v-deep .el-form-item__label{

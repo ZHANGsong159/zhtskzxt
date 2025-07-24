@@ -36,19 +36,18 @@
                 </el-table-column>
                 <el-table-column
                     prop="minRate"
-                    label="最小频率"
+                    label="射频频率下限"
                     align='center'>
                     <template scope="scope">
-                        {{scope.row.minRate==null?'--':scope.row.minRate}}
+                        {{scope.row.paramsnew.minRfFreq==null?'--':scope.row.paramsnew.minRfFreq}}
                     </template>
-                    
                 </el-table-column>
                  <el-table-column
                     prop="maxRate"
-                    label="最大频率"
+                    label="射频频率上限"
                     align='center'>
                     <template scope="scope">
-                        {{scope.row.maxRate==null?'--':scope.row.maxRate}}
+                        {{scope.row.paramsnew.maxRfFreq==null?'--':scope.row.paramsnew.maxRfFreq}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -73,8 +72,6 @@
             </el-pagination>
         </div>
     </div>
-
-
     <el-dialog
       width="80%"
       :title="dialogTitle"
@@ -87,8 +84,8 @@
 </template>
 <script>
 import '@/assets/css/mbBox.less';
-import mnDialogVue from './mnDialog.vue';
-import { getTongKangMN,deleteTongKangMN } from '@/api/api'
+import mnDialogVue from './leikangPop.vue';
+import { getLeiKangMN,deleteLeiKangMN } from '@/api/api'
 export default {
     props: {
         closeDiaLog:{
@@ -112,24 +109,33 @@ export default {
                 id:'',
                 name:'',
                 time:'',
-                signalType:'',
-                gain:0,
-                simulateList:[],
+                param:{
+                minRfFreq:'',
+                maxRfFreq:'',
+                paramBody:{
+                    freqType:'',
+                    signalType:'',
+                    cwFreq:'',
+                    cwLevel:'',
+                    pulseSafeDelay:'',
+                    signalCollection:[]
+                }
+                },
             },
             BoxleftList:[],
         }
     },
     methods:{
         getShebeiList(){
-            console.log('getTongKangMN');
             
-            this.getTongKangMN()
+            this.getLeiKangMN()
+            this.innerVisible=false
         },
         // 分页
         handleCurrentChange(parame){
             console.log(parame,'parameparameparame');
             this.pageNum=parame
-            this.getTongKangMN()
+            this.getLeiKangMN()
         },
 
         handleClickUpdata(params,copy){
@@ -142,32 +148,38 @@ export default {
                 this.dialogTitle='模版更新'
                 this.caozuotype='update'
             }
+            
+
             this.topForm.name=params.name
             this.topForm.time=params.time
+            this.topForm.param=params.paramsnew
+            this.topForm.wayNum=params.wayNum
+            this.topForm.createTime=params.createTime
 
-            if(JSON.parse(params.param)){
-                this.topForm.signalType=JSON.parse(params.param)[0].signalType
-                this.topForm.gain=JSON.parse(params.param)[0].gain
-                this.topForm.simulateList=JSON.parse(params.param)
-            }
+            // this.topForm.param.paramBody.freqType=this.topForm.param.paramBody.freqType.toString()
+            // this.topForm.param.paramBody.signalType=this.topForm.param.paramBody.signalType.toString()
+            console.log(this.topForm,JSON.parse(params.param) ,'paramsparamsparams');
+
+
             this.innerVisible=true
         },
         //列表删除
         handleClickDelete(params){
-            this.deleteTongKangMN(params.id)
+            this.deleteLeiKangMN(params.id)
         },
         //删除
-        deleteTongKangMN(id){
-            deleteTongKangMN(id).then(res=>{
+        deleteLeiKangMN(id){
+            deleteLeiKangMN(id).then(res=>{
                 console.log(res,'resresresres');
                 if(res.data.code==200){
                     this.$message.success('删除成功');
-                    this.getTongKangMN()
+                    this.getLeiKangMN()
                 }else{
                     this.$message.error('删除失败');
                 }
             }).catch(error=>{
                 console.log(error);
+                
             })
         },
         addMNMB(){
@@ -177,23 +189,36 @@ export default {
                 id:'',
                 name:'',
                 time:'',
-                signalType:'',
-                gain:0,
-                simulateList:[],
+                param:{
+                minRfFreq:'',
+                maxRfFreq:'',
+                paramBody:{
+                    freqType:'',
+                    signalType:'',
+                    cwFreq:'',
+                    cwLevel:'',
+                    pulseSafeDelay:'',
+                    signalCollection:[]
+                }
+                },
             },
             this.innerVisible=true
         },
         //获取列表数据
-        getTongKangMN(){
+        getLeiKangMN(){
         let params={
                 pageNum:this.pageNum,
                 pageSize:this.pageSize,
             }
-            getTongKangMN(params).then(res=>{
+            getLeiKangMN(params).then(res=>{
                 return res.data
             }) .then(res=>{
                 if(res.code==200){
                     this.tableData=res.data.list
+
+                    this.tableData.forEach(item=>{
+                        item.paramsnew=JSON.parse(item.param)
+                    })
                     this.total=res.data.total
                 }
             }).catch(err=>{
@@ -203,7 +228,7 @@ export default {
 
     },
     mounted(){
-        this.getTongKangMN()
+        this.getLeiKangMN()
  
     },
     

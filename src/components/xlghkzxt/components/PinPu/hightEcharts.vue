@@ -2,7 +2,7 @@
   <div class="pingPuBox">
     <div class="main">
       <!-- 频谱图 -->
-      <div class="linecharts" :id="shebeiID + 'pinpu'"></div>
+      <div class="linecharts" :id="shebeiID+'pinpu'"></div>
       <div class="neirong">
         <!--图例-->
         <div class="legend">
@@ -41,9 +41,20 @@ export default {
       type: Number,
       default: 1000,
     },
+    messagesdata: {
+      type: Object,
+      required: true,
+      default: () => ({
+        messages:[],
+        ymessages:[]
+      })
+    }
   },
   data() {
     return {
+      ws: null,          // WebSocket 实例
+      messagesnew: [],      // 独立的消息存储
+      socket: null,
       options: {
         chart: {
           zoomType: "x",
@@ -51,6 +62,7 @@ export default {
           polar: true,
           type: "line",
         },
+
         resetZoomButton: {
           // theme: { style: { display: 'none'} }
         },
@@ -58,6 +70,9 @@ export default {
         credits: {
           //版权
           enabled: false,
+        },
+        exporting: {
+          enabled: false
         },
         yAxis: {
           title: {
@@ -129,10 +144,11 @@ export default {
       maxNum: 80, //图例最大值
       minNum: 0, //图例最小值
       messages: [],
+      ymessages: [],
     };
   },
   methods: {
-    //发送频谱请求接口
+     //发送频谱请求接口
     async getCmdRateFun() {
       let params = {
         deviceId: this.shebeiID,
@@ -143,7 +159,7 @@ export default {
         })
         .then((res) => {
           if (res.code == 200) {
-            console.log(res, "getCmdRateFun");
+            console.log(res,params, "getCmdRateFun");
           }
         })
         .catch((error) => {
@@ -172,16 +188,17 @@ export default {
     },
     waterFallMove() {},
     waterFallLeave() {},
-    initMessage(max, min) {
+    initMessage(max,min) {
       var data = [];
       var yData = [];
-      data = this.$store.state.messages;
-      yData = this.$store.state.ymessages;
+      data = this.messages;
+      yData = this.ymessages;
+      console.log('initMessage瀑布图瀑布图瀑布图');
       // 折线图
       // console.log(yData,'瀑布图瀑布图瀑布图');
       //瀑布图
       // if(yData.length>0){
-      this.highInit(data, max, min);
+      this.highInit(data,max,min);
       this.queryChartList(yData);
 
       // }
@@ -194,11 +211,14 @@ export default {
       return num;
     },
     //频谱渲染值
-    highInit(data, max, min) {
+    highInit(data,max,min) {
       this.options.series[0].data = data;
-      this.options.xAxis.min = min;
-      this.options.xAxis.max = max;
-      Highcharts.chart(this.shebeiID + "pinpu", this.options);
+      this.options.xAxis.min=min;
+      this.options.xAxis.max=max;
+      console.log(this.shebeiID+'pinpu', this.options,'highInithighInit');
+      
+
+      Highcharts.chart(this.shebeiID+'pinpu', this.options);
     },
     // 创建颜色库
     setColormap() {
@@ -219,10 +239,7 @@ export default {
       let legendCanvas = document.createElement("canvas");
       legendCanvas.width = 1;
       let legendCanvasTemporary = legendCanvas.getContext("2d");
-      const imageData = legendCanvasTemporary.createImageData(
-        1,
-        that.colormap.length
-      );
+      const imageData = legendCanvasTemporary.createImageData(1,that.colormap.length);
       for (let i = 0; i < that.colormap.length; i++) {
         const color = that.colormap[i];
         imageData.data[imageData.data.length - i * 4 + 0] = color[0];
@@ -231,17 +248,7 @@ export default {
         imageData.data[imageData.data.length - i * 4 + 3] = 255;
       }
       legendCanvasTemporary.putImageData(imageData, 0, 0);
-      that.legend.drawImage(
-        legendCanvasTemporary.canvas,
-        0,
-        0,
-        1,
-        that.colormap.length,
-        50,
-        0,
-        200,
-        that.legend.canvas.height
-      );
+      that.legend.drawImage(legendCanvasTemporary.canvas,0,0,1,that.colormap.length,50, 0,200,that.legend.canvas.height);
     },
     // 创建瀑布图
     createWaterFallCanvas() {
@@ -264,18 +271,9 @@ export default {
             that.$refs[this.shebeiID].offsetHeight / that.waterFallHeight
           );
         }
-        console.log(
-          that.waterFallWidth,
-          canvasHeight * that.waterFallIndex + 1,
-          "瀑布图瀑布图瀑布图"
-        );
-        let imgOld = that.waterFall.getImageData(
-          0,
-          0,
-          that.waterFallWidth,
-          canvasHeight * that.waterFallIndex + 1
-        );
-
+        console.log(that.waterFallWidth,canvasHeight * that.waterFallIndex + 1,'瀑布图瀑布图瀑布图');
+        let imgOld = that.waterFall.getImageData(0,0,that.waterFallWidth,canvasHeight * that.waterFallIndex + 1);
+        
         const imageData = that.waterFall.createImageData(data.length, 1);
         for (let i = 0; i < imageData.data.length; i += 4) {
           const cindex = that.colorMapData(data[i / 4], 0, 130);
@@ -306,7 +304,7 @@ export default {
 
     queryChartList(data) {
       let hightEchartsbox = this.$refs[this.shebeiID].offsetHeight;
-      console.log(hightEchartsbox, "hightEchartsboxhightEchartsbox");
+      console.log(hightEchartsbox,'hightEchartsboxhightEchartsbox');
 
       let that = this;
       that.waterFallWidth = data.length;
@@ -339,27 +337,33 @@ export default {
     dianji() {
       console.log("dianjidianjidianjidianjidianjidianjidianji");
     },
+
+    
+  },
+  created(){
   },
   mounted() {
     let that = this;
+    this.getCmdRateFun()
     that.setColormap();
     that.createLegendCanvas();
-    // this.initMessage(this.maxvalue, this.minvalue)
-    this.highInit([], this.maxvalue, this.minvalue);
-    this.getCmdRateFun();
+    // console.log(this.messagesdata,'messagesdata');
+    
+    
+
+    
   },
   watch: {
-    "$store.state.messages": {
-      handler() {
-        this.initMessage(this.maxvalue, this.minvalue);
-      },
-      deep: true,
+    messagesdata(val){
+      this.messages=val.messages;
+      this.ymessages=val.ymessages;
+      this.initMessage(this.maxvalue,this.minvalue)
     },
   },
   beforeDestroy() {
     let that = this;
     clearInterval(that.timer);
-    that.getCmdRateStop();
+    this.getCmdRateStop()
   },
 };
 </script>

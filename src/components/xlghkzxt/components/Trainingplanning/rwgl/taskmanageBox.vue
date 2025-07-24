@@ -126,6 +126,8 @@ export default {
                         this.$message.success('保存成功');
                         this.$emit('closeDialogZD')
                     }
+                }).catch(error=>{
+                    console.log(error);
                 })
             }
 

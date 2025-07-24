@@ -66,7 +66,7 @@
     width="90%"
     append-to-body
     :before-close="handleClose">
-        <plandesignvue :updatadata='updatadata' @closeDialogZD='closeDialogZD'></plandesignvue>
+        <plandesignvue v-if="dialogVisible" :updatadata='updatadata' @closeDialogZD='closeDialogZD'></plandesignvue>
     </el-dialog>
 </div>
 </template>
@@ -107,6 +107,7 @@ export default {
             this.dialogVisible = false
         },
         addMNMB(){
+            this.updatadata = {}
             this.dialogVisible = true
             this.tittlename = '新建规划'
         },
@@ -136,6 +137,9 @@ export default {
                     this.tableData=res.data.data.list
                     this.total=res.data.total
                 }
+            }).catch((error)=>{
+                console.log(error);
+                 
             })
         },
         deleteGuiHua(id){
@@ -144,6 +148,8 @@ export default {
                     this.$message.success('删除成功');
                     this.getGuiHua()
                 }
+            }).catch(error=>{
+                console.log(error);
             })
         },
     },

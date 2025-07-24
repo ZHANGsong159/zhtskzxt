@@ -3,18 +3,6 @@
     <div class="main">
       <!-- 频谱图 -->
       <div class="linecharts" :id="shebeiID + 'pinpu'"></div>
-
-
-
-      <!-- 添加框选信息显示区域 -->
-      <div  class="selection-info">
-        {{ selectionInfo }}
-      </div>
-
-
-
-
-
       <div class="neirong">
         <!--图例-->
         <div class="legend">
@@ -37,25 +25,23 @@
 </template>
 <script>
 import Highcharts from "highcharts";
-import { getCmdRate, getCmdRateStop } from "@/api/api.js";
-
+import Boost from 'highcharts/modules/boost';
+Boost(Highcharts);
 export default {
   props: {
-    shebeiID: {
-      type: String,
-      default: "",
-    },
     minvalue: {
       type: Number,
       default: 0,
     },
-    maxvalue: {
       type: Number,
+    maxvalue: {
       default: 1000,
     },
   },
   data() {
     return {
+      chartInstance:null,
+      shebeiID:'',
       options: {
         chart: {
           zoomType: "x",
@@ -70,6 +56,9 @@ export default {
         credits: {
           //版权
           enabled: false,
+        },
+        exporting: {
+          enabled: false
         },
         yAxis: {
           title: {
@@ -103,18 +92,28 @@ export default {
           enabled: false,
           text: "",
         },
-        boost: {
-          useGPUTranslations: true,
-        },
         legend: {
           enabled: false,
         },
         tooltip: {
-          shared: true,
-          crosshairs: true,
-          headerFormat: "111",
-          pointFormat: "222",
+            shared: false,
+            crosshairs: true,
+            plotOptions: {
+                spline: {
+                    marker: {
+                        radius: 4,
+                        lineColor: '#666666',
+                        lineWidth: 1
+                    }
+                }
+            }
         },
+        boost: {
+          enabled: true, // 必须开启
+          useGPUTranslations: true, // 启用GPU加速
+          seriesThreshold: 1 // 当序列数超过阈值时启用boost
+        },
+
         series: [
           {
             color: "#00ffff",
@@ -138,65 +137,38 @@ export default {
       timer: null, //瀑布图定时器
       waterFallWidth: 0, //瀑布图的宽度（后端返回的数据length）
       waterFallHeight: 0, //瀑布图定高度（也可以理解成渲染次数 例如30次渲染完成）
-      maxNum: 80, //图例最大值
+      maxNum: 1000, //图例最大值
       minNum: 0, //图例最小值
       messages: [],
-
-      selectedRange: null, // 存储选中的频率范围
-      selectionInfo: "" // 存储显示的信息
     };
   },
   methods: {
-    //发送频谱请求接口
-    async getCmdRateFun() {
-      let params = {
-        deviceId: this.shebeiID,
-      };
-      getCmdRate(params)
-        .then((res) => {
-          return res.data;
-        })
-        .then((res) => {
-          if (res.code == 200) {
-            console.log(res, "getCmdRateFun");
-          }
-        })
-        .catch((error) => {
-          console.error("请求失败:", error); // 避免 Uncaught Error
-          this.$message.error("网络错误，请求失败");
-        });
-    },
 
-    //停止发送接口
-    getCmdRateStop() {
-      let params = {
-        deviceId: this.shebeiID,
-      };
-      getCmdRateStop(params)
-        .then((res) => {
-          return res.data;
-        })
-        .then((res) => {
-          if (res.code == 200) {
-            console.log(res, "getCmdRateStop");
-          }
-        })
-        .catch((error) => {
-          console.error("请求失败:", error); // 避免 Uncaught Error
-          this.$message.error("网络错误，请求失败");
-        });
-    },
     waterFallMove() {},
     waterFallLeave() {},
+    // 清空图表数据
+    clearChart() {
+      if (this.chartInstance) {
+        // 清空所有系列数据
+        while(this.chartInstance.series.length > 0) {
+          this.chartInstance.series[0].remove(false); // false 表示不重绘
+        }
+        // 重绘图表
+        this.chartInstance.redraw();
+      }
+    },
     initMessage(max, min) {
       var data = [];
       var yData = [];
       data = this.$store.state.messages;
       yData = this.$store.state.ymessages;
+      // data = xdata;
+      // yData = secondValues;
       // 折线图
       // console.log(yData,'瀑布图瀑布图瀑布图');
       //瀑布图
       // if(yData.length>0){
+      // this.clearChart()
       this.highInit(data, max, min);
       this.queryChartList(yData);
 
@@ -209,141 +181,12 @@ export default {
       var num = Min + Math.round(Rand * Range); //四舍五入
       return num;
     },
-    getData(n) {
-      const arr = [];
-      let i, x, a, b, c, spike;
-      for (
-        i = 0, x = Date.UTC(new Date().getUTCFullYear(), 0, 1) - n * 36e5;
-        i < n;
-        i = i + 1, x = x + 36e5
-      ) {
-        if (i % 100 === 0) {
-          a = 2 * Math.random();
-        }
-        if (i % 1000 === 0) {
-          b = 2 * Math.random();
-        }
-        if (i % 10000 === 0) {
-          c = 2 * Math.random();
-        }
-        if (i % 50000 === 0) {
-          spike = 10;
-        } else {
-          spike = 0;
-        }
-        arr.push([
-          x,
-          2 * Math.sin(i / 100) + a + b + c + spike + Math.random(),
-        ]);
-      }
-      return arr;
-    },
-    // 处理框选事件
-    handleSelection(minFreq, maxFreq) {
-      console.log(minFreq, maxFreq, '处理框选事件');
-      
-      if (!this.currentChartData || this.currentChartData.length === 0) {
-        console.warn('没有可用的图表数据');
-        return;
-      }
-      
-      this.selectedRange = {
-        min: minFreq,
-        max: maxFreq
-      };
-      
-      // 使用存储的图表数据
-      const visibleData = this.currentChartData.filter(
-        point => point[0] >= minFreq && point[0] <= maxFreq
-      );
-      
-      if (visibleData.length === 0) {
-        this.selectionInfo = `选中范围: ${minFreq.toFixed(2)}-${maxFreq.toFixed(2)} MHz | 无数据`;
-        return;
-      }
-      
-      const avgValue = visibleData.reduce((sum, point) => sum + point[1], 0) / visibleData.length;
-      this.selectionInfo = `选中范围: ${minFreq.toFixed(2)}-${maxFreq.toFixed(2)} MHz | 平均强度: ${avgValue.toFixed(2)} dB`;
-      
-      // 可选：添加峰值检测
-      let peakValue = -Infinity;
-      let peakFrequency = 0;
-      
-      visibleData.forEach(point => {
-        if (point[1] > peakValue) {
-          peakValue = point[1];
-          peakFrequency = point[0];
-        }
-      });
-      
-      this.selectionInfo += ` | 峰值: ${peakValue.toFixed(2)} dB @ ${peakFrequency.toFixed(2)} MHz`;
-    },
-
-
-    
     //频谱渲染值
     highInit(data, max, min) {
       this.options.series[0].data = data;
       this.options.xAxis.min = min;
       this.options.xAxis.max = max;
-      // Highcharts.chart(this.shebeiID + "pinpu", this.options);
-      ///////////////////////
-      const n = 5000;
-      const datay = this.getData(n);
-
-      Highcharts.chart(this.shebeiID + "pinpu", {
-        chart: {
-          zooming: {
-            type: "x",
-          },
-          events: {
-            selection: (event)=> {
-              if (event.xAxis) {
-                const minFreq = event.xAxis[0].min;
-                const maxFreq = event.xAxis[0].max;
-                console.log(minFreq, maxFreq,'处理框选事件');
-                
-                // 处理框选区域
-                this.handleSelection(minFreq, maxFreq,datay);
-              }
-              return true; // 允许缩放
-            }
-          },
-        },
-        
-        title: {
-          text: "Highcharts drawing " + " points",
-          align: "left",
-        },
-        subtitle: {
-          text: "Using the Boost module",
-          align: "left",
-        },
-        accessibility: {
-          screenReaderSection: {
-            beforeChartFormat:
-              "<{headingTagName}>" +
-              "{chartTitle}</{headingTagName}><div>{chartSubtitle}</div>" +
-              "<div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>" +
-              "{yAxisDescription}</div>",
-          },
-        },
-        tooltip: {
-          valueDecimals: 2,
-        },
-        xAxis: {
-          type: "datetime",
-        },
-        series: [
-          {
-            data: datay,
-            lineWidth: 0.5,
-            name: "Hourly data points",
-          },
-        ],
-      });
-
-      ///////////////////////
+      this.chartInstance=Highcharts.chart(this.shebeiID + "pinpu", this.options);
     },
     // 创建颜色库
     setColormap() {
@@ -368,7 +211,6 @@ export default {
         1,
         that.colormap.length
       );
-
       for (let i = 0; i < that.colormap.length; i++) {
         const color = that.colormap[i];
         imageData.data[imageData.data.length - i * 4 + 0] = color[0];
@@ -377,17 +219,7 @@ export default {
         imageData.data[imageData.data.length - i * 4 + 3] = 255;
       }
       legendCanvasTemporary.putImageData(imageData, 0, 0);
-      that.legend.drawImage(
-        legendCanvasTemporary.canvas,
-        0,
-        0,
-        1,
-        that.colormap.length,
-        50,
-        0,
-        200,
-        that.legend.canvas.height
-      );
+      that.legend.drawImage(legendCanvasTemporary.canvas,0,0,1,that.colormap.length,50,0,200,that.legend.canvas.height);
     },
     // 创建瀑布图
     createWaterFallCanvas() {
@@ -472,7 +304,6 @@ export default {
       let that = this;
       let waterFall = that.$refs[`${this.shebeiID}canvas`];
       waterFall.height = that.$refs[this.shebeiID].offsetHeight;
-
       let ctx = waterFall.getContext("2d");
       ctx.clearRect(0, 0, waterFall.width, waterFall.height);
       this.draw(ctx);
@@ -485,45 +316,36 @@ export default {
       console.log("dianjidianjidianjidianjidianjidianjidianji");
     },
   },
+  created(){
+    this.shebeiID=this.$route.params.id
+  },
   mounted() {
-    console.log(this.shebeiID, "shebeiIDshebeiIDshebeiIDshebeiIDshebeiID");
-
     let that = this;
     that.setColormap();
-    // that.createLegendCanvas();
-    // this.initMessage(this.maxvalue, this.minvalue)
+    that.createLegendCanvas();
     this.highInit([], this.maxvalue, this.minvalue);
   },
+
+  
   watch: {
     "$store.state.messages": {
       handler() {
         this.initMessage(this.maxvalue, this.minvalue);
+        // this.chartInstance.series[0].setData(this.$store.state.messages,false)
+
       },
       deep: true,
     },
+  
   },
   beforeDestroy() {
     // let that = this;
     // clearInterval(that.timer);
-    // that.getCmdRateStop();
   },
 };
 </script>
 
 <style lang="less" scoped>
-.selection-info {
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.7);
-  color: #00ffff;
-  border: 1px solid #00ffff;
-  margin: 10px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 4px;
-}
-
-
 .pingPuBox {
   height: 100%;
   width: 100%;

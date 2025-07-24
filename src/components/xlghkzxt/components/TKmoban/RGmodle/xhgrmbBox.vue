@@ -394,6 +394,9 @@ export default {
                 }
                 
             })
+            .catch(error=>{
+                console.log(error);
+            })
         },
 
         //更新
@@ -407,6 +410,9 @@ export default {
                     this.$message.error('编辑失败')
                 }
             })
+            .catch(error=>{
+                console.log(error);
+            })
         },
         //删除
         deleteTongKangGR(param){
@@ -418,6 +424,9 @@ export default {
                 }else{
                     this.$message.error('删除失败')
                 }
+            })
+            .catch(error=>{
+                console.log(error);
             })
         },
         addSbgl(){

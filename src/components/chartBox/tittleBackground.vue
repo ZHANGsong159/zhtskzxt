@@ -20,6 +20,7 @@ export default {
 <style lang="less" scoped>
 .leftPinpu-title {
   margin: auto;
+  width: 100%;
   margin-top: 10px;
   margin-bottom: 10px;
   background: linear-gradient(270deg, #ffffff00 0%, #ffffff26 100%);

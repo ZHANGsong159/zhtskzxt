@@ -340,7 +340,9 @@ export default {
         },
         Mndata:function () {
             this.MNtopformAdd=this.Mndata
-            this.BoxleftList=this.MNtopformAdd.disturbDto
+            if(this.MNtopformAdd.disturbDto){
+              this.BoxleftList=this.MNtopformAdd.disturbDto
+            }
         },
     },
 
@@ -419,10 +421,11 @@ export default {
             this.MNoption.forEach((item) => {
             if (item.name == this.MNtopformAdd.name) {
                 this.MNtopformAdd = JSON.parse(JSON.stringify(item));
-                    this.BoxleftList = JSON.parse(this.MNtopformAdd.param);
-                    if(this.BoxleftList.length>0){
-                    this.gain=this.BoxleftList[0].gain
-                    }
+                this.MNtopformAdd.id=''
+                this.BoxleftList = JSON.parse(this.MNtopformAdd.param);
+                if(this.BoxleftList.length>0){
+                  this.gain=this.BoxleftList[0].gain
+                }
                 }
             });
             this.Boxright=false
@@ -493,7 +496,6 @@ export default {
   .el-form-item__label{
     width: 120px;
   }
-//   .el-form-item__content
   .el-button {
     border: 1px solid #ffffff4c;
   }
@@ -502,6 +504,7 @@ export default {
 .XHMNmainBox {
   width: 100%;
   height: calc(100% - 64px);
+  overflow: hidden;
   border-top: 1px solid #1c735e;
   padding: 30px 20px;
   display: flex;
@@ -565,7 +568,7 @@ export default {
     .PinLvJin {
       width: 100%;
       flex-grow: 1;
-      padding-left: 50px;
+      padding-left: 20px;
       max-height: 50%;
       box-sizing: border-box;
       .pinlvjiMain {

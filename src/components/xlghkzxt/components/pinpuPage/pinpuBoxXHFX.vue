@@ -17,7 +17,7 @@
                             <el-input v-model.number="fxpdFrom.endRate" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="分辨率(KHz)" class="inpotBox">
-                            <el-select v-model="fxpdFrom.resolution" placeholder="请选择">
+                            <el-select v-model="fxpdFrom.resolution" @change="fblChange(fxpdFrom.resolution)"  placeholder="请选择">
                                 <el-option
                                     v-for="device in SMfbl"
                                     :key="device.value"
@@ -32,37 +32,40 @@
            
         </div>
         <div class="rightMain">
-            <hightEchartsVue :shebeiID='PPSMshebeiID' :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hightEchartsVue>       
+            <echarts-xhfx  
+            :shebeiID='PPSMshebeiID' 
+            :messagesdata="messages" 
+            :minvalue='minvalueZJ' 
+            :maxvalue="maxvalueZJ" 
+            @handleSelection='handleSelection'>
+            </echarts-xhfx>
         </div>
         <div class="rightBox">
-            <el-collapse v-model="activeNames" @change="handleChange" v-for="(item,index) in collapseList" :key='index'>
-                <el-collapse-item  :name="item.id">
+            <el-collapse v-model="activeNames" @change="handleChange" >
+                <el-collapse-item name="1">
                     <template slot="title">
                         <div class="COLLAPSEtitleleft">
                             <img src="@/assets/img/路径_@1x.png" class="titleicon" alt="">
-                            <span>频率：{{item.value}}MHz</span>
+                            <span>频率：{{pdsmFrom.centerRate}}MHz</span>
                         </div>
-
                         <div class="rightButton">
-                            <el-button type="primary" class="startButton" size="small" v-if="pdsmStart" @click="clickQJSM(item.id)"><i class="el-icon-video-play"></i> 开始</el-button>
-                            <el-button type="primary" class="stopButton" size="small" v-else @click="clickQJSM(item.id)"><i class="el-icon-video-pause"></i> 终止</el-button>
+                            <el-button type="primary" class="startButton" size="small" v-if="pdsmStart" @click.stop="clickQJSM()"><i class="el-icon-video-play"></i> 开始</el-button>
+                            <el-button type="primary" class="stopButton" size="small" v-else @click.stop="clickQJSM()"><i class="el-icon-video-pause"></i> 终止</el-button>
                         </div>
-
                     </template>
                     <div class="collapseBox">
                         <el-form label-width="140px" :inline="true">
                             <el-form-item label="中心频率(MHz)" class="inpotBox">
-                                <el-input v-model="pdsmFrom.qspl" placeholder="请输入"></el-input>
+                                <el-input v-model="pdsmFrom.centerRate" placeholder="请输入"></el-input>
                             </el-form-item>
                             <el-form-item label="分析带宽(MHz)" class="inpotBox">
-                                <el-input v-model="pdsmFrom.zzpl" placeholder="请输入"></el-input>
-                    
+                                <el-input v-model="pdsmFrom.band" placeholder="请输入"></el-input>
                             </el-form-item>
                         </el-form>
-                        <div class="textBox">
-                            <div>开始时间：2024-05-16 05:15:11</div>
-                            <div>结束时间：2024-12-16 05:15:11</div>
-                            <div>调制样式：调制样式调制样式调制样式</div>
+                        <div class="textBox" v-if='bottombox'>
+                            <div>开始时间：{{pdsmFrom.startTime}}</div>
+                            <div>结束时间：{{pdsmFrom.endTime}}</div>
+                            <div>调制样式：{{pdsmFrom.modulateStyle}}</div>
                         </div>
                     </div>
                 </el-collapse-item>
@@ -71,19 +74,21 @@
     </div>
 </template>
 <script>
-import hightEchartsVue from '../PinPu/hightEchartsPop.vue';
-import {getCmdRate}  from "@/api/api.js"
+import echartsXhfx from '@/components/xlghkzxt/components/PinPu/hightEchartsXHFX.vue';
+import {getCmdRate,getCmdRateXHFX}  from "@/api/api.js"
 export default {
-    components: { hightEchartsVue },
+    components: { echartsXhfx },
     data() {
         return {
-            activeNames:'',
+            activeNames:['1'],
             PPSMshebeiID:'',
             pdsmStart:true,
             selectedDeviceQJSM:'',
             pdsmFrom:{
-                qspl:'',
-                zzpl:'',
+                centerRate:'',
+                band:'',
+                startTime:'',
+                endTime:''
             },
             fxpdFrom:{
                 scanType:'rateBand',
@@ -118,11 +123,19 @@ export default {
             minvalueZJ:0,
             maxvalueZJ:100,
             messages:[],
-            ymessages:[],
+            bottombox:false,
         }
-    
     },
     methods: {
+        fblChange(val){
+            this.allFBL=val
+        },
+        handleSelection(param){
+            let pinjun=(param.max-param.min)/2+param.min
+            let pinjunband=param.max-param.min
+            this.pdsmFrom.centerRate=pinjun
+            this.pdsmFrom.band=pinjunband
+        },
         handleChange(){
 
         },
@@ -149,29 +162,106 @@ export default {
             this.getCmdRateFun(this.fxpdFrom)
         },
         clickQJSM(){
+            // console.log(this.pdsmFrom,'pdsmFrom');
+            this.pdsmFrom.deviceId=this.PPSMshebeiID
+            this.getCmdRateXHFX(this.pdsmFrom)
+            
+        },
+        getCmdRateXHFX(param){
+            getCmdRateXHFX(param).then(res=>{
+                return res.data
+            }).then(res=>{
+                if(res.code==200){
+                    this.bottombox=true
+                    this.pdsmFrom.startTime=res.data.startTime
+                }
+            }).catch(error=>{
+                console.log(error);
+            })
+        },
+
+        formatDateTime(isoString) {
+            if (!isoString) return '';
+    
+            try {
+            const date = new Date(isoString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            } catch (e) {
+            console.error('日期格式化错误:', e);
+            return isoString;
+            }
         }
+
     },
     created() {
         this.PPSMshebeiID=this.$route.params.id.toString()
     },
     mounted() {
+
         this.$store.state.socket.on('message', (data) => {
-                console.log(data,'message');
-                let min=data.ratePushDTO.startRate
-                let max=data.ratePushDTO.endRate
+            if(data.msgCode=='rate_data'){
+                this.minvalueZJ=data.ratePushDTO.startRate
+                this.maxvalueZJ=data.ratePushDTO.endRate
                 this.allFBL=data.ratePushDTO.resolution
-                if(data.ratePushDTO.segmentStartRate==min){
+                if(data.ratePushDTO.segmentStartRate==data.ratePushDTO.startRate){
                     this.messages=[]
-                    this.ymessages=[]
-                    this.minvalueZJ=min
-                    this.maxvalueZJ=max
                 }
                 data.ratePushDTO.values.forEach((item,index)=>{
                     this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
-                    this.ymessages.push(item)
                 })
-                this.$store.state.messages=this.messages
-                this.$store.state.ymessages=this.ymessages
+                
+                // this.messagesdata={
+                //     messages:this.messages,
+                // }
+            }else{
+                
+                this.pdsmFrom.endTime=this.formatDateTime(data.upDpVO.endTime)
+                let modulateStyle=''
+                switch (data.upDpVO.modulateStyle) {
+                    case 0: 
+                    modulateStyle='无效或无信号'
+                        break;
+                    case 1: 
+                    modulateStyle='cw'
+                        break;
+                    case 2: 
+                    modulateStyle='am'
+                        break;
+                    case 3: 
+                    modulateStyle='fm'
+                        break;
+                    case 6: 
+                    modulateStyle='2FSK'
+                        break;
+                    case 7: 
+                    modulateStyle='4FSK'
+                        break;
+                    case 8: 
+                    modulateStyle='msk'
+                        break;
+                    case 10: 
+                    modulateStyle='BPSk'
+                        break;
+                    case 11:
+                        modulateStyle='QPSK'
+                        break;
+                    case 12: 
+                    modulateStyle='8PSK'
+                        break;
+                    case 16:
+                        modulateStyle='16QAM'
+                        break;
+                }
+                this.pdsmFrom.modulateStyle	=modulateStyle
+                // this.$set(this.pdsmFrom,'endTime',data.upDpVO.endTime)
+            }
         }); 
     },
     watch:{
