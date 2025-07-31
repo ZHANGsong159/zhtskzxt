@@ -8,7 +8,7 @@
       <xlghkzxtBodyVue :saveLngLatMAP='saveLngLatMAP'></xlghkzxtBodyVue>
     </div>
     <div class="leftPinpu zIndex40">
-      <xlghkzxtPinpu @clickPinPu='clickPinPu'></xlghkzxtPinpu>
+      <xlghkzxtPinpu @clickPinPu='clickPinPu' :saveLngLatMAP='saveLngLatMAP'></xlghkzxtPinpu>
     </div>
     <div class="buttomMenu zIndex30">
       <xlghkzxtMenu @handleSelect='handleSelect'></xlghkzxtMenu>
@@ -86,6 +86,8 @@ export default {
   },
   methods:{
     saveLngLat(){
+      console.log('保存经纬度saveLngLat');
+      
       this.saveLngLatMAP=!this.saveLngLatMAP
       
     },

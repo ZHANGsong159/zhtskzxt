@@ -197,6 +197,9 @@ export function getRenWu(params){
 export function addRenWu(params){ 
     return http.post(`${resquest}/sys-task`,params)
 }
+export function deleteRenWu(id){ 
+    return http.delete(`${resquest}/sys-task/${id}`)
+}
 
 
 

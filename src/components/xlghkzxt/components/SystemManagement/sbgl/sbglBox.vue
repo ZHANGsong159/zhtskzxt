@@ -42,17 +42,16 @@
                     label="所属系统">
                     <template slot-scope="scope">
                         <!-- TK = 通抗分系统, LK = 类抗分系统, DK = 电抗分系统 -->
-                        {{scope.row.systemType=='TK'?'通抗分系统':scope.row.systemType=='LK'?'类抗分系统':scope.row.systemType=='DK'?'电抗分系统':''}}
+                        {{scope.row.systemType=='TK'?'通抗分系统':scope.row.systemType=='LK'?'雷抗分系统':scope.row.systemType=='DK'?'光抗分系统':''}}
                     </template>
                 </el-table-column>
                  <el-table-column
                     prop="deviceType"
                     align='center'
-                    
                     label="装备类型">
                     <template slot-scope="scope">
                         {{scope.row.deviceType=='TK'?'通抗设备'
-                        :scope.row.deviceType=='LK'?'类抗设备'
+                        :scope.row.deviceType=='LK'?'雷抗设备'
                         :scope.row.deviceType=='DK-HW'?'红外设备'
                         :scope.row.deviceType=='DK-106'?'1.06激光设备'
                         :scope.row.deviceType=='DK-15'?'1.5激光设备'
@@ -89,13 +88,15 @@
                 </el-table-column>
                 </el-table>
             </template>
-            <el-pagination
+            <!-- <el-pagination
             style="margin-top: 20px;"
             background
             layout="prev, pager, next"
             @current-change="handleCurrentChange"
             :total="total">
-            </el-pagination>
+            </el-pagination> -->
+            <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
+
         </div>
     </div>
 
@@ -104,51 +105,31 @@
       width="40%"
       :title="dialogTitle"
       :visible.sync="innerVisible"
+      v-if="innerVisible"
       append-to-body>
-        <el-form  :model="formAdd"  :inline="true" style="flex-flow:row warp;padding:10px 20px">
-            <el-form-item label="设备编号">
+        <el-form  :model="formAdd"   :rules="rulesAdd"  ref="addFormRef" :inline="true" style="flex-flow:row warp;padding:10px 20px">
+            <el-form-item label="设备编号" prop="deviceCode">
                 <el-input v-model="formAdd.deviceCode" maxlength="15" placeholder="设备编号"></el-input>
             </el-form-item>
-            <el-form-item label="设备名称">
+            <el-form-item label="设备名称" prop="deviceName">
                 <el-input v-model="formAdd.deviceName" maxlength="15" placeholder="设备名称"></el-input>
             </el-form-item>
             <el-form-item label="设备IP" prop="deviceIp">
-                <!-- <el-input v-model="formAdd.deviceIp" placeholder="设备IP"></el-input> -->
                 <ip-inputbox v-model="formAdd.deviceIp"></ip-inputbox>
             </el-form-item>
-            <el-form-item label="所属系统" >
+            <el-form-item label="所属系统" prop='systemType'>
                 <el-select v-model="formAdd.systemType" placeholder="请选择所属系统">
                     <el-option v-for="(item,index) in SSXToption" :label="item.label" :value="item.value" :key='index'></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="装备类型" >
-                <el-select v-model="formAdd.deviceType" placeholder="请选择装备类型">
+            <el-form-item label="装备类型" prop='deviceType'>
+                <el-select v-model="formAdd.deviceType" @change="ZBLXchange" placeholder="请选择装备类型">
                     <el-option v-for="(item,index) in SBLXoption " :label="item.label" :value="item.value" :key='index'></el-option>
                 </el-select>
             </el-form-item>
-
-
             <el-form-item label="频谱IP" prop="rateIp">
-                <!-- <el-input v-model="formAdd.deviceIp" placeholder="设备IP"></el-input> -->
                 <ip-inputbox v-model="formAdd.rateIp"></ip-inputbox>
             </el-form-item>
-            <!-- <el-form-item label="是否部署" >
-                <el-radio-group v-model="formAdd.isDeploy" class="radioBox" >
-                    <el-radio :label="0">未部署</el-radio>
-                    <el-radio :label="1">已部署</el-radio>
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item label="状态">
-                <el-select v-model="formAdd.state" placeholder="请选择设备状态">
-                    <el-option v-for="(item,index) in SBZToption" :label="item.label" :value="item.value" :key='index'></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="经度">
-                <el-input v-model="formAdd.longitude" placeholder="经度"></el-input>
-            </el-form-item>
-            <el-form-item label="纬度">
-                <el-input v-model="formAdd.latitude" placeholder="纬度"></el-input>
-            </el-form-item> -->
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="innerVisible = false">取 消</el-button>
@@ -160,6 +141,8 @@
 </template>
 <script>
 import '@/assets/css/mbBox.less';
+import pageInaiton from '@/components/chartBox/pageInaiton.vue';
+
 import IpInputbox from '@/components/chartBox/IPinputbox.vue'
 import { postAddShebei,getShebeiList,deleteShebeiById,putShebeiUpdata } from '@/api/api'
 export default {
@@ -170,19 +153,27 @@ export default {
         }
     },
     components: {
-        IpInputbox
+        IpInputbox,
+        pageInaiton
     },
     data() {
-        const validateIP = (rule, value, callback) => {
-            const ipRegex = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
-            if (!value) {
-                callback(new Error('IP地址不能为空'));
-            } else if (!ipRegex.test(value)) {
-                callback(new Error('请输入有效的IP地址'));
+        // IP地址验证函数
+        const validateIp = (rule, value, callback) => {
+            const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+            if (!value || !ipPattern.test(value)) {
+            callback(new Error("请输入有效的IP地址"));
             } else {
-                callback();
+            // 验证每个数字段是否在0-255之间
+            const segments = value.split('.');
+            const isValid = segments.every(seg => {
+                const num = parseInt(seg);
+                return num >= 0 && num <= 255;
+            });
+            isValid ? callback() : callback(new Error("IP地址无效"));
             }
         };
+
+
         return {
             pageNum:1,
             pageSize:10,
@@ -191,7 +182,31 @@ export default {
             shebeiBoxId:'dialogPinPu',
             innerVisible: false,
             radio:'1',
-            total:'1',
+            total:0,
+            rulesAdd: {
+                deviceCode: [
+                    { required: true, message: '设备编号不能为空', trigger: 'blur' },
+                    { min: 1, max: 15, message: '长度在1到15个字符', trigger: 'blur' }
+                ],
+                deviceName: [
+                    { required: true, message: '设备名称不能为空', trigger: 'blur' },
+                    { min: 1, max: 15, message: '长度在1到15个字符', trigger: 'blur' }
+                ],
+                deviceIp: [
+                    { required: true, message: '设备IP不能为空', trigger: 'blur' },
+                    { validator: validateIp, trigger: 'blur' }
+                ],
+                systemType: [
+                    { required: true, message: '请选择所属系统', trigger: 'change' }
+                ],
+                deviceType: [
+                    { required: true, message: '请选择装备类型', trigger: 'change' }
+                ],
+                rateIp: [
+                    { required: true, message: '频谱IP不能为空', trigger: 'blur' },
+                    { validator: validateIp, trigger: 'blur' }
+                ]
+            },
             
             SSXToption: [
                 { value: 'TK', label: '通抗分系统' },
@@ -201,7 +216,7 @@ export default {
             SBLXoption:[
                 { value: 'TK', label: '通抗分系统' },
                 { value: 'LK', label: '雷抗分系统' },
-                { value: 'DK-HK', label: '红外设备' },
+                { value: 'DK-HW', label: '红外设备' },
                 { value: 'DK-106', label: '1.06激光设备' },
                 { value: 'DK-15', label: '1.5激光设备' },
                 { value: 'DK-GJ', label: '告警天线' },
@@ -215,24 +230,12 @@ export default {
             ],
             tableData: [],
             formAdd:{
-                // deviceId: 1,
                 deviceCode: '',
                 deviceName: '',
                 deviceIp: '',
                 systemType: '',
                 deviceType: '',
-                // isDeploy: '',
-                // state:'',
-                // longitude: '',
-                // latitude: '',
             },
-
-            rules: {
-                deviceIp: [
-                { required: true, validator: validateIP, trigger: 'blur' }
-                ],
-            },
-        
         }
     
     },
@@ -245,9 +248,8 @@ export default {
             this.getShebeiList()
         },
         handleClickUpdata(params){
-            console.log(params,'paramsparamsparams');
             this.dialogTitle='设备更新'
-            this.formAdd=params
+            this.formAdd=JSON.parse(JSON.stringify(params))
             this.innerVisible=true
         },
         //列表删除
@@ -260,6 +262,10 @@ export default {
                 deleteShebeiById(params.deviceId).then(res=>{
                     if(res.data.code==200){
                         this.$message.success('删除成功');
+                        if(this.tableData.length==1 && this.pageNum>1){
+                            this.pageNum=this.pageNum-1                      
+                        }
+                        this.changeSheBei()
                         this.getShebeiList()
                     }else{
                         this.$message.error('删除失败');
@@ -271,40 +277,35 @@ export default {
                     message: '已取消删除'
                 });          
             });
-
-
-            
         },
-
-
         
         confirm(){
-            if(this.dialogTitle=='新增设备'){
-                // this.formAdd.deviceId=this.generateRandomId()
-                console.log(this.formAdd,'formAddformAddformAdd新增设备');
+            this.$refs.addFormRef.validate(valid => {
+                 if (valid) {
+                    if(this.dialogTitle=='新增设备'){
+                    // this.formAdd.deviceId=this.generateRandomId()
+                    this.Addshebei(this.formAdd)
+                    }else if(this.dialogTitle=='设备更新'){
+                        console.log(this.formAdd,'formAddformAddformAdd设备更新');
+                        this.UpdataShebei(this.formAdd)
+                    }
+                 }else{
+                    this.$message.error('请检查输入内容')
+                    return false
 
-                this.Addshebei(this.formAdd)
-            }else if(this.dialogTitle=='设备更新'){
-                console.log(this.formAdd,'formAddformAddformAdd设备更新');
-                this.UpdataShebei(this.formAdd)
-    
-            }
-            
-            
+                 }
+                
+            })
         },
         // 新增设备按钮
         Addshebei(foram){
             postAddShebei(foram).then(res=>{
-                console.log(res,'resresresre')
                 if(res.data.code==200){
                     this.innerVisible=false
                     this.getShebeiList()
+                    this.changeSheBei()
                     this.$message.success('新增成功')
-
-                }else{
-                    this.$message.error('新增失败')
                 }
-                
             }).catch(error=>{
                 console.log(error);
             })
@@ -317,16 +318,21 @@ export default {
                 if(res.data.code==200){
                     this.innerVisible=false
                     this.getShebeiList()
-                    this.$message.success('编辑成功')
+                    this.changeSheBei()
 
-                }else{
-                    this.$message.error('编辑失败')
+                    this.$message.success('编辑成功')
                 }
 
             }).catch(error=>{
                 console.log(error);
             })
         },
+        changeSheBei(){
+            this.$emit('saveLngLat')
+        },
+
+
+
         addSbgl(){
             this.formAdd={
                 deviceId: '',
@@ -335,10 +341,6 @@ export default {
                 deviceIp: '',
                 systemType: '',
                 deviceType: '',
-                // isDeploy: '',
-                // state:'',
-                // longitude: '',
-                // latitude: '',
             }
             this.innerVisible=true
 
@@ -363,17 +365,40 @@ export default {
                 console.log(error);
             })
         },
+        ZBLXchange(val){
+            console.log(val,'ZBLXchange');
 
+            switch (val) {
+                case 'TK':
+                    this.formAdd.systemType='TK'
+                break;
+                case 'LK':
+                    this.formAdd.systemType='LK'
+                break;
+                default:
+                    if(this.formAdd.systemType == ''){
+                        this.formAdd.systemType = 'TK';
+                    }
+                break;
+            }
+        },
     },
     mounted(){
         this.getShebeiList()
- 
     },
     
 }
 </script>
 
 <style lang="less" scoped>
+.PinPuPopor{
+    ::v-deep .el-table{
+        overflow: auto;
+    }
+    .el-table::-webkit-scrollbar{
+        width: 0;
+    }
+}
 .el-dialog__body{
     padding:10px 20px;
 }
@@ -384,17 +409,12 @@ export default {
     width: 45%;
  }
  ::v-deep .el-form-item__label{
-    width: 90px;
+    width: 100px;
  }
  ::v-deep .el-form-item__content{
-    width: calc(100% - 90px);
+    width: calc(100% - 100px);
  }
  .radioBox{
-    // display:flex;
     padding-left:15px;
-    // height: 100%;
-
-    // justify-content: center;
-    // align-items: center;
  }
 </style>

@@ -86,15 +86,6 @@ export default {
         .catch(err => console.log(err))
         
     },
-    test(){
-
-      // postLogin(this.loginForm).then(res => {
-      //   console.log(res,'postLogin')
-      // })
-      // .catch(err => console.log(err))
-    },
-    
-
 
   },
   mounted(){

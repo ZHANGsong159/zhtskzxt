@@ -7,15 +7,20 @@
           label="频段范围(MHz)"
           class="inpotBox"
           style="width: 100%"
+
         >
           <el-input
-            v-model.number="formAdd.startRate"
+            v-model="formAdd.startRate"
+            type="number"
             placeholder="起始频段"
+            @blur="formAdd.startRate = handleTimeInput(formAdd.startRate, 3000, 1.5, 3)"
           ></el-input>
           ~
           <el-input
-            v-model.number="formAdd.endRate"
+            v-model="formAdd.endRate"
+            type="number"
             placeholder="结束频段"
+            @blur="formAdd.endRate = handleTimeInput(formAdd.endRate, 3000, 1.5, 3)"
           ></el-input>
         </el-form-item>
         <el-button type="primary" @click="confirm" class="btnBox"
@@ -49,6 +54,7 @@ import {
     postProtectFrequency,
     deleteProtectFrequency
 } from "@/api/api";
+import {handleTimeInput} from '@/utils/numberUtils'
 export default {
   props: {
     closeDiaLog: {
@@ -91,6 +97,8 @@ export default {
     };
   },
   methods: {
+    handleTimeInput,
+    
     generateRandomId() {
         return Math.floor(Math.random() * 90000000000) + 10000000000;
     },
@@ -200,16 +208,23 @@ export default {
       width: 100%;
       height: 100%;
       padding: 20px 30px;
+      overflow: auto;
       background: transparent;
-      display: flex;
-      flex-flow: row wrap;
+      // display: flex;
+      // flex-flow: row wrap;
       // justify-content: space-between;
-      gap: 15px;
-      align-items: flex-start;
-      align-content:flex-start;
+      // gap: 15px;
+      // justify-content: flex-start;
+      // align-items: flex-start;
+      // align-content:flex-start;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 三列等宽 */
+      gap: 20px; /* 项目间距 */
+      justify-content: center; /* 整体居中 */
       .PinLvbox {
-        width: 30%;
+        width: 100%;
         height: 50px;
+        margin: auto;
         background: #ffffff26;
         border: 1px solid #ffffff4c;
         font-size: 18px;

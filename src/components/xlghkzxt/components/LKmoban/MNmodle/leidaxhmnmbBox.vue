@@ -62,14 +62,17 @@
                 </el-table-column>
                 </el-table>
             </template>
-            <el-pagination
+            <!-- <el-pagination
             style="margin-top: 20px;"
             background
             layout="prev, pager, next"
             @current-change="handleCurrentChange"
             :total="total">
 
-            </el-pagination>
+            </el-pagination> -->
+
+            <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
+
         </div>
     </div>
     <el-dialog
@@ -85,6 +88,8 @@
 <script>
 import '@/assets/css/mbBox.less';
 import mnDialogVue from './leikangPop.vue';
+import pageInaiton from '@/components/chartBox/pageInaiton.vue';
+
 import { getLeiKangMN,deleteLeiKangMN } from '@/api/api'
 export default {
     props: {
@@ -95,6 +100,7 @@ export default {
     },
     components: {
         mnDialogVue,
+        pageInaiton
     },
     data() {
         return {

@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { TCesium } from "./xlghkzxt/components/js/TCesium";
+import { TCesium } from "@/components/map/TCesium";
 import geojson from "@/assets/country/china.json";
 import minglinGr from "@/components/chartBox/minglinGR.vue"
 import minglinMn from "@/components/chartBox/minglinMN.vue"
@@ -229,12 +229,12 @@ export default {
   },
   watch: { 
     saveLngLatMAP(){
-
+      console.log(this.saveLngLatMAP,'this.saveLngLatMAP');
+      
       this.getShebeiList();
-      this.$nextTick(()=>{
-        this.viewer.render()
-      })
-
+      // this.$nextTick(()=>{
+      //   this.viewer.render()
+      // })
     },
   },
   created() {
@@ -463,15 +463,46 @@ export default {
           if (res.code == 200) {
             if (res.data.list.length > 0) {
               this.shebeiList = res.data.list;
-              this.shebeiList.forEach((item) => {
-                this.addLabel(item);
-              });
+              // this.shebeiList.forEach((item) => {
+              //   this.addLabel(item);
+              // });
+              this.refreshAllLabels()
             }
           }
         }).catch((err) => {
           console.log(err);
         });
     },
+
+
+    // 清除所有设备标签
+    removeAllLabels() {
+      // 创建要删除的实体ID列表，避免在迭代时修改集合
+      const entitiesToRemove = [];
+      console.log(this.viewerBF.entities.values,'所有实例');
+      
+      this.viewerBF.entities.values.forEach(entity => {
+        // 假设所有设备实体都有name属性且为deviceId
+        // if (entity.name && this.shebeiList.some(device => device.deviceId === entity.name)) {
+          entitiesToRemove.push(entity);
+        // }
+      });
+      // 执行删除
+      entitiesToRemove.forEach(entity => {
+        this.viewerBF.entities.remove(entity);
+      });
+    },
+    
+    // 刷新所有设备标签
+    refreshAllLabels() {
+      this.removeAllLabels();
+      this.shebeiList.forEach(item => {
+        this.addLabel(item);
+      });
+    },
+
+
+
     //初始化地图
     init() {
       this.mapObject = new TCesium("my-map"); // 注意，这个my-map就是我们div的id
@@ -510,9 +541,11 @@ export default {
       Cesium.ScreenSpaceEventType.RIGHT_CLICK);
       // 左键隐藏菜单
       new Cesium.ScreenSpaceEventHandler(this.viewerBF.scene.canvas).setInputAction(() => {
-        this.tankuang = false;
-      },
-      Cesium.ScreenSpaceEventType.LEFT_DOWN);
+          this.tankuang = false;
+        },
+      Cesium.ScreenSpaceEventType.LEFT_DOWN
+      );
+      // this.flyToPosition(118.7778, 32.0617, 10000);
     },
 
     //鼠标右键事件监听
@@ -523,10 +556,10 @@ export default {
         let pick = scene.pick(evt.position);
 
         if (pick == undefined) {
-          console.log("空白处右键菜单");
+          // console.log("空白处右键菜单");
           document.getElementById("hamburger_example").style.display = ""; //显示div
         } else {
-          console.log("实体处右键菜单，实体ID为：", pick.id.id);
+          // console.log("实体处右键菜单，实体ID为：", pick.id.id);
           document.getElementById("modelRightMenu").innerHTML =
             "XX" + pick.id.id.substring(0, 6);
           //显示模型菜单
@@ -547,21 +580,35 @@ export default {
     //  * @param roll   距中心的距离，以米为单位
     //  * @param duration  飞行时间
     //  */
-    flyToTarget(lon, lat, height, heading, pitch, roll, duration) {
+    flyToPosition(longitude, latitude, height = 10000, duration = 2) {
+    // 确保参数有效
+      // if (isNaN(longitude) longitude = 118.7778;
+      // if (isNaN(latitude)) latitude = 32.0617;
+      // 创建目标位置
+      const position = Cesium.Cartesian3.fromDegrees(longitude, latitude, height);
+      
+      // 设置相机方向和视角
+      const heading = Cesium.Math.toRadians(0); // 正北方向
+      const pitch = Cesium.Math.toRadians(0); // 向下倾斜30度
+      const roll = 0; // 无滚转
+      
+      // 飞行动作
       this.viewerBF.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(lon, lat, height), // 经纬度以及相机离地高度
-        orientation: {
-          heading: Cesium.Math.toRadians(heading), // 航向角
-          pitch: Cesium.Math.toRadians(pitch), // 俯仰角
-          roll: roll, // 距中心的距离，以米为单位
-        },
-        duration: duration, // 飞行时间
+          destination: position,
+          orientation: {
+              heading: heading,
+              pitch: pitch,
+              roll: roll
+          },
+          duration: duration,
+          complete: () => {
+              console.log(`已定位到: ${longitude}, ${latitude}`);
+          },
+          cancel: () => {
+              console.warn("定位被取消");
+          }
       });
-
-      // setTimeout(() => {
-      //   this.addBoundaryWall();
-      // }, 2000);
-    },
+  },
 
     //获取渐变色
     getColorRamp(val) {
@@ -630,9 +677,6 @@ export default {
       getTongKangGR()
         .then((res) => {
           console.log(res, "resresresresGR");
-          // if(res.status==200){
-            
-          // }
           return res.data;
         })
         .then((res) => {
@@ -996,3 +1040,4 @@ export default {
 }
 </style>
 
+./map/TCesium

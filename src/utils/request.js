@@ -1,6 +1,7 @@
 /**** request.js ****/
 // 导入axios
 import axios from 'axios'
+import router from '@/router'
 // 使用element-ui Message做消息提醒
 // import {Message} from 'element-ui';
 //1. 创建新的axios实例，
@@ -14,6 +15,33 @@ const service = axios.create({
 let vm
 service.setVueInstance = function(vueInstance) {
   vm = vueInstance
+}
+let isRefreshing = false
+
+// 处理未授权逻辑
+function handleUnauthorized(response) {
+  // 如果不在刷新状态，锁定并跳转登录
+  if (!isRefreshing) {
+    isRefreshing = true
+    
+    // 清空请求队列
+    // failedQueue = []
+
+    // 跳转登录页（带来源地址）
+    const loginPath = '/login'
+    const currentPath = router.currentRoute.fullPath
+    console.error('401错误',response.data.message)
+
+    console.log(currentPath,'originalRequest');
+    if (currentPath !== loginPath) {
+      router.replace({
+        path: loginPath,
+        query: { redirect: currentPath }
+      })
+    }
+    // 显示提示（仅显示一次）
+    // Message.error('会话已过期，请重新登录')
+  }
 }
 // 2.请求拦截器
 service.interceptors.request.use(config => { 
@@ -40,9 +68,9 @@ service.interceptors.response.use(response => {
   if(response.data.code==401){
     if (vm && vm.$router) {
         if (vm.$router.currentRoute.path != '/login') {
-            vm.$message.error(response.data.message)
-            console.error('401错误',response.data.message)
-            vm.$router.push('/login');
+            handleUnauthorized(response)
+            // vm.$message.error(response.data.message)
+            // vm.$router.push('/login');
         }
     }
   }
@@ -50,44 +78,33 @@ service.interceptors.response.use(response => {
 
   
 }, error => {
+  console.log(error,'error.code');
+  
+  // if(error.code==401){
+    if (vm && vm.$router) {
+        if (vm.$router.currentRoute.path != '/login') {
+            vm.$router.push('/login');
+        }
+    }
+  // }
   if (!error.response) {
     if (!error.response) {
       // 处理网络错误/超时
       // console.error('请求出错:', error);
       //  alert(`请求失败: ${error.message}`); // 或用 UI 库的 message/toast
        return Promise.resolve({ code: 500 }); // 阻止错误传播
-      // throw error;
-      // return Promise.reject(error)
-      // const errorMessage = '网络错误';
-      // const safeError = new Error(errorMessage);
-      // safeError.status = 0;
-      // safeError.data = null;
-      // Message.error(errorMessage);
-      // return Promise.reject(safeError);
     }
     if (error.response) { 
-      // HTTP 错误处理
-      // let errorMessage = '';
-      // switch (error.response.status) {
-      //   case 400: errorMessage = '错误请求'; break;
-      //   case 401: 
-      //     errorMessage = '未授权，请重新登录';
-      //     break;
-      //   default: 
-      //     errorMessage = `服务器错误 (${error.response.status})`;
-      // }
       return Promise.resolve({ code: 500 }); // 阻止错误传播
-      // throw error;
-      // // 创建标准错误对象
-      // const safeError = new Error(errorMessage);
-      // safeError.status = error.response.status; // 直接访问已确认的属性
-      // safeError.data = error.response.data || null; // 确保数据为 null
-      
-      // Message.error(errorMessage);
-      // return Promise.reject(safeError); // 确保返回拒绝的 Promise
     }
   }
 
 })
+
+
+
+
+
+
 //4.导入文件
 export default service

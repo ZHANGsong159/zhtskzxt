@@ -3,13 +3,14 @@
     <div class="XHMNinputBox">
       <el-form :inline="true">
         <el-form-item label="模板名称" style="flex-flow: row nowrap !important">
-          <el-input v-model="localTopForm.name" placeholder="请输入"></el-input>
+          <el-input v-model="localTopForm.name" maxlength="15" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="生效时间">
           <el-input
             v-model="localTopForm.time"
+            @blur="localTopForm.time=handleTimeInput(localTopForm.time,3600,0,0)"
             type="number"
-            placeholder="请输入"
+            placeholder="请输入0~3600秒"
           ></el-input>
         </el-form-item>
         <el-form-item label="信号类型">
@@ -29,10 +30,11 @@
         </el-form-item>
         <el-form-item label="发射增益">
           <el-input
-            v-model.number="localTopForm.gain"
+            v-model="localTopForm.gain"
             type="number"
+            @change="GainChange"
+            @blur="localTopForm.gain=handleTimeInput(localTopForm.gain,63,0,'gain')"
             placeholder="0~63db"
-            oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>63)value=63;if(value<0  )value=null"
           >
           </el-input>
         </el-form-item>
@@ -57,19 +59,12 @@
           <div class="XHMNBoxleftmain-left">{{ index + 1 }}</div>
           <div class="XHMNBoxleftmain-right">
             <div class="XHMNBoxleftmain-right-top">
-              信号类型：{{
-                item.signalType == 0
-                  ? "定频"
-                  : item.signalType == 1
-                  ? "跳频"
-                  : "扩频"
-              }}
+              信号类型：{{item.signalType == 0? "定频": item.signalType == 1? "跳频": "扩频"}}
               调制方式：{{ TZFFChange(item.param.modStyle) }}
             </div>
             <div class="XHMNBoxleftmain-right-bottom">
-              信号频率：{{ item.param.signalRate }}MHZ 码元速率：{{
-                setMYSL(item.param.codeRate)
-              }}
+              信号频率：{{ item.param.signalRate }}MHz 
+              码元速率：{{setMYSL(item.param.codeRate)}}
             </div>
           </div>
           <i
@@ -93,18 +88,12 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="信号频率(MHZ)">
-            <el-input
-              v-model="localFormAdd.param.signalRate"
-              type="number"
-              placeholder="1.5~3000"
-              @blur="handleTimeInput($event.target.value, 3000, 1.5, 'shpl')"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="频率范围(MHZ)">
+          
+          <el-form-item label="频率范围(MHz)">
             <el-select
               v-model="localFormAdd.param.rateRange"
               placeholder="请选择"
+              @change="PLFWchange"
             >
               <el-option
                 v-for="device in MNPLFWoption"
@@ -114,7 +103,17 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="码元速率(MHZ)">
+
+          <el-form-item label="信号频率(MHz)">
+            <el-input
+              v-model="localFormAdd.param.signalRate"
+              type="number"
+              placeholder="1.5~3000"
+              maxlength="4"
+              @blur="localFormAdd.param.signalRate=handleTimeInput(localFormAdd.param.signalRate, maxRfFreq,minRfFreq, 2)"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="码元速率">
             <el-select
               v-model="localFormAdd.param.codeRate"
               placeholder="请选择"
@@ -133,7 +132,12 @@
           >
             <el-input
               v-model.number="localFormAdd.param.sweepStartRate"
-              @blur="changPL()"
+              @blur="
+              changPL();
+              changeKSPL(localFormAdd.param.sweepStartRate);
+
+              localFormAdd.param.sweepStartRate=handleTimeInput(localFormAdd.param.sweepStartRate,maxRfFreq,minRfFreq,2) "
+
               type="number"
               placeholder="跳频开始频率"
             ></el-input>
@@ -141,10 +145,14 @@
           <el-form-item
             label="终止频率(MHz)"
             v-if="localTopForm.signalType == 1"
+            
           >
             <el-input
-              v-model.number="localFormAdd.param.sweepEndRate"
-              @blur="changPL();changeZZPL(localFormAdd.param.sweepEndRate);"
+              v-model="localFormAdd.param.sweepEndRate"
+              @blur="
+              changPL();
+              changeZZPL(localFormAdd.param.sweepEndRate);
+              localFormAdd.param.sweepEndRate=handleTimeInput(localFormAdd.param.sweepEndRate, maxRfFreq, minRfFreq, 2);"
               type="number"
               placeholder="跳频终止频率"
             ></el-input>
@@ -156,16 +164,21 @@
             <el-input
               v-model.number="localFormAdd.param.sweepNum"
               type="number"
-              @blur="changPL();handleTimeInput(localFormAdd.param.sweepNum,256,0,'tiaodian');"
+              @blur="
+              localFormAdd.param.sweepNum=handleTimeInput(localFormAdd.param.sweepNum,256,0,0);"
+              @change="changPL();"
               placeholder="0~256"
+              maxlength="3"
+
             ></el-input>
           </el-form-item>
           <el-form-item label="跳速(H/S)" v-if="localTopForm.signalType == 1">
             <el-input
               v-model.number="localFormAdd.param.sweepSpeed"
               type="number"
-              @blur="handleTimeInput(localFormAdd.param.sweepSpeed,2000,5,'tiaosu')"
+              @blur="localFormAdd.param.sweepSpeed=handleTimeInput(localFormAdd.param.sweepSpeed,2000,5,0)"
               placeholder="5~2000"
+              maxlength="4"
             ></el-input>
           </el-form-item>
           <el-form-item label="码长" v-if="localTopForm.signalType == 2">
@@ -217,6 +230,8 @@
 <script>
 import "@/assets/css/mbBox.less";
 import { postTongKangMN } from "@/api/api";
+import {handleTimeInput} from '@/utils/numberUtils'
+
 export default {
   props: {
     topForm: {
@@ -257,6 +272,9 @@ export default {
         codeLength: "",
         expandSeries: "",
       },
+
+      maxRfFreq: 0,
+      minRfFreq: 1000,
       localTopForm: JSON.parse(JSON.stringify(this.topForm)),
       pinlvji: [],
       pageNum: 1,
@@ -284,14 +302,14 @@ export default {
           { value: 8, label: "16QAM" },
         ],
         XHDKoption: [
-          { value: 7, label: "16KHz" },
-          { value: 6, label: "32KHz" },
-          { value: 5, label: "64KHz" },
-          { value: 4, label: "128KHz" },
-          { value: 3, label: "256KHz" },
-          { value: 2, label: "512KHz" },
-          { value: 1, label: "1024KHz" },
-          { value: 0, label: "2048KHz" },
+          { value: 7, label: "16kHz" },
+          { value: 6, label: "32kHz" },
+          { value: 5, label: "64kHz" },
+          { value: 4, label: "128kHz" },
+          { value: 3, label: "256kHz" },
+          { value: 2, label: "512kHz" },
+          { value: 1, label: "1024kHz" },
+          { value: 0, label: "2048kHz" },
         ],
       },
       TPoption: {
@@ -342,6 +360,35 @@ export default {
     },
   },
   methods: {
+    handleTimeInput,
+    GainChange(val){
+      this.localTopForm.simulateList.forEach(item => {
+        item.gain =Number(val)
+      });
+      console.log(this.localTopForm.simulateList,'GainChange');
+    },
+
+    PLFWchange(key){
+      switch(key){
+        case 0: 
+          this.maxRfFreq=30
+          this.minRfFreq=1.5
+          break;
+        case 1: 
+          this.maxRfFreq=512
+          this.minRfFreq=30
+          break;
+        case 2: 
+          this.maxRfFreq=2000
+          this.minRfFreq=512
+          break;
+        case 3: 
+          this.maxRfFreq=3000
+          this.minRfFreq=2000
+          break;
+      }
+      // this.localFormAdd.param.signalRate=this.minRfFreq
+    },
     //变换码元速率
     setMYSL(key) {
       let label = "";
@@ -362,26 +409,7 @@ export default {
       });
       return label;
     },
-    handleTimeInput(value, maxvalue, minvalue, key) {
-      // 修改正则表达式，允许小数点
-      let num = String(value).replace(/[^\d.]/g, ""); // 只保留数字和小数点
-      // 移除多余的小数点（最多保留一个）
-      num = String(num).replace(/\.{2,}/g, ".");
-      num = String(num).replace(/^\./g, "");
-
-      // 转换为数字并限制范围
-      let floatNum = parseFloat(num) || minvalue;
-      if (floatNum < minvalue) floatNum = minvalue;
-      if (floatNum > maxvalue) floatNum = maxvalue;
-
-      // 更新对应字段
-      switch (key) {
-        case "shpl":
-          this.localFormAdd.param.signalRate = floatNum;
-          break;
-        // 其他情况...
-      }
-    },
+    
     TZFFChange(key) {
       switch (key) {
         case 0:
@@ -398,7 +426,7 @@ export default {
           return "QPSK";
         case 6:
           return "8PSK";
-        case 7:
+        case 8:
           return "16QAM";
       }
     },
@@ -422,7 +450,7 @@ export default {
       this.optionSet(key);
     },
     BoxleftClick(params, index) {
-        console.log(params,'BoxleftClickBoxleftClick');
+        console.log(params.param.rateRange,'BoxleftClickBoxleftClick');
         this.pinlvji=params.param.hopRateList
 
 
@@ -430,10 +458,7 @@ export default {
         this.localFormAdd = JSON.parse(JSON.stringify(params));
         this.Boxright = true;
         this.optionSet(params.signalType);
-
-        // if (params.signalType === 1) {
-        //     this.changPL();
-        // }
+        this.PLFWchange(params.param.rateRange)
     },
 
 
@@ -452,11 +477,6 @@ export default {
         if (this.localTopForm.signalType === "") {
           this.$message.error("请选择信号类型");
         } else {
-            // if(this.localTopForm.signalType==1&&this.localTopForm.simulateList.length>0){
-            //     this.$message.error('该类型只能选择一个信号')
-            // }else{
-            //     }
-
             this.indculdeFuntion(save);
         }
       }
@@ -481,36 +501,28 @@ export default {
         //右侧数据输入框
         if (this.Boxright) {
           this.localFormAdd.signalType = this.localTopForm.signalType;
+
           this.localFormAdd.gain = this.localTopForm.gain;
           let param = JSON.parse(JSON.stringify(this.localFormAdd));
           if (this.localFormAdd.signalType == 1 && this.pinlvji.length > 0) {
             param.param.hopRateList = this.pinlvji;
           }
           this.localTopForm.simulateList.push(param);
-            this.AddTongKangMN(this.localTopForm, save);
-
-        }else{
-            if(this.localTopForm.simulateList.length>0){
-                this.$message.error('此类型只能添加一个信号---');
-            }else{
-                console.log('此类型wei添加一个信号');
-            }
+          this.AddTongKangMN(this.localTopForm, save);
         }
-
-
+        else{
+            // this.$message.warning('无需要保存的数据');
+            this.AddTongKangMN(this.localTopForm, save);
+        }
       } else {
         let param = JSON.parse(JSON.stringify(this.localFormAdd));
-
         this.localTopForm.simulateList[this.selectedIndex].param = param.param;
-
         if (this.localTopForm.signalType == 1 && this.pinlvji.length > 0) {
           this.localTopForm.simulateList[this.selectedIndex].param.hopRateList =this.pinlvji;
         }
         this.localTopForm.simulateList[this.selectedIndex].gain = this.gain;
-        this.selectedIndex = "";
-
         this.AddTongKangMN(this.localTopForm, save);
-
+        this.selectedIndex = "";
       }
     },
     //初始保存
@@ -538,27 +550,19 @@ export default {
  
     async addXinHao() {
       if (this.localTopForm.id == "") {
-
-
         this.$message.error("请先保存信息");
-
-
-
       } else {
-
         this.optionSet(this.localTopForm.signalType);
         if (this.Boxright) {
-            console.log(this.Boxright, this.localTopForm.signalType == 1 ,
-            this.localTopForm.simulateList.length > 0,'this.Boxrightthis.Boxright');
-            
-          if (this.localTopForm.signalType == 1 &&this.localTopForm.simulateList.length > 0) {
+          if (this.localTopForm.signalType !==0 &&this.localTopForm.simulateList.length > 0) {
             this.Boxright = false;
             this.$message.error("此类型只能添加一个信号");
           } else {
-            console.log('此类型只能添加一个信号+++++++++++++');
-            
             await this.saveXinData("save");
             this.localFormAdd.param = this.localFormParam;
+            
+            this.Boxright = true;
+            console.log('this.Boxrightthis.Boxright',this.Boxright);
           }
         } else {
           switch (this.localTopForm.signalType) {
@@ -568,7 +572,17 @@ export default {
             case 0:
               this.Boxright = true;
               this.selectedIndex = "";
-              this.localFormAdd.param = this.localFormParam;
+              this.localFormAdd.param = {
+                modStyle: "",
+                signalRate: "",
+                codeRate: "",
+                sweepStartRate: "",
+                sweepEndRate: "",
+                sweepNum: "",
+                sweepSpeed: "",
+                codeLength: "",
+                expandSeries: "",
+              }
               break;
             case 1:
                 if(this.localTopForm.simulateList.length>0){
@@ -580,9 +594,14 @@ export default {
                 }
               break;
             case 2:
-              this.Boxright = true;
-              this.selectedIndex = "";
-              this.localFormAdd.param = this.localFormParam;
+              if(this.localTopForm.simulateList.length>0){
+                    this.Boxright = false;
+                    this.$message.error("此类型只能添加一个信号");
+              }else{
+                    this.Boxright = true;
+                    this.selectedIndex = "";
+                    this.localFormAdd.param = this.localFormParam;
+              }
               break;
           }
         }
@@ -634,7 +653,10 @@ export default {
           this.localTopForm.simulateList.splice(1);
           this.$message.error(res.data.message);
         }
-      });
+      }).catch(err=>{
+        console.log(err);
+        
+      })
     },
 
     changPL() {
@@ -643,12 +665,19 @@ export default {
       let step = this.localFormAdd.param.sweepNum;
       this.generateAndSortNumbers(min, max, step);
     },
+    changeKSPL(value){
+      if (this.localFormAdd.param.sweepEndRate) {
+        let maxnumber =this.localFormAdd.param.sweepEndRate - value;
+        if (maxnumber > 20) {
+          this.localFormAdd.param.sweepStartRate = this.localFormAdd.param.sweepEndRate - 20;
+          this.$message.error("终止频率差值大于20MHz");
+        }
+        this.changPL();
+      } else {
+        this.$message.error("请先填写开始频率");
+      }
+    },
     changeZZPL(value) {
-      console.log(
-        value,
-        this.localFormAdd.param.sweepStartRate,
-        "changeZZPLchangeZZPL"
-      );
       if (this.localFormAdd.param.sweepStartRate) {
         let minnumber = value - this.localFormAdd.param.sweepStartRate;
         if (minnumber > 20) {

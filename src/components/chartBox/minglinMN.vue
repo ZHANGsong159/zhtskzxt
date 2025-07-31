@@ -24,6 +24,7 @@
                   </el-form-item>
                   <el-form-item label="生效时间">
                     <el-input
+                      disabled
                       v-model="MNtopformAdd.time"
                       type="number"
                       placeholder="请输入"
@@ -31,6 +32,7 @@
                   </el-form-item>
                   <el-form-item label="发射增益">
                       <el-input 
+                      disabled
                       v-model="gain" 
                       type="number" 
                       placeholder="0~63db" 
@@ -64,7 +66,7 @@
                   </div>
                 </div>
                 <div class="XHMNmainBoxright">
-                  <el-form :model="MNformAdd" :inline="true" v-if="Boxright">
+                  <el-form :model="MNformAdd" :inline="true" v-if="Boxright" disabled>
                     <el-form-item label="信号类型">
                       <el-select
                         v-model="MNformAdd.signalType"
@@ -374,7 +376,10 @@ export default {
       postControlCommandSimulation(params) {
         postControlCommandSimulation(params).then((res) => {
           console.log(res, "res");
-        });
+        }).catch(err=>{
+                  console.log(err);
+                  
+                })
       },
 
 
@@ -426,17 +431,19 @@ export default {
         },
         //模拟模版
         getTongKangMN() {
-            getTongKangMN()
+          let params = {pageNum:1,pageSize:1000}
+            getTongKangMN(params)
                 .then((res) => {
-                return res.data;
+                  return res.data;
                 })
                 .then((res) => {
-                if(res.code==200){
-                    console.log(res.data.list,'getTongKangMN');
-                    
-                    this.MNoption = res.data.list;
-                }
-            });
+                    if(res.code==200){
+                        this.MNoption = res.data.list;
+                    }
+                }).catch(err=>{
+                  console.log(err);
+                  
+                })
         },
         //模拟模版name改变函数
         changeMNMBname() {
@@ -454,21 +461,6 @@ export default {
 
         });
         this.Boxright=false
-        // this.MNformAdd={
-        //     signalType:0,
-        //     param:{
-        //       modStyle: "",
-        //       signalRate: "",
-        //       PLfanwei: "",
-        //       signalBand: "",
-        //       sweepStartRate: "",
-        //       sweepEndRate: "",
-        //       sweepNum: "",
-        //       sweepSpeed: "",
-        //       codeLength: "",
-        //       expandSeries: "",
-        //     }
-        // }
         },
     },
     

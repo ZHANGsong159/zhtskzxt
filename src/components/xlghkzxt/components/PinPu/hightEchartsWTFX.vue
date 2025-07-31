@@ -10,6 +10,7 @@
 import Highcharts from "highcharts";
 import Boost from 'highcharts/modules/boost';
 Boost(Highcharts);
+import * as echarts from 'echarts';
 
 export default {
   props: {
@@ -127,7 +128,41 @@ export default {
       messages: [],
     };
   },
+  
   methods: {
+    echartsExport() { 
+      console.log("导出echartsExport");
+      
+      var chart = echarts.init(document.getElementById(this.shebeiID));
+      console.log("chart",chart);
+      
+      // 数据源
+      var data = [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [4, 5]
+      ];
+
+      // 配置项
+      var option = {
+        xAxis: {
+          type: 'category',
+          data: ['0', '1', '2', '3', '4']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          type: 'line',
+          data: data
+        }]
+      };
+
+      // 绘制图表/
+      chart.setOption(option);
+    },
     initMessage(max,min) {
       var data = [];
       // var yData = [];
@@ -228,7 +263,8 @@ export default {
     },
   },
   mounted() {
-    this.initMessage(this.maxvalue, this.minvalue)
+    // this.initMessage(this.maxvalue, this.minvalue)
+    this.echartsExport()
     
   },
   watch: {

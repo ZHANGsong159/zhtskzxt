@@ -39,9 +39,16 @@
 <script>
 import hightEcharts from "@/components/xlghkzxt/components/PinPu/hightEcharts.vue";
 import {getShebeiList} from "@/api/api";
+
 export default {
   components: {
     hightEcharts,
+  },
+  props: {
+    saveLngLatMAP:{
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -54,8 +61,8 @@ export default {
   methods:{
     getShebeiList(){
       let parame={
-        "page":1,
-        "pageSize":1000
+        page:1,
+        pageSize:1000
       }
       getShebeiList(parame).then(res=>{
         return res.data
@@ -76,13 +83,17 @@ export default {
       this.$emit('clickPinPu',id)
     }
   },
+  watch:{
+    saveLngLatMAP(){
+      this.getShebeiList()
+    },
+  },
   created() {
     this.getShebeiList()
   },
   mounted() { 
 
     this.$store.state.socket.on('message', (data) => {
-
                 // if(data.deviceId.toString()==this.shebeiID){
                 if(data.msgCode=="rate_data"){
                   let min=data.ratePushDTO.startRate
@@ -110,8 +121,6 @@ export default {
                     }
                   })
                 }
-                  
-
     }); 
     
   },

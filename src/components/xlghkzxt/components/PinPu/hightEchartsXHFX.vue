@@ -121,7 +121,6 @@ export default {
           useGPUTranslations: true, // 启用GPU加速
           seriesThreshold: 1 // 当序列数超过阈值时启用boost
         },
-
         series: [
             {
                 color: "#00ffff",
@@ -249,7 +248,7 @@ export default {
   },
   mounted() {
     this.initCharts()
-    this.loadData()
+    // this.loadData()
   },
   beforeDestroy() {
     // 销毁图表实例

@@ -91,7 +91,7 @@
 <script>
 // import hightEchartsVue from '../PinPu/hightEchartsPLFX.vue';
 // import hightEchartsVue from '@/components/xlghkzxt/components/PinPu/hightEchartsPLFX.vue';
-import hightEchartsVue from '@/components/xlghkzxt/components/PinPu/hightEchartsPPSM.vue';
+import hightEchartsVue from '@/components/xlghkzxt/components/PinPu/hightEchartsWTFX.vue';
 
 import {getCmdRate}  from "@/api/api.js"
 export default {

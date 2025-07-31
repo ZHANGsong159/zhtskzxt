@@ -19,6 +19,7 @@
                     style="width: 100%;hight: 100%;">
                     <el-table-column
                         prop="name"
+                        max='15'
                         label="模板名称"
                         align='center'
                         width="180">
@@ -76,13 +77,18 @@
 
 
                 </template>
-                <el-pagination
+
+
+                <!-- <el-pagination
                 style="margin-top: 20px;"
                 background
                 layout="prev, pager, next"
                 @current-change="handleCurrentChange"
                 :total="total">
-                </el-pagination>
+                </el-pagination> -->
+
+                <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
+
             </div>
         </div>
     </div>
@@ -93,17 +99,16 @@
       append-to-body>
         <el-form  :model="formAdd" :inline="true" class="tankuang" style="flex-warp:wrap !important;" >
             <el-form-item label="模板名称">
-                <el-input v-model="formAdd.name" placeholder="请输入模板名称"></el-input>
+                <el-input v-model="formAdd.name" maxlength="15" placeholder="请输入模板名称"></el-input>
             </el-form-item>
             <el-form-item label="生效时间(秒)">
                 <el-input 
                 v-model="formAdd.time"
-                @blur="handleBlur(formAdd.time)"
-                oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>3600)value=3600;if(value<0)value=null"
+                @blur="formAdd.time=handleTimeInput(formAdd.time,3600,0,1)"
                 placeholder="范围0~3600"></el-input>
             </el-form-item>
             <el-form-item label="干扰样式">
-                <el-select v-model="formAdd.disturbDto.disturbStyle"  placeholder="请选择">
+                <el-select v-model="formAdd.disturbDto.disturbStyle" @change="GRYSChange"  placeholder="请选择">
                     <el-option
                         v-for="device in GRYSoption"
                         :key="device.value"
@@ -122,20 +127,18 @@
                     ></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="发射增益">
-                <el-input 
-                v-model.number="formAdd.disturbDto.param.gain" 
-                @blur="handleBlur(formAdd.disturbDto.param.gain)"
-                oninput="if(!/^[0-9]+$/.test(value)) value=value.replace(/\D/g,'');if(value>63)value=63;if(value<0  )value=null"
-                placeholder="范围0~63"></el-input>
-            </el-form-item>
             <el-form-item label="干扰频率(MHz)">
                 <el-input 
                 v-model="formAdd.disturbDto.param.disturbRate" 
-                @change="ganraoChange" 
                 type="number"
-                @blur="handleTimeInput(formAdd.disturbDto.param.disturbRate,maxvalueGRPL,minvalueGRPL,'grpl')"
+                @blur="formAdd.disturbDto.param.disturbRate=handleTimeInput(formAdd.disturbDto.param.disturbRate,maxvalueGRPL,minvalueGRPL,1,'grpl')"
                 placeholder="请输入干扰频率"></el-input>
+            </el-form-item>
+            <el-form-item label="发射增益">
+                <el-input 
+                v-model.number="formAdd.disturbDto.param.gain" 
+                @blur="formAdd.disturbDto.param.gain=handleTimeInput(formAdd.disturbDto.param.gain,63,0,0)"
+                placeholder="范围0~63"></el-input>
             </el-form-item>
             <el-form-item label="干扰带宽" v-if='formAdd.disturbDto.disturbStyle==0 || formAdd.disturbDto.disturbStyle==1'>
                 <el-select v-model="formAdd.disturbDto.param.disturbBand"  placeholder="请选择">
@@ -147,9 +150,6 @@
                     ></el-option>
                 </el-select>
             </el-form-item>
-
-
-
             <el-form-item label="扫频带宽" v-if='formAdd.disturbDto.disturbStyle==2'>
                 <el-select v-model="formAdd.disturbDto.param.sweepBand" placeholder="请选择">
                     <el-option
@@ -193,14 +193,21 @@
 </template>
 <script>
 import '@/assets/css/mbBox.less';
+import pageInaiton from '@/components/chartBox/pageInaiton.vue';
+
 
 import {getTongKangGR,postTongKangGR,putTongKangGR,deleteTongKangGR} from '@/api/api'
+import {handleTimeInput} from '@/utils/numberUtils'
+
 export default {
     props: {
         closeDiaLog:{
         type: Boolean,
         default: false,
         }
+    },
+    components: {
+        pageInaiton
     },
     data() {
         return {
@@ -284,28 +291,62 @@ export default {
         }
     },
     methods:{
+        handleTimeInput,
         handleBlur(param) {
             if (isNaN(param)) {
                 param = null; // 或设置为默认值
                 this.$message.error('请输入有效数字！');
             }
         },
+        GRYSChange(key){
+            console.log(key,'GRYSChange');
+
+            switch (key){
+                case 0:
+                    this.GRDKoption=[
+                        {  value: 0, label: '0.1MHz' },
+                        {  value: 1, label: '0.2MHz' },
+                        {  value: 2, label: '0.5MHz' },
+                        {  value: 3, label: '1MHz' },
+                        {  value: 4, label: '2MHz' },
+                    ]
+                break;
+                case 1:
+                    this.GRDKoption=[
+                        {  value: 5, label: '5MHz' },
+                        {  value: 6, label: '10MHz' },
+                        {  value: 7, label: '20MHz' },
+                        {  value: 8, label: '40MHz' },
+                        {  value: 9, label: '60MHz' },
+                    ]
+            }
+            
+
+        },
         //  干扰频率范围change
         GRPLchange(key){
             switch(key){
                 case 0:
+                    this.formAdd.disturbDto.param.disturbRate=1.5
+
                     this.minvalueGRPL=1.5
                     this.maxvalueGRPL=30
                 break;
                 case 1:
+                    this.formAdd.disturbDto.param.disturbRate=30
+
                     this.minvalueGRPL=30
                     this.maxvalueGRPL=512
                 break;
                 case 2:
+                    this.formAdd.disturbDto.param.disturbRate=512
+
                     this.minvalueGRPL=512
                     this.maxvalueGRPL=2000
                 break;
                 case 3:
+                    this.formAdd.disturbDto.param.disturbRate=2000
+
                     this.minvalueGRPL=2000
                     this.maxvalueGRPL=3000
                 break;
@@ -314,26 +355,7 @@ export default {
                     
             }
         },
-        //输入框数字限制
-        handleTimeInput(value,maxvalue,minvalue,key) {
-            let num = value.replace(/\D/g, '');
-            if (num > maxvalue) num = maxvalue;
-            if (num < minvalue) num = minvalue;
-            switch (key) {
-                case 'grpl':
-                    this.formAdd.disturbDto.param.disturbRate= num;
-                    break;
-            }
-        },
 
-        ganraoChange(key){
-            console.log(key,'ganraoChangeganraoChange');
-            switch(key){
-                case 0:
-                    break;
-            }
-            
-        },
         // 分页
         handleCurrentChange(parame){
             this.pageNum=parame
@@ -341,7 +363,7 @@ export default {
         },
         handleClickCopy(params){
             this.dialogTitle='模版复制'
-            this.formAdd=params
+            this.formAdd=JSON.parse(JSON.stringify(params)) 
             this.formAdd.id=''
             this.innerVisible=true
 
@@ -352,8 +374,6 @@ export default {
             this.innerVisible=true
         },
         handleClickDelete(params){
-            console.log(params,'paramsparamsparams');
-            
             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -382,17 +402,12 @@ export default {
         },
         // 新增
         Addgairao(foram){
-            console.log(foram,'foramforamforamforam');
-            
             postTongKangGR(foram).then(res=>{
                 if(res.data.code==200){
                     this.innerVisible=false
                     this.getGanRaoList()
                     this.$message.success('新增成功')
-                }else{
-                    this.$message.error('新增失败')
                 }
-                
             })
             .catch(error=>{
                 console.log(error);

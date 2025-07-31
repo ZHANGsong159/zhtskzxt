@@ -81,13 +81,17 @@
 
 
                 </template>
-                <el-pagination
+                <!-- <el-pagination
                 style="margin-top: 20px;"
                 background
                 layout="prev, pager, next"
                 @current-change="handleCurrentChange"
                 :total="total">
-                </el-pagination>
+                </el-pagination> -->
+
+                <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
+
+
             </div>
         </div>
     </div>
@@ -105,6 +109,8 @@
 <script>
 import '@/assets/css/mbBox.less';
 import graddPop from './graddPop.vue';
+import pageInaiton from '@/components/chartBox/pageInaiton.vue';
+
 import {getLeiKangGR,deleteLeiKangGR} from '@/api/api'
 export default {
     props: {
@@ -114,7 +120,8 @@ export default {
         }
     },
     components: {
-        graddPop
+        graddPop,
+        pageInaiton
     },
     data() {
         return {

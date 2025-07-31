@@ -63,14 +63,17 @@
                 </el-table-column>
                 </el-table>
             </template>
-            <el-pagination
+            <!-- <el-pagination
             style="margin-top: 20px;"
             background
             layout="prev, pager, next"
             @current-change="handleCurrentChange"
             :total="total">
 
-            </el-pagination>
+            </el-pagination> -->
+
+            <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
+
         </div>
     </div>
 
@@ -88,6 +91,8 @@
 <script>
 import '@/assets/css/mbBox.less';
 import mnDialogVue from './mnDialog.vue';
+import pageInaiton from '@/components/chartBox/pageInaiton.vue';
+
 import { getTongKangMN,deleteTongKangMN } from '@/api/api'
 export default {
     props: {
@@ -98,6 +103,7 @@ export default {
     },
     components: {
         mnDialogVue,
+        pageInaiton
     },
     data() {
         return {
@@ -154,7 +160,18 @@ export default {
         },
         //列表删除
         handleClickDelete(params){
-            this.deleteTongKangMN(params.id)
+            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                    this.deleteTongKangMN(params.id)
+                }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });          
+                });
         },
         //删除
         deleteTongKangMN(id){

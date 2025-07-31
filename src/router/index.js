@@ -7,7 +7,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('@/views/XlghkzxtIndex.vue'),
+    // component: () => import('@/views/XlghkzxtIndex.vue'),
     redirect: '/xlghkzxt',
     meta: { isAuth: true, title:'主页' },
 
@@ -57,20 +57,43 @@ const router = new VueRouter({
 document.title = '训练规划系统';
 
 
-// router.beforeEach((to, from, next) => {
-//   //如果路由需要跳转
-//   // console.log(to,'tototo');
-//   document.title = to.meta.title || '训练规划系统';
+router.beforeEach((to, from, next) => {
+  // 设置页面标题
+  document.title = to.meta.title || '训练规划系统'
+  // 2. 检查需要认证的页面
+  if (to.meta.isAuth) {
+    // 检查用户是否已登录
+    const isAuthenticated = checkAuthStatus()
+    if (isAuthenticated) {
+      // 用户已认证，允许访问
+      next()
+    } else {
+      // 用户未认证，重定向到登录页
+      // 添加redirect参数，登录后可以返回原页面
+      next({
+        path: '/login',
+      })
+    }
+  } else {
+    // 其他页面直接放行
+    next()
+  }
+})
 
-//   // 确保每个分支都调用 next()
-//   if (to.path === '/login') {
-//     // 确保没有多余的导航调用
-//     next()
-//   } else {
-//     // 避免在异步回调中调用 next()
-//     next()
-//   }
+// 捕获路由错误并忽略导航取消
+router.onError(error => {
+  if (error.name === 'NavigationCancelled') {
+    return false; // 静默处理
+  }
+  // 其他错误照常处理
+  console.error(error);
+});
+
+function checkAuthStatus() {
+  // 实际项目中应检查token是否有效（包括过期时间）
+  console.log(!!sessionStorage.getItem('token'),'sessionStorage.getItem(token)');
   
-// })
+  return !!sessionStorage.getItem('token')
+}
 
 export default router

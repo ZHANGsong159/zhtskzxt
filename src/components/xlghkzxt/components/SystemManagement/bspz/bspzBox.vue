@@ -34,7 +34,6 @@
                                 placeholder="请填写" 
                                 type="number"
                                 :disabled="selectedDeviceBSFA == '0'"
-                                @input="handleNumberInput($event, 'longitude', index)"
                                 @blur="validateLongitude(item.longitude, index)"
                                 ></el-input>
                             </el-form-item>
@@ -47,7 +46,6 @@
                                 placeholder="请填写" 
                                 type="number"
                                 :disabled="selectedDeviceBSFA == '0'"
-                                @input="handleNumberInput($event, 'latitude', index)"
                                 @blur="validateLatitude(item.latitude, index)"
                                 ></el-input>
                             </el-form-item>
@@ -64,14 +62,16 @@
         </div>
     </div>
 
-    <el-pagination
+    <!-- <el-pagination
         style="margin-top: 20px;"
         background
         :page-size="pageSize"
         layout="prev, pager, next"
         @current-change="handleCurrentChange"
         :total="total">
-    </el-pagination>
+    </el-pagination> -->
+
+    <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
     
 
 
@@ -82,12 +82,16 @@
 import moment from 'moment';
 
 import { getShebeiList ,getDeployNote,UpdataDeployNote,saveLngLat} from '@/api/api'
+import pageInaiton from '@/components/chartBox/pageInaiton.vue';
 export default {
     props: {
         closeDiaLog:{
         type: Boolean,
         default: false,
         }
+    },
+    components: {
+        pageInaiton
     },
     data() {
         return {

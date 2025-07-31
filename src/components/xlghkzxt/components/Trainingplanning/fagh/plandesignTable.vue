@@ -16,7 +16,8 @@
             <template>
                 <el-table
                 :data="tableData"
-                style="width: 100%;hight: 100%;">
+                 height="250"
+               >
                 <el-table-column
                     prop="hdnm"
                     label="任务代号"
@@ -45,20 +46,18 @@
                     </template>
                 </el-table-column>
                 </el-table>
-
-
             </template>
-            <el-pagination
+            <!-- <el-pagination
             style="margin-top: 20px;"
             background
             layout="prev, pager, next"
             @current-change="handleCurrentChange"
             :total="total">
+            </el-pagination> -->
+    <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
 
-            </el-pagination>
         </div>
     </div>
-
 
     <el-dialog
     :title="tittlename"
@@ -72,6 +71,8 @@
 </template>
 <script>
 import '@/assets/css/mbBox.less';
+import pageInaiton from '@/components/chartBox/pageInaiton.vue';
+
 import plandesignvue from '@/components/xlghkzxt/components/Trainingplanning/fagh/plandesignBox.vue';
 import {getGuiHua,deleteGuiHua} from '@/api/api'
 export default {
@@ -82,7 +83,8 @@ export default {
         }
     },
     components:{
-        plandesignvue
+        plandesignvue,
+        pageInaiton
     },
     data() {
         return {
@@ -100,8 +102,11 @@ export default {
             this.dialogVisible = false
             this.getGuiHua()
         },
-        handleCurrentChange(){
-
+        handleCurrentChange(val){
+            console.log(val,'handleCurrentChange');
+            
+            this.pageNum = val
+            this.getGuiHua()
         },
         handleClose() {
             this.dialogVisible = false
@@ -132,10 +137,15 @@ export default {
             
         },
         getGuiHua(){
-            getGuiHua().then(res=>{
+            let param={
+                pageNum:this.pageNum,
+                pageSize:this.pageSize
+            }
+            getGuiHua(param).then(res=>{
                 if(res.data.code==200){
+                    console.log(res.data,'getGuiHuagetGuiHua');
                     this.tableData=res.data.data.list
-                    this.total=res.data.total
+                    this.total=res.data.data.total
                 }
             }).catch((error)=>{
                 console.log(error);
@@ -143,9 +153,13 @@ export default {
             })
         },
         deleteGuiHua(id){
+            if(this.tableData.length==1 && this.pageNum>1){
+                this.pageNum=this.pageNum-1                      
+            }
             deleteGuiHua(id).then(res=>{
                 if(res.data.code==200){
                     this.$message.success('删除成功');
+                    
                     this.getGuiHua()
                 }
             }).catch(error=>{
@@ -164,6 +178,13 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+// .el-table{
+//     overflow: auto;
+    
+// }
+// .el-table::-webkit-scrollbar{ 
+//     width: 0;
+// }
 .buttonStyle{
     color: #FFF10D !important;
 }

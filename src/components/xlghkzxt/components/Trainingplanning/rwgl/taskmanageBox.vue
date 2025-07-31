@@ -1,12 +1,12 @@
 <template>
 <div class="taskmanageBox">
     <div class="taskmanageTittle">
-        <el-form  :inline="true" >
-            <el-form-item label="任务代号" class="inpotBox" style="width: 48%;">
-                <el-input v-model="form.hdnm"></el-input>
+        <el-form   :inline="true"  >
+            <el-form-item label="任务代号" prop="hdnm" class="inpotBox" style="width: 48%;">
+                <el-input  v-model="form.hdnm" maxlength="15" placeholder="15个字符以内"></el-input>
             </el-form-item>
-            <el-form-item label="任务名称" class="inpotBox" style="width: 48%;">
-                <el-input v-model="form.name"></el-input>
+            <el-form-item label="任务名称" prop="name" class="inpotBox" style="width: 48%;">
+                <el-input  v-model="form.name" maxlength="15" placeholder="15个字符以内"></el-input>
             </el-form-item>
         </el-form>
     </div>
@@ -14,10 +14,9 @@
         <div class="divmainBody">
             <div class="divmainTitle">任务内容</div>
             <div class="divmainContent">
-                <el-input type="textarea" v-model="form.scenario" placeholder="请输入内容"></el-input>
+                <el-input type="textarea" maxlength="100"  v-model="form.scenario" placeholder="请输入内容"></el-input>
             </div>
         </div>
-
     </div>
     <div class="taskmanageFooter">
         <div class="taskmanageFooterRight">
@@ -57,7 +56,20 @@
             <el-table-column property="hdnm" label="任务代号"  align='center'></el-table-column>
             <el-table-column property="name" label="任务名称"   align='center'></el-table-column>
             <el-table-column property="scenario" label="任务内容"  align='center'></el-table-column>
+            <el-table-column label="操作"  align='center'>
+                <template slot-scope="scope">
+                    <el-button size="mini" @click="handleClickDelete(scope.row)">删除</el-button>
+                </template>
+            </el-table-column>
         </el-table>
+        <!-- <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        layout="prev, pager, next"
+        :total="gridDatatotle">
+        </el-pagination> -->
+        <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
+
     </el-dialog>
 
 
@@ -70,22 +82,17 @@
             <p>拖放 JSON 文件到这里</p>
             <input type="file" @change="handleFileUpload" accept=".json" />
         </div>
-        <!-- <div v-if="jsonData">
-            <h3>解析后的数据：</h3>
-            <pre>{{ jsonData }}</pre>
-        </div> -->
     </el-dialog>
-
-
-
-
-
 </div>
-    
 </template>
 <script>
-import {addRenWu,getRenWu} from '@/api/api'
+import {addRenWu,getRenWu,deleteRenWu} from '@/api/api'
+import pageInaiton from '@/components/chartBox/pageInaiton.vue';
+
 export default {
+    components: {
+        pageInaiton
+    },
     data() {
         return {
             activeIndex: '1',
@@ -98,6 +105,9 @@ export default {
                 scenario:'',
             },
             gridData:[],
+            gridDatatotle:0,
+            pageNum:1,
+            pageSize:10,
         }
     },
     methods: { 
@@ -118,11 +128,13 @@ export default {
                 this.$message.error('请输入任务名称');
             }else if(!this.form.hdnm){
                 this.$message.error('请输入任务代号');
+            }else if(!this.form.scenario){
+                this.$message.error('请选择任务内容');
             }
             else{
                 addRenWu(this.form).then(res=>{
                     console.log(res,'addRenWu');
-                    if(res.code==200){
+                    if(res.data.code==200){
                         this.$message.success('保存成功');
                         this.$emit('closeDialogZD')
                     }
@@ -131,23 +143,51 @@ export default {
                 })
             }
 
-            
-
         },
         geRenWu(){
-            getRenWu().then(res=>{
+            let param={
+                pageNum:this.pageNum,
+                pageSize:this.pageSize
+            }
+            getRenWu(param).then(res=>{
                 return res.data
             }).then(res=>{
                 if(res.code==200){
+                    console.log(res.data,'getRenWu');
+                    this.gridDatatotle=res.data.total
                     this.gridData = res.data.list
                 }
-
             })
             .catch(error => {
                 console.error('请求失败:', error); // 避免 Uncaught Error
                 this.$message.error('网络错误，请求失败');
             });
 
+        },
+        handleClickDelete(val){
+            deleteRenWu(val.taskId).then(res => { 
+                return res.data
+            }).then(res=>{
+                if(res.code==200){
+                    if(this.gridData.length==1){
+                        this.pageNum=this.pageNum==1?1:this.pageNum-1
+                    }
+                    this.geRenWu()
+                    this.$message.success('删除成功')
+                }else{
+                    this.$message.error('删除失败')
+                }
+            }).catch(error=> { 
+                console.log(error);
+            });
+
+
+        },
+
+        handleCurrentChange(val){
+            console.log(val,'handleCurrentChange');
+            this.pageNum = val
+            this.geRenWu()
         },
 
 
@@ -170,13 +210,12 @@ export default {
             reader.onload = (e) => {
                 try {
                     if(!JSON.parse(e.target.result).hdnm){
-                        this.$message.error('无效文件');
+                        this.$message.error('不符合导入格式');
                     }else{
                         this.jsonData = JSON.parse(e.target.result);
                     }
                 } catch (error) {
                 alert("JSON 解析失败！");
-                    // this.$message.error('无效文件');
                 }
             };
             reader.readAsText(file);
@@ -191,9 +230,6 @@ export default {
     .taskmanageTittle{
         width: 100%;
         padding: 10px 20px;
-        ::v-deep .el-form-item__label{
-            width: 200px;
-        }
     }
     .taskmanageBody{
         padding: 20px 20px;
@@ -216,6 +252,18 @@ export default {
             .divmainContent{
                 width: 100%;
                 height: calc(100% - 40px);
+                ::v-deep .el-form{
+                    height: 100%;
+                    .el-form-item{
+                        height: 100%;
+                        .el-form-item__content{
+                            height: 100%;
+                        }
+                        .el-form-item__content::after{
+                            display: none;
+                        }
+                    }
+                }
                 ::v-deep .el-textarea{
                     height: 100% ;
                 }

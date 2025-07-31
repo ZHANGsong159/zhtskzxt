@@ -20,6 +20,7 @@
                   </el-form-item>
                   <el-form-item label="生效时间">
                     <el-input
+                      disabled
                       v-model="MNtopformAdd.time"
                       type="number"
                       placeholder="请输入"
@@ -27,6 +28,7 @@
                   </el-form-item>
                   <el-form-item label="发射增益">
                       <el-input 
+                      disabled
                       v-model="gain" 
                       type="number" 
                       placeholder="0~63db" 
@@ -62,7 +64,7 @@
                   </div>
                 </div>
                 <div class="XHMNmainBoxright">
-                  <el-form :model="MNformAdd" :inline="true" v-if="Boxright">
+                  <el-form :model="MNformAdd" :inline="true" disabled v-if="Boxright">
                     <el-form-item label="信号类型">
                       <el-select
                         v-model="MNformAdd.signalType"
@@ -404,7 +406,11 @@ export default {
         },
         //模拟模版
         getTongKangMN() {
-            getTongKangMN()
+          let params = {
+              pageNum: 1,
+              pageSize: 1000
+          }
+            getTongKangMN(params)
                 .then((res) => {
                 return res.data;
                 })

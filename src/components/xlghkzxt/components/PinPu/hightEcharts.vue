@@ -183,7 +183,7 @@ export default {
         })
         .catch((error) => {
           console.error("请求失败:", error); // 避免 Uncaught Error
-          this.$message.error("网络错误，请求失败");
+          // this.$message.error("网络错误，请求失败");
         });
     },
     waterFallMove() {},

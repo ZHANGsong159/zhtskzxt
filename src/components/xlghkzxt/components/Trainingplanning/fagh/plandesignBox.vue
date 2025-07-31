@@ -3,10 +3,10 @@
     <div class="plandesignleft">
         <el-form  :inline="true" style="flex-flow:row warp;padding:10px 20px">
             <el-form-item label="任务代号">
-                <el-input v-model="formAdd.hdnm" placeholder="任务代号"></el-input>
+                <el-input v-model="formAdd.hdnm" maxlength="15" placeholder="任务代号"></el-input>
             </el-form-item>
             <el-form-item label="任务名称">
-                <el-input v-model="formAdd.name" placeholder="任务名称"></el-input>
+                <el-input v-model="formAdd.name" maxlength="15" placeholder="任务名称"></el-input>
             </el-form-item>
         </el-form>
         <div class="textarea">
@@ -14,7 +14,7 @@
                 <span>任务内容</span>
             </div>
             <div class="textareaBody">
-                <el-input type="textarea" st v-model="formAdd.scenario"></el-input>
+                <el-input type="textarea" maxlength="100" st v-model="formAdd.scenario"></el-input>
             </div>
         </div>
         <div class="textbotton">
@@ -339,6 +339,9 @@ export default {
             width: 100px !important;
             text-align: left;
             padding: 0 10px;
+        }
+        ::v-deep .el-form-item__content{
+            width: calc(100% - 100px);
         }
         .textarea{
             margin: 10px 20px;

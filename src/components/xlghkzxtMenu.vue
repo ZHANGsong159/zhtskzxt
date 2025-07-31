@@ -1,6 +1,6 @@
 <template>
     <div class="buttomMenuMine">
-        <el-menu :default-active="activeIndex" unique-opened class="el-menu-demo" menu-trigger='click'  mode="horizontal"  @select="handleSelect">
+        <el-menu :default-active="activeIndex" unique-opened class="el-menu-demo" menu-trigger='hover'  mode="horizontal"  @select="handleSelect">
             <div v-for="(item,index) in menus" :key='index'>
                 <el-submenu :index="item.index" v-if='item.children' @click.native="handleSubmenuClick(item.index)"   popper-class="menu-popper" >
                     <template slot="title" >
@@ -77,7 +77,7 @@ export default {
                 },
                 {
                     index: "2",
-                    title: "通讯对抗分系统",
+                    title: "通信对抗分系统",
                     icon: "el-icon-tickets",
                     children: [
                         { index: "2-1", title: "信号干扰模板" },

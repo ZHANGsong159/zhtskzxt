@@ -35,12 +35,13 @@ module.exports = defineConfig({
     
     static: {
       directory: path.join(__dirname, 'public'),
+      publicPath:'/',
       watch: true
     }
   },
   
   productionSourceMap: false,
-  publicPath: process.env.NODE_ENV === 'production' ? '/your-project-path/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
   
   configureWebpack: {
     resolve: {
