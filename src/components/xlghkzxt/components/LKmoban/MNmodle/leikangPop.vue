@@ -3,13 +3,13 @@
     <div class="XHMNinputBox">
       <el-form :inline="true">
         <el-form-item label="模板名称" style="flex-flow: row nowrap !important">
-          <el-input v-model="localTopForm.name" placeholder="请输入"></el-input>
+          <el-input v-model="localTopForm.name" placeholder="请输入" maxlength="15"></el-input>
         </el-form-item>
 
         <el-form-item label="生效时间">
           <el-input
             v-model="localTopForm.time"
-            type="number"
+            @blur="localTopForm.time=handleTimeInput(localTopForm.time,2000,0,0)"
             placeholder="请输入"
           ></el-input>
         </el-form-item>
@@ -17,7 +17,7 @@
         <el-form-item label="射频频率下限">
           <el-input
             v-model="localTopForm.param.minRfFreq"
-            type="number"
+            @blur="localTopForm.param.minRfFreq=handleTimeInput(localTopForm.param.minRfFreq,2000,0,0)"
             placeholder="请输入"
           ></el-input>
         </el-form-item>
@@ -25,7 +25,8 @@
         <el-form-item label="射频频率上限">
           <el-input
             v-model="localTopForm.param.maxRfFreq"
-            type="number"
+            @blur="localTopForm.param.maxRfFreq=handleTimeInput(localTopForm.param.maxRfFreq,2000,0,0)"
+
             placeholder="请输入"
           ></el-input>
         </el-form-item>
@@ -37,6 +38,7 @@
             v-model="localTopForm.param.paramBody.freqType"
             @change="ganraoChange"
             placeholder="请选择"
+            
           >
             <el-option label="射频频率" :value="0"></el-option>
             <el-option label="中频频率" :value="1"></el-option>
@@ -56,15 +58,25 @@
 
 
         <el-form-item label="连续波频率(MHz)" style="flex-flow: row nowrap !important">
-          <el-input v-model="localTopForm.param.paramBody.cwFreq" placeholder="请输入"></el-input>
+          <el-input 
+          v-model="localTopForm.param.paramBody.cwFreq" 
+          @blur="localTopForm.param.paramBody.cwFreq=handleTimeInput(localTopForm.param.paramBody.cwFreq,2000,0,0)"
+          placeholder="请输入">
+          </el-input>
         </el-form-item>
 
         <el-form-item label="连续波衰减值(dB)" style="flex-flow: row nowrap !important">
-          <el-input v-model="localTopForm.param.paramBody.cwLevel" placeholder="请输入"></el-input>
+          <el-input 
+          v-model="localTopForm.param.paramBody.cwLevel" 
+          @blur="localTopForm.param.paramBody.cwLevel=handleTimeInput(localTopForm.param.paramBody.cwLevel,2000,0,0)"
+          placeholder="请输入"></el-input>
         </el-form-item>
 
         <el-form-item label="脉冲安全间隔(ns)" style="flex-flow: row nowrap !important">
-          <el-input v-model="localTopForm.param.paramBody.pulseSafeDelay" placeholder="请输入"></el-input>
+          <el-input 
+          v-model="localTopForm.param.paramBody.pulseSafeDelay" 
+          @blur="localTopForm.param.paramBody.pulseSafeDelay=handleTimeInput(localTopForm.param.paramBody.pulseSafeDelay,2000,0,0)"
+          placeholder="请输入"></el-input>
         </el-form-item>
 
         <div style="width: 100%; display: flex; justify-content: flex-end;">
@@ -117,6 +129,10 @@
           <el-form-item label="频率类型">
             <el-select
               v-model.number="localFormAdd.freqType"
+
+              :popper-append-to-body='false'
+              popper-class="custom-popper"
+
               placeholder="请选择"
             >
               <el-option
@@ -132,26 +148,15 @@
 
 
           <el-form-item label="频率值" v-if='localFormAdd.freqType==0||localFormAdd.freqType==3||localFormAdd.freqType==4'>
-            <!-- <el-input
-              v-model.number="localFormAdd.freqValue"
-              @input="handleInput"
-              
-              placeholder="1.5~3000"
-            ></el-input> -->
             <comma-number-input 
               v-model="localFormAdd.freqValue"
+              @blur="localFormAdd.freqValue=handleTimeInput(localFormAdd.freqValue,3000,1.5,1)"
+
               placeholder="1.5~3000"
             >
             </comma-number-input>
           </el-form-item>
-
-
           <el-form-item label="脉组频点个数" v-if='localFormAdd.freqType==2||localFormAdd.freqType==4'>
-            <!-- <el-input
-              v-model.number="localFormAdd.freqGroupNum"
-
-            ></el-input> -->
-
             <comma-number-input
             v-model="localFormAdd.freqGroupNum"
             >
@@ -159,15 +164,18 @@
           </el-form-item>
 
 
-
           <el-form-item label="捷变带宽" v-if='localFormAdd.freqType==3||localFormAdd.freqType==4'>
             <el-input
               v-model.number="localFormAdd.jitterFreqBand"
+              @blur="localFormAdd.jitterFreqBand=handleTimeInput(localFormAdd.jitterFreqBand,3000,0,1)"
+
             ></el-input>
           </el-form-item>
           <el-form-item label="捷变点个数" v-if='localFormAdd.freqType==3||localFormAdd.freqType==4'>
             <el-input
               v-model.number="localFormAdd.jitterFreqNum"
+              @blur="localFormAdd.jitterFreqNum=handleTimeInput(localFormAdd.jitterFreqNum,3000,0,0)"
+
             ></el-input>
           </el-form-item>
 
@@ -177,6 +185,9 @@
           <el-form-item label="重周类型">
             <el-select
               v-model.number="localFormAdd.periodType"
+              :popper-append-to-body='false'
+              popper-class="custom-popper"
+
               placeholder="请选择"
             >
               <el-option
@@ -212,12 +223,16 @@
           <el-form-item label="重周抖动范围">
             <el-input
               v-model.number="localFormAdd.jitterPeriodBand"
+              @blur="localFormAdd.jitterPeriodBand=handleTimeInput(localFormAdd.jitterPeriodBand,3000,0,0)"
+
             ></el-input>
           </el-form-item>
 
           <el-form-item label="重周抖动点个数">
             <el-input
               v-model.number="localFormAdd.jitterPeriodNum"
+              @blur="localFormAdd.jitterPeriodNum=handleTimeInput(localFormAdd.jitterPeriodNum,255,0,0)"
+
             ></el-input>
           </el-form-item>
 
@@ -229,12 +244,16 @@
           <el-form-item label="滑变范围">
             <el-input
               v-model.number="localFormAdd.slideRange"
+              @blur="localFormAdd.slideRange=handleTimeInput(localFormAdd.slideRange,255,0,0)"
+
             ></el-input>
           </el-form-item>
 
           <el-form-item label="滑变步进">
             <el-input
               v-model.number="localFormAdd.slideStep"
+              @blur="localFormAdd.slideStep=handleTimeInput(localFormAdd.slideStep,255,0,0)"
+
             ></el-input>
           </el-form-item>
 
@@ -244,6 +263,9 @@
           <el-form-item label="脉宽类型">
             <el-select
               v-model.number="localFormAdd.widthType"
+              :popper-append-to-body='false'
+              popper-class="custom-popper"
+
               placeholder="请选择"
             >
               <el-option
@@ -281,6 +303,8 @@
           <el-form-item label="脉宽抖动范围">
             <el-input
               v-model.number="localFormAdd.jitterWidthBand"
+              @blur="localFormAdd.jitterWidthBand=handleTimeInput(localFormAdd.jitterWidthBand,255,0,0)"
+
             ></el-input>
           </el-form-item>
 
@@ -289,6 +313,8 @@
           <el-form-item label="脉宽抖动点个数">
             <el-input
               v-model.number="localFormAdd.jitterWidthNum"
+              @blur="localFormAdd.jitterWidthNum=handleTimeInput(localFormAdd.jitterWidthNum,255,0,0)"
+
             ></el-input>
           </el-form-item>
 
@@ -299,6 +325,9 @@
           <el-form-item label="脉内类型">
             <el-select
               v-model.number="localFormAdd.pulseType"
+              :popper-append-to-body='false'
+              popper-class="custom-popper"
+
               placeholder="请选择"
             >
               <el-option
@@ -315,12 +344,17 @@
           <el-form-item label="调频带宽">
             <el-input
               v-model.number="localFormAdd.pulseBand"
+              @blur="localFormAdd.pulseBand=handleTimeInput(localFormAdd.pulseBand,255,0,0)"
+
             ></el-input>
           </el-form-item>
 
           <el-form-item label="调频方向">
             <el-select
               v-model.number="localFormAdd.fmDirection"
+              :popper-append-to-body='false'
+              popper-class="custom-popper"
+
               placeholder="请选择"
             >
               <el-option label="上" :value="0"></el-option>
@@ -333,6 +367,8 @@
           <el-form-item label="码元宽度">
             <el-input
               v-model.number="localFormAdd.codeWidth"
+              @blur="localFormAdd.codeWidth=handleTimeInput(localFormAdd.codeWidth,1000,0,0)"
+
             ></el-input>
           </el-form-item>
 
@@ -374,6 +410,9 @@
           <el-form-item label="扫描类型">
             <el-select
               v-model.number="localFormAdd.scanType"
+              :popper-append-to-body='false'
+              popper-class="custom-popper"
+
               placeholder="请选择"
             >
               <el-option
@@ -396,12 +435,16 @@
           <el-form-item label="扫描周期">
             <el-input
               v-model.number="localFormAdd.scanPeriodValue"
+              @blur="localFormAdd.scanPeriodValue=handleTimeInput(localFormAdd.scanPeriodValue,1000,0,0)"
+
             ></el-input>
           </el-form-item>
 
           <el-form-item label="主瓣驻留时间">
             <el-input
               v-model.number="localFormAdd.resideTime"
+              @blur="localFormAdd.resideTime=handleTimeInput(localFormAdd.resideTime,36000,0,0)"
+
             ></el-input>
           </el-form-item>
           <el-form-item label="发射衰减">
@@ -418,6 +461,8 @@
           <el-form-item label="单波位积累个数">
             <el-input
               v-model.number="localFormAdd.cpiPulseNum"
+              @blur="localFormAdd.cpiPulseNum=handleTimeInput(localFormAdd.cpiPulseNum,255,0,0)"
+
             ></el-input>
           </el-form-item>
 
@@ -430,6 +475,8 @@
 import "@/assets/css/mbBox.less";
 import {postLeiKangMN,putLeiKangMN,deleteLeiKangMN} from "@/api/api";
 import commaNumberInput from '@/components/chartBox/commaNumberInput.vue'
+import {handleTimeInput} from "@/utils/numberUtils.js";
+
 export default {
   props: {
     topForm: {
@@ -570,8 +617,11 @@ export default {
     // }
   },
   methods: {
+    handleTimeInput,
+
+    
     // 处理输入变化
-      handleInput(value) {
+    handleInput(value) {
           // 过滤掉非数字、非逗号、非小数点的字符
           this.inputString = value.replace(/[^\d,.-]/g, '');
           // 将字符串分割为数组
@@ -588,7 +638,7 @@ export default {
               return isNaN(num) ? null : num;
             })
             .filter(num => num !== null);
-      },
+    },
     //变换码元速率
     setMYSL(key) {
       let label = "";
@@ -608,26 +658,6 @@ export default {
         }
       });
       return label;
-    },
-    handleTimeInput(value, maxvalue, minvalue, key) {
-      // 修改正则表达式，允许小数点
-      let num = String(value).replace(/[^\d.]/g, ""); // 只保留数字和小数点
-      // 移除多余的小数点（最多保留一个）
-      num = String(num).replace(/\.{2,}/g, ".");
-      num = String(num).replace(/^\./g, "");
-
-      // 转换为数字并限制范围
-      let floatNum = parseFloat(num) || minvalue;
-      if (floatNum < minvalue) floatNum = minvalue;
-      if (floatNum > maxvalue) floatNum = maxvalue;
-
-      // 更新对应字段
-      switch (key) {
-        case "shpl":
-          this.localFormAdd.param.signalRate = floatNum;
-          break;
-        // 其他情况...
-      }
     },
     TZFFChange(key) {
       switch (key) {
@@ -995,6 +1025,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+
+::v-deep .el-select-dropdown {
+ position: absolute !important;
+ top: 30px !important;
+ left: 0px !important;
+}
 
 .line{
   width: 80%;

@@ -40,6 +40,3 @@ export function handleTimeInput(value, maxvalue, minvalue, decimalPlaces) {
   }
   
   // 可以导出更多相关函数
-  export default {
-    handleTimeInput
-  };

@@ -29,8 +29,7 @@
           :shebeiID='item.deviceId.toString()' 
           :messagesdata='item.messagesdata'  
           :minvalue='item.minvalue'
-          :maxvalue="item.maxvalue"
-          :config="{ url: wssUrl, }" ></hightEcharts>
+          :maxvalue="item.maxvalue" ></hightEcharts>
         </div>
       </div>
     </div>
@@ -94,30 +93,32 @@ export default {
   mounted() { 
 
     this.$store.state.socket.on('message', (data) => {
-                // if(data.deviceId.toString()==this.shebeiID){
                 if(data.msgCode=="rate_data"){
-                  let min=data.ratePushDTO.startRate
-                  let max=data.ratePushDTO.endRate
-                  this.allFBL=data.ratePushDTO.resolution
-                  if(data.ratePushDTO.segmentStartRate==min){
-                      this.messages=[]
-                      this.ymessages=[]
-                      this.minvalueZJ=min
-                      this.maxvalueZJ=max
-                  }
-                  data.ratePushDTO.values.forEach((item,index)=>{
-                      this.messages.push([(index*100/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
-                      this.ymessages.push(item)
-                  })
                   this.leftPinpu.forEach(item=>{ 
                     if(item.deviceId==data.deviceId){
-                      this.$set(item,'messagesdata',{
-                        messages:this.messages,
-                        ymessages:this.ymessages
+                    // if(item.deviceId==1){
+                      let min=data.ratePushDTO.startRate
+                      let max=data.ratePushDTO.endRate
+                      let startmin=data.ratePushDTO.segmentStartRate
+                      this.allFBL=data.ratePushDTO.resolution
+                      if(startmin==min){
+                          this.$set(item,'messagesdata',{
+                            messages:[],
+                            ymessages:[]
+                          })
+                      }
+                      data.ratePushDTO.values.forEach((items,index)=>{
+                        if(item.messagesdata){
+                          // 创建新数组以确保响应式更新
+                          const newMessages = [...item.messagesdata.messages, [(index*1000/1000)+Number(startmin),items]];
+                          const newYmessages = [...item.messagesdata.ymessages, items];
+                          
+                          this.$set(item.messagesdata, 'messages', newMessages);
+                          this.$set(item.messagesdata, 'ymessages', newYmessages);
+                        }
                       })
                       this.$set(item,'minvalue',min)
                       this.$set(item,'maxvalue',max)
-
                     }
                   })
                 }

@@ -714,6 +714,9 @@ export default {
     postControlCommandStop(params) {
       postControlCommandStop(params).then((res) => {
         console.log(res, "res");
+        if(res.data.code==200){
+          this.$message.success('停止成功')
+        }
         this.runing=false
       });
     },

@@ -12,20 +12,18 @@
               <el-form-item label="模板名称">
                 <el-input
                   v-model="formAdd.name"
+                  maxlength="15"
                   placeholder="模板名称"
                 ></el-input>
               </el-form-item>
               <el-form-item label="生效时长(s)">
                 <el-input
                   v-model="formAdd.time"
+                  @blur="formAdd.time = handleTimeInput(formAdd.time,3600,0,0)"
                   placeholder="生效时长(s)"
                 ></el-input>
               </el-form-item>
               <el-form-item label="侦收开关">
-                <!-- <el-input
-                  v-model="formAdd.param.pdwReport"
-                  placeholder="侦收开关"
-                ></el-input> -->
                 <el-switch
                   v-model="formAdd.param.pdwReport"
                   active-value="1"
@@ -38,18 +36,21 @@
                 <el-input
                   v-model="formAdd.param.rxAtt"
                   placeholder="接收衰减值"
+                  @blur="formAdd.param.rxAtt=handleTimeInput(formAdd.param.rxAtt,2000,0,2)"
                 ></el-input>
               </el-form-item>
               <el-form-item label="射频频率上限">
                 <el-input
                   v-model="formAdd.param.maxRfFreq"
                   placeholder="射频频率上限"
+                  @blur="formAdd.param.maxRfFreq=handleTimeInput(formAdd.param.maxRfFreq,2000,0,2)"
                 ></el-input>
               </el-form-item>
               <el-form-item label="射频频率下限">
                 <el-input
                   v-model="formAdd.param.minRfFreq"
                   placeholder="射频频率下限"
+                  @blur="formAdd.param.minRfFreq=handleTimeInput(formAdd.param.minRfFreq,2000,0,2)"
                 ></el-input>
               </el-form-item>
               <div class="radio-box">
@@ -89,14 +90,14 @@
                     <el-form-item label="射频中心频率">
                       <el-input
                         v-model.number="formAddtop.rfCenter"
-                        :oninput="xianzhi(25000,800)"
+                        @blur="formAddtop.rfCenter=handleTimeInput(formAddtop.rfCenter,25000,800,0)"
                         placeholder="800-25000MHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="噪声带宽">
                       <el-input
                         v-model.number="formAddtop.bandWidth"
-                        :oninput="xianzhi(1000,1)"
+                        @blur="formAddtop.bandWidth=handleTimeInput(formAddtop.bandWidth,1000,1,0)"
                         placeholder="1-1000MHz"
                       ></el-input>
                     </el-form-item>
@@ -113,21 +114,22 @@
                     <el-form-item label="侦收时长">
                       <el-input
                         v-model.number="formAddtop.recvTime"
-                        :oninput="xianzhi(5000,1)"
+                        @blur="formAddtop.recvTime=handleTimeInput(formAddtop.recvTime,5000,1,0)"
+
                         placeholder="1-5000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="干扰时长">
                       <el-input
                         v-model.number="formAddtop.emitTime"
-                        :oninput="xianzhi(12000,1)"
+                        @blur="formAddtop.emitTime=handleTimeInput(formAddtop.emitTime,12000,1,0)"
                         placeholder="1-12000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="噪声带宽">
                       <el-input
                         v-model="formAddtop.bandWidth"
-                        :oninput="xianzhi(50,1)"
+                        @blur="formAddtop.bandWidth=handleTimeInput(formAddtop.bandWidth,50,1,0)"
                         placeholder="1-50MHz"
                       ></el-input>
                     </el-form-item>
@@ -144,28 +146,28 @@
                     <el-form-item label="起始频率">
                       <el-input
                         v-model="formAddtop.rfStart"
-                        :oninput="xianzhi(25000,800)"
+                        @blur="formAddtop.rfStart=handleTimeInput(formAddtop.rfStart,25000,800,0)"
                         placeholder="800-25000MHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="终止频率">
                       <el-input
                         v-model="formAddtop.rfEnd"
-                        :oninput="xianzhi(25000,800)"
+                        @blur="formAddtop.rfEnd=handleTimeInput(formAddtop.rfEnd,25000,800,0)"
                         placeholder="800-25000MHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="驻留时间">
                       <el-input
                         v-model="formAddtop.dwellTime"
-                        :oninput="xianzhi(65535,0)"
+                        @blur="formAddtop.dwellTime=handleTimeInput(formAddtop.dwellTime,65535,0,0)"
                         placeholder="0-65535ms"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="扫频间隔">
                       <el-input
                         v-model="formAddtop.scanInterval"
-                        :oninput="xianzhi(65535,0)"
+                        @blur="formAddtop.scanInterval=handleTimeInput(formAddtop.scanInterval,65535,0,0)"
                         placeholder="0-65535kHz"
                       ></el-input>
                     </el-form-item>
@@ -181,28 +183,28 @@
                     <el-form-item label="起始频率">
                       <el-input
                         v-model="formAddtop.rfStart"
-                        :oninput="xianzhi(25000,800)"
+                        @blur="formAddtop.rfStart=handleTimeInput(formAddtop.rfStart,25000,800,0)"
                         placeholder="800-25000MHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="终止频率">
                       <el-input
                         v-model="formAddtop.rfEnd"
-                        :oninput="xianzhi(25000,800)"
+                        @blur="formAddtop.rfEnd=handleTimeInput(formAddtop.rfEnd,25000,800,0)"
                         placeholder="800-25000MHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="谱线间隔">
                       <el-input
                         v-model="formAddtop.freqInterval"
-                        :oninput="xianzhi(100,10)"
+                        @blur="formAddtop.freqInterval=handleTimeInput(formAddtop.freqInterval,100,10,0)"
                         placeholder="10-100MHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="谱线宽度">
                       <el-input
                         v-model="formAddtop.width"
-                        :oninput="xianzhi(10,0)"
+                        @blur="formAddtop.width=handleTimeInput(formAddtop.width,10,0,0)"
                         placeholder="0-10MHz"
                       ></el-input>
                     </el-form-item>
@@ -218,42 +220,42 @@
                     <el-form-item label="最小脉冲">
                       <el-input
                         v-model="formAddtop.minPulseWidth"
-                        :oninput="xianzhidouble(1000,0.3)"
+                        @blur="formAddtop.minPulseWidth=handleTimeInput(formAddtop.minPulseWidth,1000,0.3,1)"
                         placeholder="0.3-1000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="最大脉冲">
                       <el-input
                         v-model="formAddtop.maxPulseWidth"
-                        :oninput="xianzhidouble(1000,0.3)"
+                        @blur="formAddtop.maxPulseWidth=handleTimeInput(formAddtop.maxPulseWidth,1000,0.3,1)"
                         placeholder="0.3-1000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="最小重周">
                       <el-input
                         v-model="formAddtop.minPulsePeriod"
-                        :oninput="xianzhidouble(1000,0.3)"
+                        @blur="formAddtop.minPulsePeriod=handleTimeInput(formAddtop.minPulsePeriod,1000,0.3,1)"
                         placeholder="0.3-1000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="最大重周">
                       <el-input
                         v-model="formAddtop.maxPulsePeriod"
-                        :oninput="xianzhidouble(1000,0.3)"
+                        @blur="formAddtop.maxPulsePeriod=handleTimeInput(formAddtop.maxPulsePeriod,1000,0.3,1)"
                         placeholder="0.3-1000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="干扰窗开始时间">
                       <el-input
                         v-model="formAddtop.startTime"
-                        :oninput="xianzhi(3000,10)"
+                        @blur="formAddtop.startTime=handleTimeInput(formAddtop.startTime,3000,10,0)"
                         placeholder="10-3000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="干扰窗结束时间">
                       <el-input
                         v-model="formAddtop.endTime"
-                        :oninput="xianzhi(12000,10)"
+                        @blur="formAddtop.endTime=handleTimeInput(formAddtop.endTime,12000,10,0)"
                         placeholder="10-12000us"
                       ></el-input>
                     </el-form-item>
@@ -278,49 +280,49 @@
                     <el-form-item label="侦收时长">
                       <el-input
                         v-model="formAddbottom.recvTime"
-                        :oninput="xianzhi(5000,1)"
+                        @blur="formAddtop.recvTime=handleTimeInput(formAddtop.recvTime,5000,1,0)"
                         placeholder="1-5000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="干扰时长">
                       <el-input
                         v-model="formAddbottom.emitTime"
-                        :oninput="xianzhi(12000,1)"
+                        @blur="formAddtop.emitTime=handleTimeInput(formAddtop.emitTime,12000,1,0)"
                         placeholder="1-12000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="左边带带宽">
                       <el-input
                         v-model="formAddbottom.leftBand"
-                        :oninput="xianzhidouble(10000,0)"
+                        @blur="formAddtop.leftBand=handleTimeInput(formAddtop.leftBand,10000,0,0)"
                         placeholder="0-10000kHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="右边带带宽">
                       <el-input
                         v-model="formAddbottom.rightBand"
-                        :oninput="xianzhidouble(10000,0)"
+                        @blur="formAddtop.rightBand=handleTimeInput(formAddtop.rightBand,10000,0,0)"
                         placeholder="0-10000kHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="驻留时间">
                       <el-input
                         v-model="formAddbottom.dwellTime"
-                        :oninput="xianzhi(65535,0)"
+                        @blur="formAddtop.dwellTime=handleTimeInput(formAddtop.dwellTime,65535,0,0)"
                         placeholder="0-65535us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="扫频时间">
                       <el-input
                         v-model="formAddbottom.scanInterval"
-                        :oninput="xianzhi(65535,0)"
+                        @blur="formAddtop.scanInterval=handleTimeInput(formAddtop.scanInterval,65535,0,0)"
                         placeholder="0-65535kHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="间断重复时间">
                       <el-input
                         v-model="formAddbottom.cutTime"
-                        :oninput="xianzhi(65535,0)"
+                        @blur="formAddtop.cutTime=handleTimeInput(formAddtop.cutTime,65535,0,0)"
                         placeholder="0-65535us"
                       ></el-input>
                     </el-form-item>
@@ -333,57 +335,54 @@
                     :inline="true"
                     @tab-click="handleClickbottom"
                     :disabled='disabledbottom'
-
-                    
-
                     style="flex-flow: row warp; padding: 10px 20px"
                   >
                     <el-form-item label="侦收时长">
                       <el-input
                         v-model="formAddbottom.recvTime"
-                        :oninput="xianzhi(10000,1)"
+                        @blur="formAddtop.recvTime=handleTimeInput(formAddtop.recvTime,10000,1,0)"
                         placeholder="1-10000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="干扰时长">
                       <el-input
                         v-model="formAddbottom.emitTime"
-                        :oninput="xianzhi(40000,1)"
+                        @blur="formAddtop.emitTime=handleTimeInput(formAddtop.emitTime,40000,1,0)"
                         placeholder="1-40000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="左边带带宽">
                       <el-input
                         v-model="formAddbottom.leftBand"
-                        :oninput="xianzhidouble(10000,0)"
+                        @blur="formAddtop.emitTime=handleTimeInput(formAddtop.emitTime,10000,0,0)"
                         placeholder="0-10000kHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="右边带带宽">
                       <el-input
                         v-model="formAddbottom.rightBand"
-                        :oninput="xianzhidouble(10000,0)"
+                        @blur="formAddtop.rightBand=handleTimeInput(formAddtop.rightBand,10000,0,0)"
                         placeholder="0-10000kHz"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="目标间隔">
                       <el-input
                         v-model="formAddbottom.targetInterval"
-                        :oninput="xianzhi(1000,2)"
+                        @blur="formAddtop.targetInterval=handleTimeInput(formAddtop.targetInterval,10000,2,0)"
                         placeholder="2-1000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="随机抖动">
                       <el-input
                         v-model="formAddbottom.jitterTime"
-                        :oninput="xianzhi(10000,0)"
+                        @blur="formAddtop.jitterTime=handleTimeInput(formAddtop.jitterTime,10000,0,0)"
                         placeholder="0-10000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="目标速度">
                       <el-input
                         v-model="formAddbottom.targetSpeed"
-                        :oninput="xianzhi(3400,-3400)"
+                        @blur="formAddtop.targetSpeed=handleTimeInput(formAddtop.targetSpeed,3400,-3400,0)"
                         placeholder="-3400-3400m/s"
                       ></el-input>
                     </el-form-item>
@@ -401,21 +400,21 @@
                     <el-form-item label="干扰窗开始时间">
                       <el-input
                         v-model="formAddbottom.startTime"
-                        :oninput="xianzhi(3000,10)"
+                        @blur="formAddtop.startTime=handleTimeInput(formAddtop.startTime,3000,10,0)"
                         placeholder="10-3000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="干扰窗结束时间">
                       <el-input
                         v-model="formAddbottom.endTime"
-                        :oninput="xianzhi(12000,10)"
+                        @blur="formAddtop.endTime=handleTimeInput(formAddtop.endTime,12000,10,0)"
                         placeholder="10-12000us"
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="噪声带宽">
                       <el-input
                         v-model="formAddbottom.bandWidth"
-                        :oninput="xianzhi(2000,0)"
+                        @blur="formAddtop.bandWidth=handleTimeInput(formAddtop.bandWidth,2000,0,0)"
                         placeholder="0-2000kHz"
                       ></el-input>
                     </el-form-item>
@@ -432,7 +431,7 @@
                     <el-form-item label="侦收时长">
                       <el-input
                         v-model="formAddbottom.recvTime"
-                        :oninput="xianzhi(10000,1)"
+                        @blur="formAddtop.recvTime=handleTimeInput(formAddtop.recvTime,10000,1,0)"
                         placeholder="1-10000us"
                       ></el-input>
                     </el-form-item>
@@ -440,7 +439,7 @@
                     <el-form-item label="干扰时长">
                       <el-input
                         v-model="formAddbottom.emitTime"
-                        :oninput="xianzhi(40000,1)"
+                        @blur="formAddtop.emitTime=handleTimeInput(formAddtop.emitTime,40000,1,0)"
                         placeholder="1-40000us"
                       ></el-input>
                     </el-form-item>
@@ -448,7 +447,7 @@
                     <el-form-item label="切片时间">
                       <el-input
                         v-model="formAddbottom.cutTime"
-                        :oninput="xianzhidouble(1000,2)"
+                        @blur="formAddtop.cutTime=handleTimeInput(formAddtop.cutTime,1000,2,0)"
                         placeholder="2-1000us"
                       ></el-input>
                     </el-form-item>
@@ -456,7 +455,7 @@
                     <el-form-item label="目标速度">
                       <el-input
                         v-model="formAddbottom.targetSpeed"
-                        :oninput="xianzhi(3400,-3400)"
+                        @blur="formAddtop.targetSpeed=handleTimeInput(formAddtop.targetSpeed,3400,-3400,0)"
                         placeholder="-3400~3400m/s"
                       ></el-input>
                     </el-form-item>
@@ -475,6 +474,7 @@
 </template>
 <script>
 import tittleBg from "@/components/chartBox/tittleBackground.vue";
+import {handleTimeInput} from "@/utils/numberUtils.js";
 
 import {postLeiKangGR,putLeiKangGR} from "@/api/api";
 export default {
@@ -494,27 +494,8 @@ export default {
     return {
       tittlename: "任务列表",
       formAdd:JSON.parse(JSON.stringify(this.formAdddata)),
-      // formAdd:{
-      //   name:'',
-      //   time:'',
-      //   param:{
-      //     pdwReport:'',
-      //     rxAtt:'',
-      //     maxRfFreq:'',
-      //     minRfFreq:'',
-      //     radio:'1',
-      //     leftselect:'',
-      //     rightselect:'',
-      //     paramBody:{},
-      //   },
-      // },
-
       formAddtop:{},
       formAddbottom:{},
-
-
-      // formAddtop:this.formAdd.param.paramBody.noiseParam || {},
-      // formAddbottom:this.formAdd.param.paramBody.coherentParam ||{} ,
       //噪声干扰
       noiseTypeoptions: [
         {label: "无", value: 0 },
@@ -569,36 +550,7 @@ export default {
         }
   },
   methods: {
-
-    xianzhi(maxvalue,minvalue){
-      return "if(!/^[0-9]+$/.test(value)) value=value.replace(/\\D/g,'');if(value>"+maxvalue+")value="+maxvalue+";if(value<"+minvalue+")value="+minvalue
-    },
-    xianzhidouble(maxvalue,minvalue){ 
-      return `value = value.replace(/[^\\d.]/g, ''); 
-          if (value > ${maxvalue}) value = ${maxvalue};
-          if (value < ${minvalue}) value = ${minvalue};`
-    },
-    handleTimeInput(value, maxvalue, minvalue) {
-      // 修改正则表达式，允许小数点
-      let num = String(value).replace(/[^\d.]/g, ""); // 只保留数字和小数点
-      // 移除多余的小数点（最多保留一个）
-      num = String(num).replace(/\.{2,}/g, ".");
-      num = String(num).replace(/^\./g, "");
-
-      // 转换为数字并限制范围
-      let floatNum = parseFloat(num) || minvalue;
-      if (floatNum < minvalue) floatNum = minvalue;
-      if (floatNum > maxvalue) floatNum = maxvalue;
-      value = floatNum;
-
-      // // 更新对应字段
-      // switch (key) {
-      //   case "shpl":
-      //     this.localFormAdd.param.signalRate = floatNum;
-      //     break;
-      //   // 其他情况...
-      // }
-    },
+    handleTimeInput,
     radioChange(key){
       switch(key){
         case '1':
@@ -614,7 +566,6 @@ export default {
           this.disabledbottom=false;
           break;
       }
-      console.log(key,this.disabledtop,this.disabledbottom,'radioChange');
     },
     handleClicktop(){
 

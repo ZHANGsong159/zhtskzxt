@@ -18,7 +18,7 @@
                 </el-form-item>
                 <el-form-item label="生效时间(秒)">
                   <el-input
-                    disabled
+                    
                     v-model="formAdd.time"
                     type="number"
                     placeholder="范围0~3600"
@@ -28,7 +28,7 @@
                   <el-select
                     v-model="formAdd.disturbDto.disturbStyle"
                     placeholder="请输入干扰样式"
-                    disabled
+                    
                   >
                     <el-option
                       v-for="device in GRYSoption"
@@ -39,7 +39,7 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="干扰频率范围">
-                  <el-select v-model="formAdd.disturbDto.param.rateRange" @change="GRPLchange" disabled  placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.rateRange" @change="GRPLchange"   placeholder="请选择">
                     <el-option
                         v-for="device in GRPLFWoption"
                         :key="device.value"
@@ -50,14 +50,14 @@
                 </el-form-item>
                 <el-form-item label="发射增益">
                   <el-input
-                    disabled
+                    
                     v-model="formAdd.disturbDto.param.gain"
                     placeholder="请输入发射增益"
                   ></el-input>
                 </el-form-item>
                 <el-form-item label="干扰频率(KHZ)">
                   <el-input
-                    disabled
+                    
                     v-model="formAdd.disturbDto.param.disturbRate"
                     type="number"
                     placeholder="范围0~3600"
@@ -65,7 +65,7 @@
                 </el-form-item>
                 <el-form-item label="干扰带宽(KHZ)" v-if='formAdd.disturbDto.disturbStyle==0 || formAdd.disturbDto.disturbStyle==1'>
                   <el-input
-                    disabled
+                    
                     v-model="formAdd.disturbDto.param.disturbBand"
                     type="number"
                     placeholder="范围0~3600"
@@ -73,7 +73,7 @@
                 </el-form-item>
                 <!-- {{formAdd.disturbDto.param}} -->
                 <el-form-item label="扫频带宽" v-if='formAdd.disturbDto.disturbStyle==2'>
-                  <el-select v-model="formAdd.disturbDto.param.sweepBand" disabled placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.sweepBand"  placeholder="请选择">
                       <el-option
                           v-for="device in SPDKoption"
                           :key="device.value"
@@ -83,7 +83,7 @@
                   </el-select>
               </el-form-item>
               <el-form-item label="谱线间隔" v-if='formAdd.disturbDto.disturbStyle==3'>
-                  <el-select v-model="formAdd.disturbDto.param.lineInterval" disabled placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.lineInterval"  placeholder="请选择">
                       <el-option
                           v-for="device in PXJGoption"
                           :key="device.value"
@@ -93,7 +93,7 @@
                   </el-select>
               </el-form-item>
               <el-form-item label="谱线数量" v-if='formAdd.disturbDto.disturbStyle==3'>
-                  <el-select v-model="formAdd.disturbDto.param.lineNum"  disabled placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.lineNum"   placeholder="请选择">
                       <el-option
                           v-for="device in PXSLoption"
                           :key="device.value"

@@ -32,6 +32,7 @@
           <el-input
             v-model="localTopForm.gain"
             type="number"
+            :disabled="Boxright"
             @change="GainChange"
             @blur="localTopForm.gain=handleTimeInput(localTopForm.gain,63,0,'gain')"
             placeholder="0~63db"
@@ -62,9 +63,13 @@
               信号类型：{{item.signalType == 0? "定频": item.signalType == 1? "跳频": "扩频"}}
               调制方式：{{ TZFFChange(item.param.modStyle) }}
             </div>
-            <div class="XHMNBoxleftmain-right-bottom">
+            <div class="XHMNBoxleftmain-right-bottom" v-if="localTopForm.signalType != 1">
               信号频率：{{ item.param.signalRate }}MHz 
               码元速率：{{setMYSL(item.param.codeRate)}}
+            </div>
+            <div class="XHMNBoxleftmain-right-bottom" v-else>
+              开始频率：{{ item.param.sweepStartRate}}MHz 
+              终止速率：{{item.param.sweepEndRate}}MHz 
             </div>
           </div>
           <i
@@ -79,6 +84,7 @@
             <el-select
               v-model="localFormAdd.param.modStyle"
               placeholder="请选择"
+              @change="changeModStyle"
             >
               <el-option
                 v-for="device in TZYSoption"
@@ -104,7 +110,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="信号频率(MHz)">
+          <el-form-item label="信号频率(MHz)" v-if="localTopForm.signalType != 1">
             <el-input
               v-model="localFormAdd.param.signalRate"
               type="number"
@@ -113,7 +119,7 @@
               @blur="localFormAdd.param.signalRate=handleTimeInput(localFormAdd.param.signalRate, maxRfFreq,minRfFreq, 2)"
             ></el-input>
           </el-form-item>
-          <el-form-item label="码元速率">
+          <el-form-item label="码元速率" v-if="localTopForm.signalType != 1">
             <el-select
               v-model="localFormAdd.param.codeRate"
               placeholder="请选择"
@@ -290,16 +296,19 @@ export default {
 
       TZYSoption: [],
       XHDKoption: [],
+      XHDKoptionNew:[
+                { value: 0, label: "2048kHz" },
+            ],
       DPoption: {
         TZYSoption: [
           { value: 0, label: "AM" },
           { value: 1, label: "FM" },
-          { value: 2, label: "FSK" },
-          { value: 3, label: "BPSK" },
-          { value: 4, label: "MSK" },
-          { value: 5, label: "QPSK" },
-          { value: 6, label: "8PSK" },
-          { value: 8, label: "16QAM" },
+          { value: 2, label: "BPSK" },
+          { value: 3, label: "QPSK" },
+          { value: 4, label: "8PSK" },
+          { value: 5, label: "16QAM" },
+          { value: 6, label: "FSK" },
+          { value: 7, label: "MSK" },
         ],
         XHDKoption: [
           { value: 7, label: "16kHz" },
@@ -313,11 +322,11 @@ export default {
         ],
       },
       TPoption: {
-        TZYSoption: [{ value: 5, label: "QPSK" }],
+        TZYSoption: [{ value: 3, label: "QPSK" }],
         XHDKoption: [{ value: 7, label: "16KHz" }],
       },
       KPoption: {
-        TZYSoption: [{ value: 5, label: "QPSK" }],
+        TZYSoption: [{ value: 3, label: "QPSK" }],
         XHDKoption: [
           { value: 7, label: "16KHz" },
           { value: 6, label: "32KHz" },
@@ -363,9 +372,17 @@ export default {
     handleTimeInput,
     GainChange(val){
       this.localTopForm.simulateList.forEach(item => {
-        item.gain =Number(val)
+        console.log(item,'GainChange');
+        item.gain = Number(val)
       });
-      console.log(this.localTopForm.simulateList,'GainChange');
+    },
+    changeModStyle(val){
+      console.log(val,'changeModStyle');
+        if(val==0||val==1){
+          this.XHDKoption=this.XHDKoptionNew
+        }else{
+          this.XHDKoption=this.DPoption.XHDKoption
+        }
     },
 
     PLFWchange(key){
@@ -393,14 +410,14 @@ export default {
     setMYSL(key) {
       let label = "";
       let alldata = [
-        { value: 7, label: "16KHz" },
-        { value: 6, label: "32KHz" },
-        { value: 5, label: "64KHz" },
-        { value: 4, label: "128KHz" },
-        { value: 3, label: "256KHz" },
-        { value: 2, label: "512KHz" },
-        { value: 1, label: "1024KHz" },
-        { value: 0, label: "2048KHz" },
+        { value: 7, label: "16kHz" },
+        { value: 6, label: "32kHz" },
+        { value: 5, label: "64kHz" },
+        { value: 4, label: "128kHz" },
+        { value: 3, label: "256kHz" },
+        { value: 2, label: "512kHz" },
+        { value: 1, label: "1024kHz" },
+        { value: 0, label: "2048kHz" },
       ];
       alldata.forEach((item) => {
         if (item.value == key) {
@@ -417,24 +434,28 @@ export default {
         case 1:
           return "FM";
         case 2:
-          return "FSK";
-        case 3:
           return "BPSK";
-        case 4:
-          return "MSK";
-        case 5:
+        case 3:
           return "QPSK";
-        case 6:
+        case 4:
           return "8PSK";
-        case 8:
+        case 5:
           return "16QAM";
+        case 6:
+          return "FSK";
+        case 7:
+          return "MSK";
       }
     },
     optionSet(key) {
       switch (key) {
         case 0:
           this.TZYSoption = this.DPoption.TZYSoption;
-          this.XHDKoption = this.DPoption.XHDKoption;
+          if(this.localFormAdd.param.modStyle==0||this.localFormAdd.param.modStyle==1){
+            this.XHDKoption = this.XHDKoptionNew;
+          }else{
+            this.XHDKoption = this.DPoption.XHDKoption;
+          }
           break;
         case 1:
           this.TZYSoption = this.TPoption.TZYSoption;
@@ -450,10 +471,7 @@ export default {
       this.optionSet(key);
     },
     BoxleftClick(params, index) {
-        console.log(params.param.rateRange,'BoxleftClickBoxleftClick');
         this.pinlvji=params.param.hopRateList
-
-
         this.selectedIndex = index;
         this.localFormAdd = JSON.parse(JSON.stringify(params));
         this.Boxright = true;
@@ -717,8 +735,10 @@ export default {
       // 生成随机数
       const randomNumbers = this.generateRandomNumbers(min, max, step);
       // 排序（升序）
-      this.sortedRandomNumbers = randomNumbers.sort((a, b) => a - b);
-      this.pinlvji = this.sortedRandomNumbers;
+      // this.sortedRandomNumbers = randomNumbers.sort((a, b) => a - b);
+      // this.pinlvji = this.sortedRandomNumbers;
+      this.pinlvji =randomNumbers
+
     },
   },
   mounted() {},

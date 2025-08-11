@@ -79,13 +79,6 @@
                 </template>
 
 
-                <!-- <el-pagination
-                style="margin-top: 20px;"
-                background
-                layout="prev, pager, next"
-                @current-change="handleCurrentChange"
-                :total="total">
-                </el-pagination> -->
 
                 <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
 
@@ -182,6 +175,9 @@
                 </el-select>
             </el-form-item>
         </el-form>
+
+        <!-- <grmodle :formAddNEW.sync='formAdd' :form-item-width="'45%'" ></grmodle> -->
+
         <div slot="footer" class="dialog-footer">
             <el-button @click="innerVisible = false">取 消</el-button>
             <el-button type="primary" @click="confirm" >确 定</el-button>
@@ -194,10 +190,9 @@
 <script>
 import '@/assets/css/mbBox.less';
 import pageInaiton from '@/components/chartBox/pageInaiton.vue';
-
-
 import {getTongKangGR,postTongKangGR,putTongKangGR,deleteTongKangGR} from '@/api/api'
 import {handleTimeInput} from '@/utils/numberUtils'
+// import grmodle from '@/components/chartBox/GRmodle.vue'
 
 export default {
     props: {
@@ -207,7 +202,8 @@ export default {
         }
     },
     components: {
-        pageInaiton
+        pageInaiton,
+        // grmodle
     },
     data() {
         return {
@@ -394,6 +390,8 @@ export default {
             
         },
         confirm(){
+            console.log(this.formAdd,'formAddformAddformAdd设备更新');
+            
             if(this.dialogTitle=='模版更新'){
                 this.Updataganrao(this.formAdd)
             }else{
@@ -434,6 +432,9 @@ export default {
             deleteTongKangGR(param).then(res=>{
                 console.log(res,'resresresres');
                 if(res.data.code==200){
+                    if(this.tableData.length==1){
+                        this.pageNum=this.pageNum-1
+                    }
                     this.getGanRaoList()
                     this.$message.success('删除成功')
                 }else{

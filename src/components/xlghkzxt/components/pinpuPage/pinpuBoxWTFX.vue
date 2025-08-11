@@ -75,9 +75,6 @@
                                 </div>
                                 
                             </div>
-                            <!-- <div>开始时间：2024-05-16 05:15:11</div>
-                            <div>结束时间：2024-12-16 05:15:11</div>
-                            <div>调制样式：调制样式调制样式调制样式</div> -->
                         </div>
                     </div>
 
@@ -89,10 +86,7 @@
     </div>
 </template>
 <script>
-// import hightEchartsVue from '../PinPu/hightEchartsPLFX.vue';
-// import hightEchartsVue from '@/components/xlghkzxt/components/PinPu/hightEchartsPLFX.vue';
 import hightEchartsVue from '@/components/xlghkzxt/components/PinPu/hightEchartsWTFX.vue';
-
 import {getCmdRate}  from "@/api/api.js"
 export default {
     components: { hightEchartsVue },

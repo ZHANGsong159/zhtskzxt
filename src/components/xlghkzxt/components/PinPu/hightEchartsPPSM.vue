@@ -26,15 +26,12 @@
 <script>
 import Highcharts from "highcharts";
 import Boost from 'highcharts/modules/boost';
+import {getDeployNote} from '@/api/api'
 Boost(Highcharts);
 export default {
   props: {
-    minvalue: {
+    fblbeishu: {
       type: Number,
-      default: 0,
-    },
-      type: Number,
-    maxvalue: {
       default: 1000,
     },
   },
@@ -46,7 +43,7 @@ export default {
         chart: {
           zoomType: "x",
           backgroundColor: "rgba(0,0,0,0)",
-          polar: true,
+          // polar: true,
           type: "line",
         },
         resetZoomButton: {
@@ -64,8 +61,10 @@ export default {
           title: {
             enabled: false,
           },
-          gridLineColor: "rgba(46, 54, 92, 0.69)",
-          lineColor: "rgba(46, 54, 92, 0.69)",
+          min:0,
+          startOnTick: false, // 必须：禁用起始刻度调整
+          gridLineColor: "rgba(255,255,255,0.5)",
+          gridLineWidth: 1,
           labels: {
             style: {
               color: "#dfdfdf",
@@ -81,31 +80,39 @@ export default {
           min: 0,
           max: 100,
           showLastLabel: true,
-          gridLineColor: "rgba(46, 54, 92, 0.69)",
+          gridLineColor: "rgba(255,255,255,0.5)",
+          gridLineWidth: 1, 
           lineColor: "rgba(165,165,165, 0.3)",
           showFirstLabel: true,
-          tickColor: false,
+          tickColor: true,
           plotBands: [], //标注区
-          plotLines: [],
         },
         title: {
           enabled: false,
           text: "",
         },
+
         legend: {
           enabled: false,
         },
         tooltip: {
-            shared: false,
-            crosshairs: true,
-            plotOptions: {
-                spline: {
-                    marker: {
-                        radius: 4,
-                        lineColor: '#666666',
-                        lineWidth: 1
-                    }
-                }
+            enabled: true, // 必须设置为true
+            useHTML: true, // 启用HTML内容
+            zIndex: 100,
+            formatter: function() {
+                // 使用this.point访问当前数据点
+                return `
+                    <div>频率: <b>${this.x} MHz</b></div>
+                    <div>信号强度: <b>${this.y} dB</b></div>
+                `;
+            },
+            // 样式配置
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            borderColor: '#4dabf7',
+            borderRadius: 8,
+            style: {
+                color: '#fff',
+                fontSize: '14px'
             }
         },
         boost: {
@@ -116,12 +123,25 @@ export default {
 
         series: [
           {
-            color: "#00ffff",
+            color: "rgba(234,225,113,1)",
             marker: {
-              enabled: false,
+                enabled: false, // 启用标记点
+                states: {
+                    hover: {
+                        enabled: true // 启用悬停状态
+                    }
+                }
+            },
+            
+            turboThreshold: 0,
+                boostThreshold: 1,  // 强制所有系列使用boost
+                dataGrouping: {
+                  enabled: true,    // ✅ 关键：在boost模式下启用分组
+                  approximation: 'average',
+                  groupPixelWidth: 4
             },
             animation: false,
-            enableMouseTracking: false,
+            enableMouseTracking: true,
             type: "line",
             data: [],
             lineWidth: 0.5,
@@ -137,15 +157,32 @@ export default {
       timer: null, //瀑布图定时器
       waterFallWidth: 0, //瀑布图的宽度（后端返回的数据length）
       waterFallHeight: 0, //瀑布图定高度（也可以理解成渲染次数 例如30次渲染完成）
-      maxNum: 1000, //图例最大值
+      maxNum: 120, //图例最大值
       minNum: 0, //图例最小值
       messages: [],
+      ymessages:[],
+
+      maxvalue:1000,
+      minvalue:0,
+      noiseData: {},
     };
   },
   methods: {
-
     waterFallMove() {},
     waterFallLeave() {},
+    getDeployNote(){
+      let noise ='noise'
+      getDeployNote(noise).then(res => { 
+        return res.data
+      }).then(res=>{
+        this.noiseData = res.data
+        this.options.yAxis.min = Number(res.data.configValue)
+        console.log(this.options.yAxis.min,'this.options.yAxis.min');
+        
+      }).catch(error => { 
+        console.log(error);
+      });
+    },
     // 清空图表数据
     clearChart() {
       if (this.chartInstance) {
@@ -160,19 +197,11 @@ export default {
     initMessage(max, min) {
       var data = [];
       var yData = [];
-      data = this.$store.state.messages;
-      yData = this.$store.state.ymessages;
-      // data = xdata;
-      // yData = secondValues;
-      // 折线图
-      // console.log(yData,'瀑布图瀑布图瀑布图');
-      //瀑布图
-      // if(yData.length>0){
-      // this.clearChart()
+      data = this.messages;
+      yData = this.ymessages;
+
       this.highInit(data, max, min);
       this.queryChartList(yData);
-
-      // }
     },
     // 生成范围区间的值
     RandomNumBoth(Min, Max) {
@@ -225,7 +254,10 @@ export default {
     createWaterFallCanvas() {
       let that = this;
       let waterFall = that.$refs[`${this.shebeiID}canvas`];
+      
       that.waterFall = waterFall.getContext("2d");
+
+
       waterFall.width = that.waterFallWidth;
       waterFall.height = that.$refs[this.shebeiID].offsetHeight;
     },
@@ -234,25 +266,14 @@ export default {
       let that = this;
       if (that.$refs[this.shebeiID] !== undefined) {
         let canvasHeight = 1;
-        if (that.waterFallHeight == 0) {
-          clearInterval(this.timer);
-        } else {
-          canvasHeight = Math.floor(
-            that.$refs[this.shebeiID].offsetHeight / that.waterFallHeight
-          );
-        }
-        console.log(
-          that.waterFallWidth,
-          canvasHeight * that.waterFallIndex + 1,
-          "瀑布图瀑布图瀑布图"
-        );
-        let imgOld = that.waterFall.getImageData(
-          0,
-          0,
-          that.waterFallWidth,
-          canvasHeight * that.waterFallIndex + 1
-        );
-
+        // if (that.waterFallHeight == 0) {
+        //   clearInterval(this.timer);
+        // } else {
+        //   canvasHeight = Math.floor(
+        //     that.$refs[this.shebeiID].offsetHeight / that.waterFallHeight
+        //   );
+        // }
+        let imgOld = that.waterFall.getImageData(0,0,that.waterFallWidth,canvasHeight * that.waterFallIndex + 1);
         const imageData = that.waterFall.createImageData(data.length, 1);
         for (let i = 0; i < imageData.data.length; i += 4) {
           const cindex = that.colorMapData(data[i / 4], 0, 130);
@@ -281,16 +302,16 @@ export default {
       );
     },
 
-    queryChartList(data) {
+    queryChartList(data,max) {
       let hightEchartsbox = this.$refs[this.shebeiID].offsetHeight;
-      console.log(hightEchartsbox, "hightEchartsboxhightEchartsbox");
-
+      
       let that = this;
-      that.waterFallWidth = data.length;
+      that.waterFallWidth = max;
       that.waterFallHeight = hightEchartsbox;
       if (that.waterFall === null) {
         that.createWaterFallCanvas(data.length);
       }
+
       that.rowToImageData(data);
       that.waterFallCopyList.unshift(data);
       that.waterFallIndex++;
@@ -308,39 +329,71 @@ export default {
       ctx.clearRect(0, 0, waterFall.width, waterFall.height);
       this.draw(ctx);
     },
+
     draw(ctx) {
       ctx.fillStyle = "blue";
       ctx.fillRect(10, 10, 100, 100);
     },
-    dianji() {
-      console.log("dianjidianjidianjidianjidianjidianjidianji");
+
+    tesxttu(){
+          var xdata=[],yData=[];
+        for(var i =950;i<2150;i+=0.3){
+          if(i>=1200&&i<=1230){
+             let nums=this.RandomNumBoth(60,70);
+            yData.push(nums) 
+            xdata.push([i,nums])
+           }else if(i>=1450&&i<=1500){
+             let nums=this.RandomNumBoth(50,60);
+            yData.push(nums) 
+            xdata.push([i,nums])
+           }else if(i>=1800&&i<=1850){
+             let num1=this.RandomNumBoth(40,50);
+            yData.push(num1) 
+            xdata.push([i,num1])
+           }else{
+              let num=this.RandomNumBoth(2,30);
+                yData.push(num);
+                xdata.push([i,num])
+           }
+        }
+        console.log(xdata,yData,'data');
+        
+        this.queryChartList(yData);
+
     },
+
+    
   },
   created(){
     this.shebeiID=this.$route.params.id
+    this.getDeployNote()
   },
   mounted() {
     let that = this;
     that.setColormap();
     that.createLegendCanvas();
-    this.highInit([], this.maxvalue, this.minvalue);
-  },
+    this.highInit([], this.maxvalue, this.minvalue)
+    
+    this.$store.state.socket.on('message', (data) => {
+      if(data.msgCode=="rate_data"){
+        let min=data.ratePushDTO.startRate
+        let max=data.ratePushDTO.endRate
 
-  
-  watch: {
-    "$store.state.messages": {
-      handler() {
-        this.initMessage(this.maxvalue, this.minvalue);
-        // this.chartInstance.series[0].setData(this.$store.state.messages,false)
+        if(data.ratePushDTO.segmentStartRate==min){
+          this.messages=[]
+          this.ymessages=[]
+        }
+        data.ratePushDTO.values.forEach((item,index)=>{
+          this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
+          // this.messages.push([(index*1000/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
+          this.ymessages.push(item)
+        })
 
-      },
-      deep: true,
-    },
-  
-  },
-  beforeDestroy() {
-    // let that = this;
-    // clearInterval(that.timer);
+        this.chartInstance.xAxis[0].setExtremes(min, max);
+        this.chartInstance.series[0].setData(this.messages)
+        this.queryChartList(this.ymessages,max);
+      }
+    }); 
   },
 };
 </script>

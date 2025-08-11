@@ -54,129 +54,45 @@ export default {
       // socket: null,
       minvalueZJ:0,
       maxvalueZJ:100,
-      optionTop:{
-         chart: {
-          type: 'line',
-          zoomType: 'x',
-          panning: true,
-          backgroundColor: "rgba(0,0,0,0)",
-          panKey: 'shift',
-          events: {
-            selection: event => this.handleSelection(event)
-          }
-        },
-        title: {
-          text: ''
-        },
-        xAxis: {
-          title: {
-            text: '频率 (Hz)'
-          },
-          labels: {
-            style: {
-              color: "#dfdfdf",
-            },
-          },
-          min: this.minvalueZJ,
-          max: this.maxvalueZJ,
-          showLastLabel: true,
-          gridLineColor: "rgba(46, 54, 92, 0.69)",
-          lineColor: "rgba(165,165,165, 0.3)",
-          showFirstLabel: true,
-          tickColor: false,
-          plotBands: [], //标注区
-          plotLines: [],
-        },
-        yAxis: {
-          title: {
-            enabled: false,
-          },
-          gridLineColor: "rgba(46, 54, 92, 0.69)",
-          lineColor: "rgba(46, 54, 92, 0.69)",
-          labels: {
-            style: {
-              color: "#dfdfdf",
-            },
-          },
-        },
-        legend: {
-          enabled: false
-        },
-        plotOptions: {
-          series: {
-            cursor: 'pointer',
-            animation: false, // 禁用动画
-            marker: { enabled: false }, // 关闭数据点标记
-            shadow: false, // 关闭阴影
-            lineWidth: 1 ,// 减少线宽
-            point: {
-              events: {
-                click: event => this.handlePointClick(event.point)
-              }
-            }
-          }
-        },
-        boost: {
-          enabled: true, // 必须开启
-          useGPUTranslations: true, // 启用GPU加速
-          seriesThreshold: 1 // 当序列数超过阈值时启用boost
-        },
-        series: [
-            {
-                color: "#00ffff",
-                marker: {
-                  enabled: false,
-                },
-                turboThreshold: 0,
-                boostThreshold: 1,  // 强制所有系列使用boost
-                dataGrouping: {
-                  enabled: true,    // ✅ 关键：在boost模式下启用分组
-                  approximation: 'average',
-                  groupPixelWidth: 4
-                },
-                enableMouseTracking: false,
-                type: "line",
-                data: [],
-                lineWidth: 0.5,
-            }
-        ],
-        tooltip: {
-          valueDecimals: 2
-        },
-        exporting: {
-          enabled: false
-        },
-        credits: {
-          //版权
-          enabled: false,
-        },
-
-      },
-      optionBotoom:{
+      optionTop: {
         chart: {
           zoomType: "x",
           backgroundColor: "rgba(0,0,0,0)",
-          polar: true,
+          // polar: true,
           type: "line",
+          events: {
+          // 点击图表空白区域时触发 [4,6](@ref)
+          click: (event)=> {
+            this.$emit('clickpoint', event.xAxis[0].value,event.yAxis[0].value)
+          }
+        }
+        },
+        resetZoomButton: {
+          // theme: { style: { display: 'none'} }
         },
         reflow: true,
         credits: {
           //版权
           enabled: false,
         },
-        resetZoomButton: {
-          // theme: { style: { display: 'none'} }
+        exporting: {
+          enabled: false
         },
-        title: {
-          text: '',
-          style: {
-            color: '#dfdfdf',
+        yAxis: {
+          title: {
+            enabled: false,
+          },
+          min:0,
+          startOnTick: false, // 必须：禁用起始刻度调整
+          gridLineColor: "rgba(255,255,255,0.5)",
+          gridLineWidth: 1,
+          labels: {
+            style: {
+              color: "#dfdfdf",
+            },
           },
         },
         xAxis: {
-          title: {
-            text: ''
-          },
           labels: {
             style: {
               color: "#dfdfdf",
@@ -185,28 +101,169 @@ export default {
           min: 0,
           max: 100,
           showLastLabel: true,
-          gridLineColor: "rgba(46, 54, 92, 0.69)",
+          gridLineColor: "rgba(255,255,255,0.5)",
+          gridLineWidth: 1, 
           lineColor: "rgba(165,165,165, 0.3)",
           showFirstLabel: true,
-          tickColor: false,
+          tickColor: true,
           plotBands: [], //标注区
-          plotLines: [],
+        },
+        title: {
+          enabled: false,
+          text: "",
+        },
+
+        legend: {
+          enabled: false,
+        },
+        tooltip: {
+            enabled: true, // 必须设置为true
+            useHTML: true, // 启用HTML内容
+            zIndex: 100,
+            formatter: function() {
+                // 使用this.point访问当前数据点
+                return `
+                    <div>频率: <b>${this.x} MHz</b></div>
+                    <div>信号强度: <b>${this.y} dB</b></div>
+                `;
+            },
+            // 样式配置
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            borderColor: '#4dabf7',
+            borderRadius: 8,
+            style: {
+                color: '#fff',
+                fontSize: '14px'
+            }
+        },
+        boost: {
+          enabled: true, // 必须开启
+          useGPUTranslations: true, // 启用GPU加速
+          seriesThreshold: 1 // 当序列数超过阈值时启用boost
+        },
+        // plotOptions: {
+        //   scatter: {
+        //     // 数据点点击事件 [1,6](@ref)
+        //     point: {
+        //       events: {
+        //         click: function() {
+        //           const infoDiv = document.getElementById('info');
+        //           infoDiv.innerHTML = `🔥 点击峰值点：频率 = ${this.frequency}，强度 = ${this.y.toFixed(1)}dB`;
+        //         }
+        //       }
+        //     },
+        //     marker: {
+        //       radius: 6,
+        //       states: {
+        //         hover: { radius: 8 }
+        //       }
+        //     }
+        //   }
+        // },
+        series: [
+          {
+            color: "rgba(234,225,113,1)",
+            marker: {
+                enabled: false, // 启用标记点
+                states: {
+                    hover: {
+                        enabled: true // 启用悬停状态
+                    }
+                }
+            },
+            
+            turboThreshold: 0,
+                boostThreshold: 1,  // 强制所有系列使用boost
+                dataGrouping: {
+                  enabled: true,    // ✅ 关键：在boost模式下启用分组
+                  approximation: 'average',
+                  groupPixelWidth: 4
+            },
+            animation: false,
+            enableMouseTracking: true,
+            type: "line",
+            data: [],
+            lineWidth: 0.5,
+          },
+        ],
+      },
+      optionBotoom:{
+        chart: {
+          zoomType: "x",
+          backgroundColor: "rgba(0,0,0,0)",
+          // polar: true,
+          type: "line",
+          events: {
+        }
+        },
+        resetZoomButton: {
+          // theme: { style: { display: 'none'} }
+        },
+        reflow: true,
+        credits: {
+          //版权
+          enabled: false,
+        },
+        exporting: {
+          enabled: false
         },
         yAxis: {
           title: {
-            text: ''
+            enabled: false,
           },
-          min: 0,
-          gridLineColor: "rgba(46, 54, 92, 0.69)",
-          lineColor: "rgba(46, 54, 92, 0.69)",
+          min:0,
+          startOnTick: false, // 必须：禁用起始刻度调整
+          gridLineColor: "rgba(255,255,255,0.5)",
+          gridLineWidth: 1,
           labels: {
             style: {
               color: "#dfdfdf",
             },
           },
         },
+        xAxis: {
+          labels: {
+            style: {
+              color: "#dfdfdf",
+            },
+          },
+          min: 0,
+          max: 100,
+          showLastLabel: true,
+          gridLineColor: "rgba(255,255,255,0.5)",
+          gridLineWidth: 1, 
+          lineColor: "rgba(165,165,165, 0.3)",
+          showFirstLabel: true,
+          tickColor: true,
+          plotBands: [], //标注区
+        },
+        title: {
+          enabled: false,
+          text: "",
+        },
+
         legend: {
-          enabled: false
+          enabled: false,
+        },
+        tooltip: {
+            enabled: true, // 必须设置为true
+            useHTML: true, // 启用HTML内容
+            zIndex: 100,
+            formatter: function() {
+                // 使用this.point访问当前数据点
+                return `
+                    <div>频率: <b>${this.x} MHz</b></div>
+                    <div>信号强度: <b>${this.y} dB</b></div>
+                `;
+            },
+            // 样式配置
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            borderColor: '#4dabf7',
+            borderRadius: 8,
+            style: {
+                color: '#fff',
+                fontSize: '14px'
+            }
         },
         boost: {
           enabled: true, // 必须开启
@@ -214,10 +271,15 @@ export default {
           seriesThreshold: 1 // 当序列数超过阈值时启用boost
         },
         series: [
-        {
-          color: "#00ffff",
+          {
+            color: "rgba(234,225,113,1)",
             marker: {
-              enabled: false,
+                enabled: false, // 启用标记点
+                states: {
+                    hover: {
+                        enabled: true // 启用悬停状态
+                    }
+                }
             },
             turboThreshold: 0,
                 boostThreshold: 1,  // 强制所有系列使用boost
@@ -227,28 +289,19 @@ export default {
                   groupPixelWidth: 4
             },
             animation: false,
-            enableMouseTracking: false,
+            enableMouseTracking: true,
             type: "line",
             data: [],
             lineWidth: 0.5,
-        }
+          },
         ],
-        tooltip: {
-          valueDecimals: 2
-        },
-        //右上角菜单
-        exporting: {
-          enabled: false
-        },
-        
-
       },
 
     }
   },
   mounted() {
     this.initCharts()
-    // this.loadData()
+    this.loadData()
   },
   beforeDestroy() {
     // 销毁图表实例

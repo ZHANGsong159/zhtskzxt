@@ -62,14 +62,6 @@
         </div>
     </div>
 
-    <!-- <el-pagination
-        style="margin-top: 20px;"
-        background
-        :page-size="pageSize"
-        layout="prev, pager, next"
-        @current-change="handleCurrentChange"
-        :total="total">
-    </el-pagination> -->
 
     <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
     

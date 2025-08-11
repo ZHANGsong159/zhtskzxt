@@ -8,20 +8,23 @@ import request from './utils/request'
 import pac from './../package.json'
 
 // import { Message } from 'element-ui'; // 添加这行
+import Highcharts from 'highcharts';
+import timeline from 'highcharts/modules/timeline';
+import exporting from 'highcharts/modules/exporting';
+import boost from 'highcharts/modules/boost';
+timeline(Highcharts)
+exporting(Highcharts)
+boost(Highcharts)
 
 
-// import 'vue-ip-input/dist/vue-ip-input.css';
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css' // 引入样式文件
 
-// import * as echarts from 'echarts';
 
 console.log('版本号：' + pac.version)
 // console.log('构建版本号：' + pac.buildVersion)
-
-
 Vue.use(ElementUI) // 全局注册组件
-
 // Vue.prototype.$echarts = echarts;
 
 Vue.config.productionTip = false

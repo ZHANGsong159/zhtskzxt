@@ -24,7 +24,7 @@
                   </el-form-item>
                   <el-form-item label="生效时间">
                     <el-input
-                      disabled
+                      
                       v-model="MNtopformAdd.time"
                       type="number"
                       placeholder="请输入"
@@ -32,7 +32,7 @@
                   </el-form-item>
                   <el-form-item label="发射增益">
                       <el-input 
-                      disabled
+                      
                       v-model="gain" 
                       type="number" 
                       placeholder="0~63db" 
@@ -66,7 +66,7 @@
                   </div>
                 </div>
                 <div class="XHMNmainBoxright">
-                  <el-form :model="MNformAdd" :inline="true" v-if="Boxright" disabled>
+                  <el-form :model="MNformAdd" :inline="true" v-if="Boxright" >
                     <el-form-item label="信号类型">
                       <el-select
                         v-model="MNformAdd.signalType"
@@ -85,6 +85,7 @@
                       <el-select
                         v-model="MNformAdd.param.modStyle"
                         placeholder="请选择"
+                        @change="changeModStyle"
                       >
                         <el-option
                           v-for="device in TZYSoption"
@@ -241,6 +242,9 @@ export default {
             selectedIndex: 0,
             TZYSoption: [],
             XHDKoption: [],
+            XHDKoptionNew:[
+                { value: 0, label: "2048kHz" },
+            ],
             XHLXoption: [
                 { value: 0, label: "定频" },
                 { value: 1, label: "跳频" },
@@ -280,37 +284,39 @@ export default {
                 TZYSoption: [
                 { value: 0, label: "AM" },
                 { value: 1, label: "FM" },
-                { value: 2, label: "FSK" },
-                { value: 3, label: "BPSK" },
-                { value: 4, label: "MSK" },
-                { value: 5, label: "QPSK" },
-                { value: 6, label: "8PSK" },
-                { value: 8, label: "16QAM" },
+                { value: 2, label: "BPSK" },
+                { value: 3, label: "QPSK" },
+                { value: 4, label: "8PSK" },
+                { value: 5, label: "16QAM" },
+                { value: 6, label: "FSK" },
+                { value: 7, label: "MSK" },
                 ],
                 XHDKoption: [
-                { value: 4, label: "16KHz" },
-                { value: 5, label: "32KHz" },
-                { value: 6, label: "64KHz" },
-                { value: 7, label: "128KHz" },
-                { value: 8, label: "256KHz" },
-                { value: 9, label: "512KHz" },
-                { value: 10, label: "1024KHz" },
-                { value: 11, label: "2048KHz" },
+                { value: 7, label: "16kHz" },
+                { value: 6, label: "32kHz" },
+                { value: 5, label: "64kHz" },
+                { value: 4, label: "128kHz" },
+                { value: 3, label: "256kHz" },
+                { value: 2, label: "512kHz" },
+                { value: 1, label: "1024kHz" },
+                { value: 0, label: "2048kHz" },
                 ],
             },
             TPoption: {
-                TZYSoption: [{ value: 5, label: "QPSK" }],
-                XHDKoption: [{ value: 4, label: "16KHz" }],
+                TZYSoption: [{ value: 3, label: "QPSK" }],
+                XHDKoption: [{ value: 7, label: "16KHz" }],
             },
             KPoption: {
-                TZYSoption: [{ value: 5, label: "QPSK" }],
+                TZYSoption: [{ value: 3, label: "QPSK" }],
                 XHDKoption: [
-                { value: 0, label: "1KHz" },
-                { value: 1, label: "2KHz" },
-                { value: 2, label: "4KHz" },
-                { value: 3, label: "8KHz" },
-                { value: 4, label: "16KHz" },
-                { value: 5, label: "32KHz" },
+                { value: 7, label: "16KHz" },
+                { value: 6, label: "32KHz" },
+                { value: 5, label: "64KHz" },
+                { value: 4, label: "128KHz" },
+                { value: 3, label: "256KHz" },
+                { value: 2, label: "512KHz" },
+                { value: 1, label: "1024KHz" },
+                { value: 0, label: "2048KHz" },
                 ],
                 MCoption: [
                 { value: 0, label: "63" },
@@ -349,9 +355,10 @@ export default {
     methods:{
       clickMN() {
         console.log(this.BoxleftList,this.MNformAdd,'BoxleftList');
-        
         let params = {};
         this.BoxleftList[this.selectedIndex] = this.MNformAdd;
+        console.log(this.shebeiData.deviceType,'this.shebeiData.deviceType');
+        
         switch (this.shebeiData.deviceType) {
           case "TK":
             params = {
@@ -376,31 +383,44 @@ export default {
       postControlCommandSimulation(params) {
         postControlCommandSimulation(params).then((res) => {
           console.log(res, "res");
+          if(res.data.code==200){
+            this.$message.success('下发成功');
+          }else{
+            this.$message.error('下发失败');
+          }
         }).catch(err=>{
                   console.log(err);
                   
-                })
+        })
+      },
+      changeModStyle(val){
+        console.log(val,'changeModStyle');
+          if(val==0||val==1){
+            this.XHDKoption=this.XHDKoptionNew
+          }else{
+            this.XHDKoption=this.DPoption.XHDKoption
+          }
       },
 
 
         TZFFChange(key){ 
             switch(key){
                 case 0:
-                   return 'AM'
+                  return "AM";
                 case 1:
-                    return 'FM'
+                  return "FM";
                 case 2:
-                    return 'FSK'
+                  return "BPSK";
                 case 3:
-                    return 'BPSK'
+                  return "QPSK";
                 case 4:
-                    return 'MSK'
+                  return "8PSK";
                 case 5:
-                    return 'QPSK'
+                  return "16QAM";
                 case 6:
-                    return '8PSK'
-                case 7:
-                    return '16QAM'
+                  return "FSK";
+                case 8:
+                  return "MSK";
             }
         },
         optionSet(key) {
@@ -408,7 +428,11 @@ export default {
             switch (key) {
                 case 0:
                 this.TZYSoption = this.DPoption.TZYSoption;
-                this.XHDKoption = this.DPoption.XHDKoption;
+                if(this.MNformAdd.param.modStyle==0||this.MNformAdd.param.modStyle==1){
+                  this.XHDKoption = this.XHDKoptionNew;
+                }else{
+                  this.XHDKoption = this.DPoption.XHDKoption;
+                }
                 break;
                 case 1:
                 this.TZYSoption = this.TPoption.TZYSoption;
@@ -424,6 +448,7 @@ export default {
             if(this.MNformAdd.no){
                 this.BoxleftList[this.selectedIndex] = this.MNformAdd;
             }
+            this.pinlvji=params.param.hopRateList
             this.selectedIndex = index;
             this.MNformAdd = JSON.parse(JSON.stringify(params));
             this.optionSet(this.MNformAdd.signalType)

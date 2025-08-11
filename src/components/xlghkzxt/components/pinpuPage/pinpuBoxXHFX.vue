@@ -33,10 +33,12 @@
         </div>
         <div class="rightMain">
             <echarts-xhfx  
+            ref="echartsxhfx"
             :shebeiID='PPSMshebeiID' 
             :messagesdata="messages" 
             :minvalue='minvalueZJ' 
             :maxvalue="maxvalueZJ" 
+            @clickpoint='clickpoint'
             @handleSelection='handleSelection'>
             </echarts-xhfx>
         </div>
@@ -59,13 +61,32 @@
                                 <el-input v-model="pdsmFrom.centerRate" placeholder="请输入"></el-input>
                             </el-form-item>
                             <el-form-item label="分析带宽(MHz)" class="inpotBox">
-                                <el-input v-model="pdsmFrom.band" placeholder="请输入"></el-input>
+                                <!-- <el-input v-model="pdsmFrom.band" placeholder="请输入"></el-input> -->
+                                <el-select v-model="pdsmFrom.band" @change='FXDKchange'  placeholder="请选择">
+                                    <el-option
+                                        v-for="device in Bandoption"
+                                        :key="device.value"
+                                        :label="device.label"
+                                        :value="device.value"
+                                    ></el-option>
+                                </el-select>
                             </el-form-item>
+                            <!-- <el-form-item label="采样率" class="inpotBox">
+                                <el-select v-model="pdsmFrom.cyl"  placeholder="请选择">
+                                    <el-option
+                                        v-for="device in CYLoption"
+                                        :key="device.value"
+                                        :label="device.label"
+                                        :value="device.value"
+                                    ></el-option>
+                                </el-select>
+                            </el-form-item> -->
                         </el-form>
                         <div class="textBox" v-if='bottombox'>
                             <div>开始时间：{{pdsmFrom.startTime}}</div>
                             <div>结束时间：{{pdsmFrom.endTime}}</div>
                             <div>调制样式：{{pdsmFrom.modulateStyle}}</div>
+                            <div>码元速率：{{pdsmFrom.codeRate}}MHz</div>
                         </div>
                     </div>
                 </el-collapse-item>
@@ -118,6 +139,27 @@ export default {
                 { value: 15, label: '3.125K' },
                 { value: 16, label: '1.5625K' },
             ],
+            CYLoption:[
+                {value:0,label:'5120Hz'},
+                {value:1,label:'2560Hz'},
+                {value:2,label:'1280Hz'},
+                {value:3,label:'640Hz'},
+                {value:4,label:'320Hz'},
+                {value:5,label:'160Hz'},
+                {value:6,label:'80Hz'},
+                {value:7,label:'40Hz'},
+            ],
+            Bandoption:[
+                {value:0,label:'2048KHz'},
+                {value:1,label:'1024KHz'},
+                {value:2,label:'512KHz'},
+                {value:3,label:'256KHz'},
+                {value:4,label:'128KHz'},
+                {value:5,label:'64KHz'},
+                {value:6,label:'32KHz'},
+                {value:7,label:'16KHz'},
+            ],
+
             allFBL:'',
             fblbeishu:0,
             minvalueZJ:0,
@@ -130,11 +172,52 @@ export default {
         fblChange(val){
             this.allFBL=val
         },
+        clickpoint(xdata,ydata){
+            console.log(xdata,ydata,'clickpoint');
+            this.pdsmFrom.centerRate=xdata.toFixed(2)
+            
+        },
+        FXDKchange(val){
+            let DKnumber=null
+            switch(val){
+                case 0: 
+                    DKnumber=2048
+                break;
+                case 1: 
+                    DKnumber=1024
+                break;
+                case 2: 
+                    DKnumber=512
+                break;
+                case 3: 
+                    DKnumber=256
+                break;
+                case 4: 
+                    DKnumber=128
+                break;
+                case 5: 
+                    DKnumber=64
+                break;
+                case 6: 
+                    DKnumber=32
+                break;
+                case 7: 
+                    DKnumber=16
+                break;
+            }
+            let min=Number(this.pdsmFrom.centerRate)-DKnumber/2/100
+            let max=Number(this.pdsmFrom.centerRate)+DKnumber/2/100
+            this.$refs.echartsxhfx.highlightSelection(min, max)
+        },
         handleSelection(param){
-            let pinjun=(param.max-param.min)/2+param.min
-            let pinjunband=param.max-param.min
-            this.pdsmFrom.centerRate=pinjun
-            this.pdsmFrom.band=pinjunband
+            console.log(param,'handleSelection');
+            
+
+            
+            // let pinjun=(param.max-param.min)/2+param.min
+            // let pinjunband=param.max-param.min
+            // this.pdsmFrom.centerRate=pinjun
+            // this.pdsmFrom.band=pinjunband
         },
         handleChange(){
 

@@ -81,7 +81,7 @@
             </div>
         </div>
         <div class="rightMain">
-            <hight-echarts-vue  :minvalue='minvalueZJ' :maxvalue="maxvalueZJ"></hight-echarts-vue>       
+            <hight-echarts-vue :fblbeishu='fblbeishu'></hight-echarts-vue>       
         </div>
 
     </div>
@@ -100,11 +100,7 @@ export default {
             qjsmStart:true,
             pdsmStart:true,
             dpksStart:true,
-            selectedDeviceQJSM:'',
             SMfbl: [
-                // { value: 0, label: '1000K' },
-                // { value: 1, label: '2000K' },
-
                 { value: 3, label: '12800K' },
                 { value: 4, label: '6400K' },
                 { value: 5, label: '3200K' },
@@ -135,52 +131,11 @@ export default {
                 centerRate:'',
                 band:'',
             },
-
             allFBL:'',
-            fblbeishu:0,
-            minvalueZJ:0,
-            maxvalueZJ:100,
-            messages:[],
-            ymessages:[],
-
-
-
+            fblbeishu:0,//分辨率倍数
         }
-    
     },
     methods: {
-               // 生成随机数
-        generateRandomNumbers(minvalue,maxvalue,fbl) {
-            const result = [];
-            const min = minvalue;
-            const max = maxvalue;
-            const step = fbl; // 设置步长为0.025
-            const allstep = Math.floor((max - min) / step);
-            // 计算可能的数值范围
-            const minSteps = Math.ceil(min / step);
-            const maxSteps = Math.floor(max / step);
-            
-            for (let i = 0; i < allstep; i++) {
-            // 生成随机步数
-            const randomSteps = Math.floor(Math.random() * (maxSteps - minSteps + 1)) + minSteps;
-            
-            // 计算对应的数值
-            const randomNum = randomSteps * step;
-            
-            result.push(parseFloat(randomNum.toFixed(3))); // 保留3位小数避免浮点数精度问题
-            }
-            
-            return result;
-        },
-        generateAndSortNumbers(min,max,step) {
-            // 生成随机数
-            const randomNumbers = this.generateRandomNumbers(min,max,step);
-            // 排序（升序）
-            let sortedRandomNumbers = randomNumbers.sort((a, b) => a - b);
-            // this.pinlvji=this.sortedRandomNumbers
-            return  sortedRandomNumbers
-            
-        },
         //停止发送接口
         getCmdRateStop(dataparam){
             let params = {
@@ -217,7 +172,6 @@ export default {
             }else{
                 this.allFBL=0
             }
-            console.log(params,'getCmdRateFun');
             getCmdRate(params).then(res => {
                 return res.data
             }).then(res=>{
@@ -250,22 +204,7 @@ export default {
                     parameName='dpksFrom'
                     break;
             }
-            // this.submitForm(parameName,parameFrom)
-            console.log(parameFrom,parameName,'parameFrom');
-            this.getCmdRateFun(parameFrom)
-
-        },
-        submitForm(formName,parameFrom) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    this.getCmdRateFun(parameFrom)
-                    console.log(' submit!!');
-
-                } else {
-                    console.log('error submit!!');
-                    this.$message.error('表单验证未通过，请检查输入内容');
-                }
-            });
+            this.getCmdRateFun(parameFrom,parameName)
         },
         fblChange(val){
             this.allFBL=val
@@ -273,30 +212,6 @@ export default {
     },
     mounted() {
         this.PPSMshebeiID=this.$route.params.id
-        this.$store.state.socket.on('message', (data) => {
-            if(data.msgCode=="rate_data"){
-                    let min=data.ratePushDTO.startRate
-                    let max=data.ratePushDTO.endRate
-                    this.allFBL=data.ratePushDTO.resolution
-                    this.minvalueZJ=min
-                    this.maxvalueZJ=max
-                    if(data.ratePushDTO.segmentStartRate==min){
-                        this.messages=[]
-                        this.ymessages=[]
-                        // this.minvalueZJ=min
-                        // this.maxvalueZJ=max
-                        console.log('数据初始化');
-                    }
-                    data.ratePushDTO.values.forEach((item,index)=>{
-                        this.messages.push([(index*this.fblbeishu/1000)+Number(data.ratePushDTO.segmentStartRate),item]);
-                        this.ymessages.push(item)
-                    })
-                    console.log(min,max,'messageTTTT');
-
-                    this.$store.state.messages=this.messages
-                    this.$store.state.ymessages=this.ymessages
-                }
-        }); 
     },
     beforeDestroy() {
         this.getCmdRateStop()
@@ -357,7 +272,6 @@ export default {
             }
         }
     }
-    
 }
 </script>
 <style lang="less" scoped>

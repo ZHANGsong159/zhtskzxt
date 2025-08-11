@@ -14,7 +14,7 @@
       </el-form>
       <div class="leftPinpu">
         <tittleBg :tittlename="'任务列表'"></tittleBg>
-        <el-table :data="tableData" style="width: 100%" >
+        <el-table :data="tableData" style="width: 100% ; hight:calc(100% - 50px);" >
           <el-table-column type="index" label="#"> </el-table-column>
           <el-table-column prop="taskName" label="名称"> </el-table-column>
           <el-table-column prop="delayedTime" label="延迟（s）" > 
@@ -606,7 +606,9 @@ export default {
 
     .leftPinpu {
       width: 100%;
+      height: calc(100% - 50px);
       padding: 0px 20px;
+      overflow: auto;
       ::v-deep .el-table__header {
         width: 100%;
       }

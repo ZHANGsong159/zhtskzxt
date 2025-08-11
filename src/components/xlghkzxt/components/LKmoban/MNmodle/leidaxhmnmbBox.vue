@@ -62,14 +62,6 @@
                 </el-table-column>
                 </el-table>
             </template>
-            <!-- <el-pagination
-            style="margin-top: 20px;"
-            background
-            layout="prev, pager, next"
-            @current-change="handleCurrentChange"
-            :total="total">
-
-            </el-pagination> -->
 
             <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
 
@@ -133,7 +125,6 @@ export default {
     },
     methods:{
         getShebeiList(){
-            
             this.getLeiKangMN()
             this.innerVisible=false
         },

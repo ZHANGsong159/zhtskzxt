@@ -63,14 +63,6 @@
                 </el-table-column>
                 </el-table>
             </template>
-            <!-- <el-pagination
-            style="margin-top: 20px;"
-            background
-            layout="prev, pager, next"
-            @current-change="handleCurrentChange"
-            :total="total">
-
-            </el-pagination> -->
 
             <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
 
@@ -179,6 +171,9 @@ export default {
                 console.log(res,'resresresres');
                 if(res.data.code==200){
                     this.$message.success('删除成功');
+                    if(this.tableData.length==1){
+                        this.pageNum=this.pageNum-1
+                    }
                     this.getTongKangMN()
                 }else{
                     this.$message.error('删除失败');

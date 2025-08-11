@@ -23,7 +23,7 @@
                 </el-form-item>
                 <el-form-item label="生效时间(秒)">
                   <el-input
-                    disabled
+                    
                     v-model="formAdd.time"
                     type="number"
                     placeholder="范围0~3600"
@@ -31,7 +31,7 @@
                 </el-form-item>
                 <el-form-item label="干扰样式">
                   <el-select
-                    disabled
+                    
                     v-model="formAdd.disturbDto.disturbStyle"
                     placeholder="请输入干扰样式"
                     @change="GRYSChange"
@@ -45,7 +45,7 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="干扰频率范围">
-                  <el-select v-model="formAdd.disturbDto.param.rateRange" @change="GRPLchange" disabled  placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.rateRange" @change="GRPLchange"   placeholder="请选择">
                     <el-option
                         v-for="device in GRPLFWoption"
                         :key="device.value"
@@ -56,14 +56,14 @@
                 </el-form-item>
                 <el-form-item label="发射增益">
                   <el-input
-                    disabled
+                    
                     v-model="formAdd.disturbDto.param.gain"
                     placeholder="范围0~63"
                   ></el-input>
                 </el-form-item>
                 <el-form-item label="干扰频率(MHz)">
                   <el-input
-                    disabled
+                    
                     v-model="formAdd.disturbDto.param.disturbRate"
                     type="number"
                     placeholder="范围0~3600"
@@ -72,7 +72,7 @@
                 <el-form-item label="干扰带宽"  v-if='formAdd.disturbDto.disturbStyle==0 || formAdd.disturbDto.disturbStyle==1'>
  
 
-                  <el-select v-model="formAdd.disturbDto.param.disturbBand"  disabled placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.disturbBand"   placeholder="请选择">
                       <el-option
                           v-for="device in GRDKoption"
                           :key="device.value"
@@ -84,7 +84,7 @@
 
 
                   <el-form-item label="扫频带宽" v-if='formAdd.disturbDto.disturbStyle==2'>
-                  <el-select v-model="formAdd.disturbDto.param.sweepBand" disabled placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.sweepBand"  placeholder="请选择">
                       <el-option
                           v-for="device in SPDKoption"
                           :key="device.value"
@@ -94,7 +94,7 @@
                   </el-select>
               </el-form-item>
               <el-form-item label="谱线间隔" v-if='formAdd.disturbDto.disturbStyle==3'>
-                  <el-select v-model="formAdd.disturbDto.param.lineInterval" disabled placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.lineInterval"  placeholder="请选择">
                       <el-option
                           v-for="device in PXJGoption"
                           :key="device.value"
@@ -104,7 +104,7 @@
                   </el-select>
               </el-form-item>
               <el-form-item label="谱线数量" v-if='formAdd.disturbDto.disturbStyle==3'>
-                  <el-select v-model="formAdd.disturbDto.param.lineNum" disabled  placeholder="请选择">
+                  <el-select v-model="formAdd.disturbDto.param.lineNum"   placeholder="请选择">
                       <el-option
                           v-for="device in PXSLoption"
                           :key="device.value"
@@ -113,8 +113,10 @@
                       ></el-option>
                   </el-select>
               </el-form-item>
-                <!-- {{formAdd.disturbDto.param}} -->
               </el-form>
+
+            <!-- <grmodle :formAddNEW.sync='formAdd' :boxtype='true' :form-item-width="'30%'"  :GRoption='GRoption' ></grmodle> -->
+
             </div>
             <div class="dialogMainFoot">
               <div class="xiafa" v-show="!xiafa">
@@ -136,6 +138,7 @@ import {
   postControlCommandInterference,
   getTongKangGR,
 } from "@/api/api";
+// import grmodle from "@/components/chartBox/GRmodle.vue"
 export default {
     props:{
         shebeiData:{
@@ -145,6 +148,9 @@ export default {
             }
         },
        
+    },
+    components:{
+        // grmodle
     },
     data(){
         return{
@@ -260,6 +266,8 @@ export default {
             //干扰标签下发按钮
         commentGR() {
             let params = {};
+            console.log(this.formAdd, "formAddcommentGR");
+            
             switch (this.shebeiData.deviceType) {
                 case "TK":
                 params = {
@@ -275,17 +283,18 @@ export default {
                     deviceType: this.shebeiData.deviceType,
                     lkDisturbDto: this.formAdd.disturbDto,
                     time: this.formAdd.time,
-
                 };
+                break
             }
-            console.log(this.shebeiData.deviceType,'this.shebeiData.deviceType');
-            
             this.postControlCommandInterference(params);
         },
           //下发干扰命令
       postControlCommandInterference(params) {
         postControlCommandInterference(params).then((res) => {
           console.log(res, "res");
+          if(res.data.code==200){
+            this.$message.success('下发成功');
+          }
           this.xiafa = false;
         });
       },

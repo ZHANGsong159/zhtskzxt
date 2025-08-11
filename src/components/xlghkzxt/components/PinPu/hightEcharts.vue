@@ -52,6 +52,7 @@ export default {
   },
   data() {
     return {
+      chartInstance:null,
       ws: null,          // WebSocket 实例
       messagesnew: [],      // 独立的消息存储
       socket: null,
@@ -59,10 +60,9 @@ export default {
         chart: {
           zoomType: "x",
           backgroundColor: "rgba(0,0,0,0)",
-          polar: true,
+          // polar: true,
           type: "line",
         },
-
         resetZoomButton: {
           // theme: { style: { display: 'none'} }
         },
@@ -78,8 +78,10 @@ export default {
           title: {
             enabled: false,
           },
-          gridLineColor: "rgba(46, 54, 92, 0.69)",
-          lineColor: "rgba(46, 54, 92, 0.69)",
+          min:50,
+          startOnTick: false, // 必须：禁用起始刻度调整
+          gridLineColor: "rgba(255,255,255,0.5)",
+          gridLineWidth: 1,
           labels: {
             style: {
               color: "#dfdfdf",
@@ -95,37 +97,68 @@ export default {
           min: 0,
           max: 100,
           showLastLabel: true,
-          gridLineColor: "rgba(46, 54, 92, 0.69)",
+          gridLineColor: "rgba(255,255,255,0.5)",
+          gridLineWidth: 1, 
           lineColor: "rgba(165,165,165, 0.3)",
           showFirstLabel: true,
-          tickColor: false,
+          tickColor: true,
           plotBands: [], //标注区
-          plotLines: [],
         },
         title: {
           enabled: false,
           text: "",
         },
-        boost: {
-          useGPUTranslations: true,
-        },
+
         legend: {
           enabled: false,
         },
         tooltip: {
-          shared: true,
-          crosshairs: true,
-          headerFormat: "111",
-          pointFormat: "222",
+            enabled: true, // 必须设置为true
+            useHTML: true, // 启用HTML内容
+            zIndex: 100,
+            formatter: function() {
+                // 使用this.point访问当前数据点
+                return `
+                    <div>频率: <b>${this.x} MHz</b></div>
+                    <div>信号强度: <b>${this.y} dB</b></div>
+                `;
+            },
+            // 样式配置
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            borderColor: '#4dabf7',
+            borderRadius: 8,
+            style: {
+                color: '#fff',
+                fontSize: '14px'
+            }
         },
+        boost: {
+          enabled: true, // 必须开启
+          useGPUTranslations: true, // 启用GPU加速
+          seriesThreshold: 1 // 当序列数超过阈值时启用boost
+        },
+
         series: [
           {
-            color: "#00ffff",
+            color: "rgba(234,225,113,1)",
             marker: {
-              enabled: false,
+                enabled: false, // 启用标记点
+                states: {
+                    hover: {
+                        enabled: true // 启用悬停状态
+                    }
+                }
+            },
+            
+            turboThreshold: 0,
+                boostThreshold: 1,  // 强制所有系列使用boost
+                dataGrouping: {
+                  enabled: true,    // ✅ 关键：在boost模式下启用分组
+                  approximation: 'average',
+                  groupPixelWidth: 4
             },
             animation: false,
-            enableMouseTracking: false,
+            enableMouseTracking: true,
             type: "line",
             data: [],
             lineWidth: 0.5,
@@ -141,7 +174,7 @@ export default {
       timer: null, //瀑布图定时器
       waterFallWidth: 0, //瀑布图的宽度（后端返回的数据length）
       waterFallHeight: 0, //瀑布图定高度（也可以理解成渲染次数 例如30次渲染完成）
-      maxNum: 80, //图例最大值
+      maxNum: 1000, //图例最大值
       minNum: 0, //图例最小值
       messages: [],
       ymessages: [],
@@ -193,13 +226,13 @@ export default {
       var yData = [];
       data = this.messages;
       yData = this.ymessages;
-      console.log('initMessage瀑布图瀑布图瀑布图');
+      console.log(yData,'initMessage瀑布图瀑布图瀑布图');
       // 折线图
       // console.log(yData,'瀑布图瀑布图瀑布图');
       //瀑布图
       // if(yData.length>0){
       this.highInit(data,max,min);
-      this.queryChartList(yData);
+      // this.queryChartList(yData);
 
       // }
     },
@@ -215,10 +248,7 @@ export default {
       this.options.series[0].data = data;
       this.options.xAxis.min=min;
       this.options.xAxis.max=max;
-      console.log(this.shebeiID+'pinpu', this.options,'highInithighInit');
-      
-
-      Highcharts.chart(this.shebeiID+'pinpu', this.options);
+      this.chartInstance=Highcharts.chart(this.shebeiID+'pinpu', this.options);
     },
     // 创建颜色库
     setColormap() {
@@ -271,7 +301,6 @@ export default {
             that.$refs[this.shebeiID].offsetHeight / that.waterFallHeight
           );
         }
-        console.log(that.waterFallWidth,canvasHeight * that.waterFallIndex + 1,'瀑布图瀑布图瀑布图');
         let imgOld = that.waterFall.getImageData(0,0,that.waterFallWidth,canvasHeight * that.waterFallIndex + 1);
         
         const imageData = that.waterFall.createImageData(data.length, 1);
@@ -343,21 +372,28 @@ export default {
   created(){
   },
   mounted() {
-    let that = this;
     this.getCmdRateFun()
-    that.setColormap();
-    that.createLegendCanvas();
-    // console.log(this.messagesdata,'messagesdata');
-    
-    
+    this.initMessage(this.maxvalue,this.minvalue)
 
-    
+    this.setColormap();
+    this.createLegendCanvas();
   },
   watch: {
-    messagesdata(val){
-      this.messages=val.messages;
-      this.ymessages=val.ymessages;
-      this.initMessage(this.maxvalue,this.minvalue)
+    messagesdata: {
+      handler(val) {
+        if (val) {
+          this.messages = val.messages || [];
+          this.ymessages = val.ymessages || [];
+          // 确保图表实例存在
+          if (this.chartInstance) {
+            this.chartInstance.xAxis[0].setExtremes(this.minvalue, this.maxvalue);
+            this.chartInstance.series[0].setData(this.messages);
+            this.queryChartList(this.ymessages);
+          }
+        }
+      },
+      deep: true, // 深度监听
+      immediate: true // 立即执行
     },
   },
   beforeDestroy() {

@@ -62,12 +62,6 @@
                 </template>
             </el-table-column>
         </el-table>
-        <!-- <el-pagination
-        background
-        @current-change="handleCurrentChange"
-        layout="prev, pager, next"
-        :total="gridDatatotle">
-        </el-pagination> -->
         <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
 
     </el-dialog>

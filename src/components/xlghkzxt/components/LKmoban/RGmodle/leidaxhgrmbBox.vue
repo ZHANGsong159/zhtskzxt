@@ -42,15 +42,6 @@
                     </el-table-column>
 
                     <el-table-column
-                        prop="rxAtt"
-                        align='center'
-                        label="接收衰减值">
-                        <template slot-scope="scope">
-                            {{scope.row.paramVo.rxAtt}}MHz
-                        </template>
-                    </el-table-column>
-
-                    <el-table-column
                         prop="maxRfFreq"
                         align='center'
                         label="射频频率上限">
@@ -81,13 +72,6 @@
 
 
                 </template>
-                <!-- <el-pagination
-                style="margin-top: 20px;"
-                background
-                layout="prev, pager, next"
-                @current-change="handleCurrentChange"
-                :total="total">
-                </el-pagination> -->
 
                 <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
 

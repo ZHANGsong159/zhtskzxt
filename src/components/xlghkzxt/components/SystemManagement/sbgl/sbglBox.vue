@@ -88,13 +88,6 @@
                 </el-table-column>
                 </el-table>
             </template>
-            <!-- <el-pagination
-            style="margin-top: 20px;"
-            background
-            layout="prev, pager, next"
-            @current-change="handleCurrentChange"
-            :total="total">
-            </el-pagination> -->
             <page-inaiton :pageSize="pageSize" :total="total"  @currentChange="handleCurrentChange"></page-inaiton>
 
         </div>
@@ -118,7 +111,7 @@
                 <ip-inputbox v-model="formAdd.deviceIp"></ip-inputbox>
             </el-form-item>
             <el-form-item label="所属系统" prop='systemType'>
-                <el-select v-model="formAdd.systemType" placeholder="请选择所属系统">
+                <el-select v-model="formAdd.systemType" @change="SSXTchange" placeholder="请选择所属系统">
                     <el-option v-for="(item,index) in SSXToption" :label="item.label" :value="item.value" :key='index'></el-option>
                 </el-select>
             </el-form-item>
@@ -213,7 +206,7 @@ export default {
                 { value: 'LK', label: '雷抗分系统' },
                 { value: 'DK', label: '光抗分系统' },
             ],
-            SBLXoption:[
+            SBLXoptionold:[
                 { value: 'TK', label: '通抗分系统' },
                 { value: 'LK', label: '雷抗分系统' },
                 { value: 'DK-HW', label: '红外设备' },
@@ -221,7 +214,9 @@ export default {
                 { value: 'DK-15', label: '1.5激光设备' },
                 { value: 'DK-GJ', label: '告警天线' },
                 { value: 'DK-GR', label: '偏引干扰机' },
+
             ],
+            SBLXoption:[],
             SBZToption:[
                 { value: 'outline', label: '离线' },
                 { value: 'standby', label: '待机' },
@@ -240,6 +235,31 @@ export default {
     
     },
     methods:{
+        SSXTchange(val){
+            console.log(val,'SSXTchange');
+            this.formAdd.deviceType=''
+            switch(val){ 
+                case 'TK':
+                    this.SBLXoption=[{ value: 'TK', label: '通抗分系统' },]
+                break;
+                case 'LK':
+                    this.SBLXoption=[{ value: 'LK', label: '雷抗分系统' },]
+                break
+                case 'DK':
+                    this.SBLXoption=[
+                        { value: 'DK-HW', label: '红外设备' },
+                        { value: 'DK-106', label: '1.06激光设备' },
+                        { value: 'DK-15', label: '1.5激光设备' },
+                        { value: 'DK-GJ', label: '告警天线' },
+                        { value: 'DK-GR', label: '偏引干扰机' },
+                    ]
+                break
+
+            }
+
+            
+
+        },
  
         // 分页
         handleCurrentChange(parame){
